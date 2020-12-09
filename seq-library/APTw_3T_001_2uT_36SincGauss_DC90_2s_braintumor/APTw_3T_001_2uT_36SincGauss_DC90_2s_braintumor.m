@@ -1,5 +1,5 @@
 %% APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor
-% An APTw protocol with Sinc-Gaussian pulses,90% DC and tsat of 2 s:
+% Creates a sequence file for an APTw protocol with Sinc-Gaussian pulses, 90% DC and tsat of 2 s
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
@@ -116,7 +116,6 @@ save_seq_plot(seq_filename);
 
 %% call standard sim
 Simulate_and_plot_seq_file(seq_filename, B0);
-
 
 
 
