@@ -2,7 +2,11 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-
+# Simulation parameters for gray matter at 3T with
+# - 3 CEST pools
+# - 1 NOE pool      
+# - a SuperLorentzian shaped MT pool
+#
 # sources/references for settings in this file:
 # CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
 
