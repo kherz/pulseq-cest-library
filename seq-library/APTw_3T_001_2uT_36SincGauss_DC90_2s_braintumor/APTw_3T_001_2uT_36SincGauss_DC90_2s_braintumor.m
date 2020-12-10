@@ -19,13 +19,14 @@ end
 seq_defs.n_pulses      = 36              ; % number of pulses
 seq_defs.tp            = 50e-3           ; % pulse duration [s]
 seq_defs.td            = 5e-3            ; % interpulse delay [s]
-seq_defs.DCsat         = 0.5             ; % duty cycle
 seq_defs.Trec          = 3.5             ; % recovery time [s]
 seq_defs.Trec_M0       = 3.5             ; % recovery time before M0 [s]
 seq_defs.M0_offset     = -1560           ; % m0 offset [ppm]
+seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
 seq_defs.offsets_ppm   = [seq_defs.M0_offset -4:0.25:4]; % offset vector [ppm]
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
-seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td);  % saturation time [s]
+seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
+                         seq_defs.td ;  % saturation time [s]
 seq_defs.B0            = 3               ; % B0 [T]
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
