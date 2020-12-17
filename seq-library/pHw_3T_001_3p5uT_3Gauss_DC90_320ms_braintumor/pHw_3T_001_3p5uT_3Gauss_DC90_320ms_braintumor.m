@@ -1,8 +1,7 @@
 %% pHw_3T_001_3p5uT_3Gauss_DC90_320ms_braintumor
 % Creates a sequence file for an ph weighted protocol according to
-% https://doi.org/10.1002/nbm.3611
-%
-% https://doi.org/10.3174/ajnr.A6063
+% https://doi.org/10.1002/mrm.27204
+
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
 

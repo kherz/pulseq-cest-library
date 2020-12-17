@@ -1,6 +1,6 @@
 %% Glu_7T_001_3uT_8Hannning_DC99_800ms_braintumor
 % Creates a sequence file for an glutamate weighted protocol according to
-% https://doi.org/10.1002/nbm.2949
+% https://doi.org/10.1002/mrm.27362 
 %
 % Kai Herz 2020
 % kai.herz@tuebingen.mpg.de
