@@ -1,4 +1,4 @@
-%% DGE_7T_001_1p96uT_32SincGauss_DC66_2375ms_braintumor
+%% DGE_7T_001_1uT_32SincGauss_DC66_2375ms_braintumor
 % Creates a sequence file for a DGE protocol with Sinc-Gaussian pulses, 66% DC and tsat of 2.3 s
 % Xu X, Yadav NN, Knutsson L, et al. Dynamic Glucose-Enhanced (DGE) MRI: Translation to Human Scanning and First Results in Glioma Patients. Tomography. 2015;1(2):105-114. doi:10.18383/j.tom.2015.00175
 %
@@ -43,7 +43,7 @@ tp          = seq_defs.tp;          % sat pulse duration [s]
 td          = seq_defs.td;          % delay between pulses [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
 B0          = seq_defs.B0;          % B0 [T]
-B1pa        = 1.96;  % no description, just B1 = 1.92 uT
+B1peak      = 1.96;  % peak b1 of saturation pulse 
 spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
@@ -56,11 +56,13 @@ lims = Get_scanner_limits();
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
+fa_sat        = gyroRatio_rad*tp; % dummy flip angle
 % create pulseq saturation pulse object
 
 %satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
 satPulse      = mr.makeSincPulse(fa_sat, 'Duration', tp, 'system', lims,'timeBwProduct', 2,'apodization', 0.15); % philips-like sinc
+satPulse.signal = (satPulse.signal./max(satPulse.signal)).*B1peak*gyroRatio_hz; 
+
 
 [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,1,gyroRatio_hz);
 seq_defs.B1cwpe = B1cwpe;
@@ -112,8 +114,6 @@ seq.write(seq_filename, author);
 %% plot
 save_seq_plot(seq_filename);
 
-%% call standard sim
-Simulate_and_plot_seq_file(seq_filename, B0);
 
 
 
