@@ -124,6 +124,7 @@ seq.write(seq_filename);
 save_seq_plot(seq_filename);
 
 %% call standard sim
-Simulate_and_plot_seq_file(seq_filename, B0);
+Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml');
+
 
 
