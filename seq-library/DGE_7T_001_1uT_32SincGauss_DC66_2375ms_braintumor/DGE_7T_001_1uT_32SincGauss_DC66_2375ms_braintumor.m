@@ -112,7 +112,7 @@ end
 seq.write(seq_filename, author);
 
 %% plot
-Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml',1,1);
+M_z = Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml');
 
 
 

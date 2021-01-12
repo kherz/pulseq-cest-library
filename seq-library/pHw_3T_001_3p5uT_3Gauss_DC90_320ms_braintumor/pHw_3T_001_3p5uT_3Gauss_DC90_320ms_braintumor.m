@@ -111,8 +111,6 @@ for n_id = 1:numel(def_fields)
 end
 seq.write(seq_filename, author);
 
-%% plot
-Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml');
-
-
+%% call standard sim
+M_z = Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml');
 

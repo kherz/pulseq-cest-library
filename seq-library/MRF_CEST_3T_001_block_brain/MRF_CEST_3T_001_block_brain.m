@@ -112,7 +112,7 @@ set(fig_seq, 'Position', get(0, 'Screensize'));
 % get data and save figure
 f_data    = getframe(fig_seq);
 imwrite(f_data.cdata, fullfile([seq_defs.seq_id_string '.png']), 'png');
-%% call standard sim
-%Simulate_and_plot_seq_file(seq_filename, B0);
 
+%% call standard sim
+M_z = Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml');
 
