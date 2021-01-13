@@ -81,7 +81,7 @@ for currentOffset = offsets_Hz
         % calc phase for next rf pulse
         accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
         
-        if np < n_pulses % delay between pulses
+        if np < n_pulses(meas_id) % delay between pulses
             
             seq.addBlock(mr.makeDelay(td)); % add delay
             
