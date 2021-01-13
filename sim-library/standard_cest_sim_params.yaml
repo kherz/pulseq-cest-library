@@ -1,0 +1,84 @@
+####################################################################################
+# ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
+# ------------------------ https://pulseq-cest.github.io/ ------------------------ #
+####################################################################################
+
+# sources/references for settings in this file:
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
+
+###### Pool settings
+#         f: relative pool size fraction (float)
+#        r1: inverse longitudinal relaxation time R1 = 1/T1 [Hz] (float)
+#        r2: inverse transversal relaxation time R2 = 1/T2 [Hz] (float)
+#         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
+#        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
+# lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
+
+### water pool
+water_pool: {
+  f: 1.0,
+  r1: 1 / 1.3,
+  r2: 1 / 75e-3
+}
+
+### MT pool
+mt_pool: {
+  f: 5.5 / 111,
+  r1: 1 / 1.3,
+  r2: 1 / 9e-6,
+  k: 40,
+  dw: 0,
+  lineshape: 'SuperLorentzian'
+}
+
+### CEST pool(s)
+cest_pool: {
+  'amide': {
+    f: 72e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 100e-3,
+    k: 30,
+    dw: 3.5
+  },
+  'guanidine_1': {
+    f: 20e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 170e-3,
+    k: 1100,
+    dw: 2
+  },
+  'amine_1': {
+    f: 20e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 200e-3,
+    k: 5500,
+    dw: 3
+  },
+  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
+    f: 500e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 5e-3,
+    k: 16,
+    dw: -3.5
+  }
+}
+
+###### Scanner settings
+#       b0: field strength [T] (float)
+#    gamma: gyromagnetic ratio [rad / uT], default is 267.5153 (float)
+# b0_inhom: field inhomogeneity [ppm], default is 0.0 (float)
+#   rel_b1: relative amp inhomogeneity, default is 1.0 (float)
+b0: 7
+gamma: 267.5153
+b0_inhom: 0.0
+rel_b1: 1
+
+##### Additional simulation settings
+#           verbose: verbose output, default is False (bool)
+#    reset_init_mag: True to reset magnetization after each readout, default is True (bool)
+#             scale: relative magnetization after reset of magnetization, default is 1 (float)
+# max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
+verbose: False
+reset_init_mag: True
+scale: 0.5
+max_pulse_samples: 300
