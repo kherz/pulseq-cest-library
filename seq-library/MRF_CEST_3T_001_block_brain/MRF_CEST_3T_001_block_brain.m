@@ -114,5 +114,5 @@ f_data    = getframe(fig_seq);
 imwrite(f_data.cdata, fullfile([seq_defs.seq_id_string '.png']), 'png');
 
 %% call standard sim
-M_z = Run_pulseq_cest_Simulation(seq_filename,'GM_3T_001_bmsim.yaml');
+M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
 
