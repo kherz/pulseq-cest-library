@@ -11,4 +11,4 @@ WASABI protocol for simultaneous B0 and B1 mapping at 7T
 
 ### Plot
 
-
+<img src="WASABI_7T_001_3p7uT_1block_5ms.png" width="300"/> 
