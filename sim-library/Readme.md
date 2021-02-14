@@ -8,7 +8,7 @@ Resources of T1, T2, MTC  and CEST parameters:
 
 |  3T  | T1 [s]      | T2 [ms]     |MTC fraction [%]  |  MTC k [Hz] | MTC T2 [µs]| pub |
 | ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
-| GM_001| XX          |   XX        |     XX        |   XX        |  XX         | van Zijl Neuroimage   |
+| GM_001| 1.2         |   69        |     5.5/111      |   40        |  9         | van Zijl Neuroimage   |
 | GM_002| 1.21 ± 0.13 |  71.3 ± 5.6 | (6.3 ± 0.7)/111  |    40 ± 5   | 67 ± 5      | [Heo 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/)    |
 | WM_002| 1.05 ± 0.03 |  39.8 ± 3.8 | (11.2 ± 0.7)/111 |    29 ± 4   | 63 ± 4      | [Heo 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/)    |
 | GM_003| 1.31 ±0.11  |   71  ± 5   |                  |             |             | [Zhu 2014](https://cds.ismrm.org/protected/14MPresentations/abstracts/3208.pdf)     |
