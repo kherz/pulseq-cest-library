@@ -17,10 +17,12 @@ Resources of T1, T2, MTC  and CEST parameters:
 | WM_004| 1.084       |   69        |     0.139        |   23        |  10         | [Stanisz 2005](https://doi.org/10.1002/mrm.20605)    |
 
 
-|  7T  | T1 [s]      | T2 [ms]     |MTC fraction [%]  |  MTC k [Hz] | MTC T2 [µs]| pub |
-| ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
-| GM_001| 1.670 ±0.070 |   43  ± 3   |                  |             |             | [Zhu 2014](https://cds.ismrm.org/protected/14MPresentations/abstracts/3208.pdf)     |
-| WM_001| 1.222 ± 0.058 |  37 ± 3     |                  |             |             | [Zhu 2014](https://cds.ismrm.org/protected/14MPresentations/abstracts/3208.pdf)     |
+|  7T  | T1 [s]         | T2 [ms]  |MTC fraction [%]  |  MTC k [Hz] | MTC T2 [µs]| pub |
+| ---- |:--------------:|:--------:| :---:            |:---:        |:---:         | ---- |
+| GM_001| 1.670 ±0.070  |  43  ± 3 |                  |             |             | [Zhu 2014](https://cds.ismrm.org/protected/14MPresentations/abstracts/3208.pdf)|
+| WM_001| 1.222 ± 0.058 |  37 ± 3  |                  |             |             | [Zhu 2014](https://cds.ismrm.org/protected/14MPresentations/abstracts/3208.pdf)|
+| GM_002|               |          |                  |      24±3   |             | [McKeithan 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7549401/)|
+| WM_002|               |          |                  |             |             | [McKeithan 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7549401/)|
 
 
 The MT pool is at -2.6 in WM, and at 0 ppm in GM? However unclear how to model, as SuperLorentzian has a pole.
