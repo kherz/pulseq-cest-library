@@ -16,8 +16,8 @@ from pypulseq.make_delay import make_delay
 from pypulseq.make_trap_pulse import make_trapezoid
 from pypulseq.make_sinc_pulse import make_sinc_pulse
 from pypulseq.opts import Opts
-from sim.utils.calc_power_equivalents import calc_power_equivalent
-from sim.utils.seq.write_seq import write_seq
+from bmctool.utils.pulses.calc_power_equivalents import calc_power_equivalent
+from bmctool.utils.seq.write import write_seq
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]

@@ -12,9 +12,9 @@ from pypulseq.make_adc import make_adc
 from pypulseq.make_delay import make_delay
 from pypulseq.make_trap_pulse import make_trapezoid
 from pypulseq.opts import Opts
-from sim.utils.calc_power_equivalents import calc_power_equivalent
-from sim.utils.seq.write_seq import write_seq
-from sim.utils.seq.make_hanning import make_hanning_pulse
+from bmctool.utils.seq.write import write_seq
+from bmctool.utils.pulses.make_hanning import make_gauss_hanning
+from bmctool.utils.pulses.calc_power_equivalents import calc_power_equivalent
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]
@@ -61,7 +61,7 @@ gx_spoil, gy_spoil, gz_spoil = [make_trapezoid(channel=c, system=sys, amplitude=
 
 # RF pulses
 flip_angle_sat = 3772 * np.pi / 180
-sat_pulse = make_hanning_pulse(flip_angle_sat=flip_angle_sat, duration=seq_defs['tp'], system=sys)
+sat_pulse = make_gauss_hanning(flip_angle=flip_angle_sat, pulse_duration=seq_defs['tp'], system=sys)
 seq_defs['b1cwpe'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'], td=seq_defs['td'], gamma_hz=gamma_hz)
 
 
