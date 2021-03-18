@@ -13,7 +13,7 @@ from pypulseq.make_delay import make_delay
 from pypulseq.make_trap_pulse import make_trapezoid
 from pypulseq.make_block_pulse import make_block_pulse
 from pypulseq.opts import Opts
-from sim.utils.seq.write_seq import write_seq
+from bmctool.utils.seq.write import write_seq
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]

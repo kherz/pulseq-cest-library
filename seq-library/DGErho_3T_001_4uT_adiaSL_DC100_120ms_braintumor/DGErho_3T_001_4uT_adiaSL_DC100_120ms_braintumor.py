@@ -12,9 +12,8 @@ from pypulseq.make_delay import make_delay
 from pypulseq.make_trap_pulse import make_trapezoid
 from pypulseq.make_block_pulse import make_block_pulse
 from pypulseq.opts import Opts
-from sim.utils.calc_power_equivalents import calc_power_equivalent
-from sim.utils.seq.write_seq import write_seq
-from sim.utils.seq.generate_hsexp_pulses import generate_hsexp_pulses
+from bmctool.utils.seq.write import write_seq
+from bmctool.utils.pulses.make_hsexp import generate_hsexp_dict
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]
@@ -65,7 +64,7 @@ gx_spoil, gy_spoil, gz_spoil = [make_trapezoid(channel=c, system=sys, amplitude=
 # RF pulses
 flip_angle_sat = b1 * gamma_hz * 2 * np.pi * seq_defs['tp']
 sat_pulse, _ = make_block_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys)
-adia_sl: dict = generate_hsexp_pulses(amp=b1, system=sys)
+adia_sl: dict = generate_hsexp_dict(amp=b1, system=sys)
 
 # ADC events
 pseudo_adc = make_adc(num_samples=1, duration=1e-3)  # (not played out; just used to split measurements)

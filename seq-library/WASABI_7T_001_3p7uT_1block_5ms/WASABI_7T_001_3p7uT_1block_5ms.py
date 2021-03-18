@@ -14,14 +14,14 @@ from pypulseq.make_trap_pulse import make_trapezoid
 from pypulseq.make_block_pulse import make_block_pulse
 
 from pypulseq.opts import Opts
-from sim.utils.seq.write_seq import write_seq
+from bmctool.utils.seq.write import write_seq
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]
 
 # general settings
 author = 'Patrick Schuenke'
-plot_sequence = True  # plot preparation block?
+plot_sequence = False  # plot preparation block?
 convert_to_1_3 = True  # convert seq-file to a pseudo version 1.3 file?
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
