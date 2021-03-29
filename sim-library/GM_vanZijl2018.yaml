@@ -4,7 +4,7 @@
 ####################################################################################
 # Simulation parameters for gray matter at 3T with
 # - 4 CEST pools
-# - 1 NOE pool      
+# - 5 NOE pools      
 # - a SuperLorentzian shaped MT pool
 #
 # sources/references for settings in this file:
@@ -65,12 +65,40 @@ cest_pool: {
     k: 2000,
     dw: 0.9
   },
-  'NOE': { #average of 5 NOE pools from https://doi.org/10.1016/j.neuroimage.2017.04.045
-    f: 500e-3 / 111,
+  'rNOE_1': { 
+    f: 100e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 5e-3,
+    k: 16,
+    dw: -1.75
+  },
+  'rNOE_2': { 
+    f: 100e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 5e-3,
+    k: 16,
+    dw: -2.25
+  },
+  'rNOE_3': { 
+    f: 100e-3 / 111,
     r1: 1 / 1.3,
     r2: 1 / 5e-3,
     k: 16,
     dw: -2.75
+  },
+  'rNOE_4': { 
+    f: 100e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 5e-3,
+    k: 16,
+    dw: -3.25
+  },
+  'rNOE_5': { 
+    f: 100e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 5e-3,
+    k: 16,
+    dw: -3.75
   }
 }
 
