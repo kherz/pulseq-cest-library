@@ -116,8 +116,6 @@ end
 seq.write(seq_filename, author);
 
 %% write sequence
-seq.setDefinition('offsets_ppm',offset_list);
-seq.setDefinition('run_m0_scan', run_m0_scan);
 seq.write(seq_filename);
 
 %% plot
