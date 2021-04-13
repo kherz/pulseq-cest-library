@@ -2,12 +2,13 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for gray matter at 3T with
+# Simulation parameters for white matter at 3T with
 # - 4 CEST pools
 # - 1 NOE pool      
 # - a SuperLorentzian shaped MT pool
 #
 # sources/references for settings in this file:
+# Water and MT: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/ 
 # CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
 
 ###### Pool settings
@@ -21,17 +22,17 @@
 ### water pool
 water_pool: {
   f: 1.0,
-  r1: 1 / 1.2,
-  r2: 1 / 69e-3
+  r1: 1 / 1.05,
+  r2: 1 / 39.8e-3
 }
 
 ### MT pool
 mt_pool: {
-  f: 5.5 / 111,
-  r1: 1 / 1.3,
+  f: 11.2 / 111,
+  r1: 1 / 1.05,
   r2: 1 / 9e-6,
-  k: 40,
-  dw: 0,
+  k: 29,
+  dw: 0, # this can be shifted but might introduce artifacts due to the pol of the Super-Lorentzian
   lineshape: 'SuperLorentzian'
 }
 
@@ -39,35 +40,35 @@ mt_pool: {
 cest_pool: {
   'amide': {
     f: 72e-3 / 111,
-    r1: 1 / 1.3,
+    r1: 1 / 1.05,
     r2: 1 / 100e-3,
     k: 30,
     dw: 3.5
   },
   'amine': {
     f: 20e-3 / 111,
-    r1: 1 / 1.3,
+    r1: 1 / 1.05,
     r2: 1 / 200e-3,
     k: 5500,
     dw: 3
   },
   'guanidinium': {
     f: 20e-3 / 111,
-    r1: 1 / 1.3,
+    r1: 1 / 1.05,
     r2: 1 / 170e-3,
     k: 1100,
     dw: 2
   },
   'hydroxyl': {
     f: 45e-3 / 111,
-    r1: 1 / 1.3,
+    r1: 1 / 1.05,
     r2: 1 / 55e-3,
     k: 2000,
     dw: 0.9
   },
   'NOE': { #average of 5 NOE pools from https://doi.org/10.1016/j.neuroimage.2017.04.045
     f: 500e-3 / 111,
-    r1: 1 / 1.3,
+    r1: 1 / 1.05,
     r2: 1 / 5e-3,
     k: 16,
     dw: -2.75
