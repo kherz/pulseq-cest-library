@@ -21,7 +21,7 @@ seqid = os.path.splitext(os.path.basename(__file__))[0]
 # general settings
 author = 'Patrick Schuenke'
 plot_sequence = False  # plot preparation block?
-convert_to_1_3 = True  # convert seq-file to a pseudo version 1.3 file?
+convert_to_1_3 = False  # convert seq-file to a version 1.3 file? Needed for pypulseq < v1.3.1 only!
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
 b1: float = 4  # B1 peak amplitude [µT] (the cw power equivalent will be calculated and written to seq_defs below)
@@ -63,7 +63,7 @@ gx_spoil, gy_spoil, gz_spoil = [make_trapezoid(channel=c, system=sys, amplitude=
 
 # RF pulses
 flip_angle_sat = b1 * gamma_hz * 2 * np.pi * seq_defs['tp']
-sat_pulse, _ = make_block_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys)
+sat_pulse = make_block_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys)
 adia_sl: dict = generate_hsexp_dict(amp=b1, system=sys)
 
 # ADC events

@@ -22,7 +22,7 @@ seqid = os.path.splitext(os.path.basename(__file__))[0]
 # general settings
 author = 'Kerstin Heinecke'
 plot_sequence = False  # plot preparation block?
-convert_to_1_3 = True  # convert seq-file to a pseudo version 1.3 file?
+convert_to_1_3 = False  # convert seq-file to a version 1.3 file? Needed for pypulseq < v1.3.1 only!
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
 b1: float = 2.0  # B1 peak amplitude [µT] (the cw power equivalent will be calculated and written to seq_defs below)
@@ -74,7 +74,6 @@ trec_delay = make_delay(seq_defs['trec'])
 
 # Sequence object
 seq = Sequence()
-seq.shape_library
 
 # ===
 # RUN
