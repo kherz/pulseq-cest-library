@@ -9,7 +9,7 @@
 author = 'Kai Herz';
 
 %% get id of generation file
-if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
+if contains(mfilename, 'LiveEditorEvaluationHelperESectionEval')
     [~, seqid] = fileparts(matlab.desktop.editor.getActiveFilename);
 else
     [~, seqid] = fileparts(which(mfilename));
