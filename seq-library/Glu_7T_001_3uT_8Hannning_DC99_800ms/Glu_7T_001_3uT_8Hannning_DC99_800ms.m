@@ -9,7 +9,7 @@
 author = 'Kai Herz';
 
 %% get id of generation file
-if strcmp(mfilename, 'LiveEditorEvaluationHelperESectionEval')
+if contains(mfilename, 'LiveEditorEvaluationHelperESectionEval')
     [~, seqid] = fileparts(matlab.desktop.editor.getActiveFilename);
 else
     [~, seqid] = fileparts(which(mfilename));
@@ -22,7 +22,7 @@ seq_defs.tp            = 99.8e-3           ; % pulse duration [s]
 seq_defs.td            = 0.2e-3            ; % interpulse delay [s]
 seq_defs.Trec          = 15             ; %  every  15  s ???
 seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
-seq_defs.offsets_ppm   = [-100 -20 -4.2:0.2:-1.8 1.8:0.2:4.2 20 100]; % ±1.8 to?±?4.2?ppm  with a step size of 0.2?ppm
+seq_defs.offsets_ppm   = [-100 -20 -4.2:0.2:-1.8 1.8:0.2:4.2 20 100]; % ï¿½1.8 to?ï¿½?4.2?ppm  with a step size of 0.2?ppm
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
