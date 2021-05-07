@@ -44,7 +44,7 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 
 % create pulseq object
-hs_pulse = WriteHSHalfPassagePulses(20,lims);
+hs_pulse = Generate_HS_HP_pulseq_pulses(20,lims);
 seq_defs.B1cwpe = B1pa;
 
 % spoilers
