@@ -1,0 +1,116 @@
+####################################################################################
+# ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
+# ------------------------ https://pulseq-cest.github.io/ ------------------------ #
+####################################################################################
+# Simulation parameters for white matter at 3T 
+# This file is not based on quantification, but purely heuristic on the visual match with measured Z-spectrum and MTRasym.
+# The file was initialized by WM_3T_001, but was adjusted to match the in vivo data acquired by Heo,..Zhou et al. 
+# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/figure/F2/
+# this data was acquired with the sequence APTw_3T_003 which can be found here:
+# https://github.com/kherz/pulseq-cest-library/tree/master/seq-library/APTw_3T_003_2uT_8block_DC95_834ms_braintumor
+# By simulating the APTw_3T_003 sequence with this yaml file we get a WM Z-spectrum that looks most similar as in the article
+# This was achieved by the following adjustments:
+# The negative asymetry around 12 ppm requires a shifted ssMT pool. 
+# As the Superlorentzian ssMT description has a pole at its frequency, 
+# we switched to a Lorentzian ssMT pool lineshape.
+# To adjust the width of the Lorentzian MT to coarsly match the SuperLorentzian with one can adjust the R2ssmt by a factor 0.23
+# We then increased the MT to get the Z-value at 14 ppm to about 60% and the MTRasym value at 14 ppm to about -3% 
+# The CEST parameters were inspired by WM_3T_001, but were adjusted mostly to generate the prominent peak in the WM MTRasym at around 1.5 ppm.
+# For this it was necessary to increase the guanidine (2 ppm) concentration to 150e-3 / 111. 
+# To get around 0 MTRasym at 3.5 ppm we also increased the amide concentration to 150e-3 / 111. 
+# This is also an interplay with the NOE pool which was kept identical to WM_3T_001.
+# amine and OH pools were added for completeness, but they do not affect the spectra significantly
+# 
+#
+# - 3 CEST pools
+# - 1 NOE pool      
+# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
+#
+# sources/references for settings in this file:
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
+
+###### Pool settings
+#         f: relative pool size fraction (float)
+#        r1: inverse longitudinal relaxation time R1 = 1/T1 [Hz] (float)
+#        r2: inverse transversal relaxation time R2 = 1/T2 [Hz] (float)
+#         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
+#        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
+# lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
+
+### water pool   # as in WM_3T_001
+water_pool: {
+  f: 1.0,
+  r1: 1 / 1.05,
+  r2: 1 / 39.8e-3
+}
+
+### MT pool   # as in WM_3T_001  bit with increased f and decreased R2 to get shape of Z-spectra
+mt_pool: {
+  f: 15.42 / 111,
+  r1: 1 / 1.05,
+  r2: 0.23 / 9e-6 ,  # adjusted to have similar shape to SuperLorentzian
+  k:  29,
+  dw: -3.0,  # leads to most simlar asym at 15 ppm of - 3%
+  lineshape: 'Lorentzian'
+}
+
+cest_pool: {  
+  'amide': {
+    f: 72e-3 / 111,    
+    r1: 1 / 1.3,
+    r2: 1 / 100e-3,
+    k: 30,
+    dw: 3.5
+  },
+  'guanidine_1': {       # eight times the value of WM_3T_001, needed to get the peak at 1.5 ppm in MTRasym
+    f: 150e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 170e-3,
+    k: 1100,
+    dw: 2
+  },
+  'amine_1': {
+    f: 20e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 200e-3,
+    k: 5500,
+    dw: 3
+  },
+  'OH_1': {
+    f: 20e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 200e-3,
+    k: 3500,
+    dw: 1.3
+  },
+
+  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
+    f: 500e-3 / 111,
+    r1: 1 / 1.3,
+    r2: 1 / 5e-3,
+    k: 16,
+    dw: -2.75
+  }
+}
+
+
+
+###### Scanner settings
+#       b0: field strength [T] (float)
+#    gamma: gyromagnetic ratio [rad / uT], default is 267.5153 (float)
+# b0_inhom: field inhomogeneity [ppm], default is 0.0 (float)
+#   rel_b1: relative amp inhomogeneity, default is 1.0 (float)
+b0: 3
+gamma: 267.5153
+b0_inhom: 0.0
+rel_b1: 1
+
+##### Additional simulation settings
+#           verbose: verbose output, default is False (bool)
+#    reset_init_mag: True to reset magnetization after each readout, default is True (bool)
+#             scale: relative magnetization after reset of magnetization, default is 1 (float)
+# max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
+verbose: False
+reset_init_mag: True
+scale: 0.5
+max_pulse_samples: 300
