@@ -1,4 +1,4 @@
-%% APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor
+%% APTw_3T_000_2uT_1block_2s_braintumor
 % Creates a sequence file for an APTw protocol with on single cw (block) pulse
 % this sequence will not run on some real Systems.
 % it serves as a reference for the pulsed pre-saturation schemes
