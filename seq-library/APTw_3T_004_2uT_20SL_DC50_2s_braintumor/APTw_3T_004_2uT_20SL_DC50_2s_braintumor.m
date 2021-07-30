@@ -1,4 +1,9 @@
 %% APTw_3T_004_2uT_20SL_DC50_2s_braintumor
+% this file requires pulseq-cest sim commit
+% 94484e494e4897287ab0c78160bf654106feeff7 or later, as previously weff sign  error lead to artifacts
+% see also https://github.com/kherz/pulseq-cest/pull/6
+%
+%
 % Creates a sequence file for an APTw protocol with conventional offresonant SL pulses, 50% DC and tsat of 2 s
 % This is a pulseq spin-lock pulse train following the paper of Roellofs et al.
 % citation:
