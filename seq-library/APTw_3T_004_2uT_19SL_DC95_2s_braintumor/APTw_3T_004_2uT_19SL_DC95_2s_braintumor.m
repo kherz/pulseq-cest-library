@@ -1,4 +1,4 @@
-%% APTw_3T_004_2uT_20SL_DC50_2s_braintumor
+%% APTw_3T_004_2uT_19SL_DC95_2s_braintumor
 % this file requires pulseq-cest sim commit
 % 94484e494e4897287ab0c78160bf654106feeff7 or later, as previously weff sign  error lead to artifacts
 % see also https://github.com/kherz/pulseq-cest/pull/6
