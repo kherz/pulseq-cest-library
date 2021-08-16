@@ -13,8 +13,8 @@
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
-#        r1: inverse longitudinal relaxation time R1 = 1/T1 [Hz] (float)
-#        r2: inverse transversal relaxation time R2 = 1/T2 [Hz] (float)
+#        t1: longitudinal relaxation time T1 = 1/R1 [s] (float)
+#        t2: transversal relaxation time T2 = 1/R2 [s] (float)
 #         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
@@ -22,15 +22,15 @@
 ### water pool
 water_pool: {
   f: 1.0,
-  r1: 1 / 1.05,
-  r2: 1 / 39.8e-3
+  t1: 1.05,
+  t2: 39.8e-3
 }
 
 ### MT pool
 mt_pool: {
-  f: 11.2 / 111,
-  r1: 1 / 1.0,
-  r2: 1 / 63e-6 ,
+  f: 0.1009, #11.2 / 111,
+  t1: 1.0,
+  t2: 63.0e-6 ,
   k: 29,
   dw: -1.5,  # leads to most simlar asym at 15 ppm of - 3%
   lineshape: 'Lorentzian'
@@ -38,9 +38,9 @@ mt_pool: {
 
 cest_pool: {  
   'amide': {
-    f: 198e-3 / 111,    
-    r1: 1 / 1.3,
-    r2: 1 / 2.5e-3,
+    f: 0.0018, # 198e-3 / 111,    
+    t1: 1.3,
+    t2: 2.5e-3,
     k: 151,
     dw: 3.5
   }

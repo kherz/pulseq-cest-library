@@ -12,8 +12,8 @@
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
-#        r1: inverse longitudinal relaxation time R1 = 1/T1 [Hz] (float)
-#        r2: inverse transversal relaxation time R2 = 1/T2 [Hz] (float)
+#        t1: longitudinal relaxation time T1 = 1/R1 [s] (float)
+#        t2: transversal relaxation time T2 = 1/R2 [s] (float)
 #         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
@@ -21,15 +21,15 @@
 ### water pool
 water_pool: {
   f: 1.0,
-  r1: 1 / 1.2,
-  r2: 1 / 69e-3
+  t1: 1.2,
+  t2: 0.069
 }
 
 ### MT pool
 mt_pool: {
-  f: 5.5 / 111,
-  r1: 1 / 1.3,
-  r2: 1 / 9e-6,
+  f: 0.0495, # 5.5 / 111,
+  t1: 1.3,
+  t2: 9.0e-6,
   k: 40,
   dw: 0,
   lineshape: 'SuperLorentzian'
@@ -38,37 +38,37 @@ mt_pool: {
 ### CEST pool(s)
 cest_pool: {
   'amide': {
-    f: 72e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 100e-3,
+    f: 0.00064865, # 72e-3 / 111,
+    t1: 1.3,
+    t2: 0.1,
     k: 30,
     dw: 3.5
   },
   'amine': {
-    f: 20e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 200e-3,
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.2,
     k: 5500,
     dw: 3
   },
   'guanidinium': {
-    f: 20e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 170e-3,
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.17,
     k: 1100,
     dw: 2
   },
   'hydroxyl': {
-    f: 45e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 55e-3,
+    f: 0.00040541, #45e-3 / 111,
+    t1: 1.3,
+    t2: 0.055,
     k: 2000,
     dw: 0.9
   },
   'NOE': { #average of 5 NOE pools from https://doi.org/10.1016/j.neuroimage.2017.04.045
-    f: 500e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 5e-3,
+    f: 0.0045, #500e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
     k: 16,
     dw: -2.75
   }
