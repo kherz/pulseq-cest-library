@@ -9,10 +9,9 @@ simple text editor.
 |  3T  | T1 [s]      | T2 [ms]     |MTC fraction [%]  |  MTC k [Hz] | MTC T2 [µs]| pub |
 | ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
 | GM_001| 1.2        |   69        |     5.5/111      |    40       | 9         | [van Zijl 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650949/)   |
-| WM_001| 1.05       |  39.8       |    11.2/111      |    29       | 9         | [van Zijl 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650949/)  + [Heo 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/) |
 | GM_vanZijl2018| 1.2         |   69        |     5.5/111      |   40        |  9         | [van Zijl 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650949/)   |
-| WM_002| 1.05       |  39.8       |    15.42/111      |    29       | 9/0.23         | WM_001 adjusted to match [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
-| GLIO_002| 1.5       |  70       |    6/111      |    29       | 9/0.23         | WM_002 adjusted to match [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
+| WM_001| 1.05       |  39.8       |    15.42/111      |    29       | 9/0.23         | [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
+| GLIO_002| 1.5       |  70       |    6/111      |    29       | 9/0.23         | WM_001 adjusted to match [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
 
 
 
