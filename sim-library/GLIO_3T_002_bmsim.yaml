@@ -25,8 +25,8 @@
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
-#        r1: inverse longitudinal relaxation time R1 = 1/T1 [Hz] (float)
-#        r2: inverse transversal relaxation time R2 = 1/T2 [Hz] (float)
+#        t1: longitudinal relaxation time T1 = 1/R1 [s] (float)
+#        t2: transversal relaxation time T2 = 1/R2 [s] (float)
 #         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
@@ -34,15 +34,15 @@
 ### water pool
 water_pool: {
   f: 1.0,
-  r1: 1 / 1.5,
-  r2: 1 / 70e-3
+  t1: 1.5,
+  t2: 0.07
 }
 
 ### MT pool
 mt_pool: {
-  f: 6.0 / 111,
-  r1: 1 / 1.05,
-  r2: 0.23 / 9e-6 ,  # adjusted to have similar shape to SuperLorentzian
+  f: 0.0541, # 6.0 / 111
+  t1: 1.05,
+  t2: 3.9130e-05 ,  # 1/(0.23 / 9e-6), adjusted to have similar shape to SuperLorentzian
   k:  29,
   dw: -3.0,  # leads to most simlar asym at 15 ppm of - 3%
   lineshape: 'Lorentzian'
@@ -50,38 +50,37 @@ mt_pool: {
 
 cest_pool: {  
   'amide': {
-    f: 100e-3 / 111,    # increased compared to WM_3T_001/002
-    r1: 1 / 1.3,
-    r2: 1 / 100e-3,
+    f: 0.0009009,  # 100e-3 / 111,  increased compared to WM_3T_001/002
+    t1: 1.3,
+    t2: 0.1,
     k: 30,
     dw: 3.5
   },
   'guanidine_1': {       # same as WM_3T_002
-    f: 150e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 170e-3,
+    f: 0.0014, # 150e-3 / 111,
+    t1: 1.3,
+    t2: 0.17,
     k: 1100,
     dw: 2
   },
   'amine_1': {
-    f: 20e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 200e-3,
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.2,
     k: 5500,
     dw: 3
   },
   'OH_1': {
-    f: 20e-3 / 111,
-    r1: 1 / 1.3,
-    r2: 1 / 200e-3,
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.2,
     k: 3500,
     dw: 1.3
   },
-
   'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
-    f: 100e-3 / 111,   # decreased compared to WM_3T_002
-    r1: 1 / 1.3,
-    r2: 1 / 5e-3,
+    f: 0.0009009,  # 100e-3 / 111,  decreased compared to WM_3T_002
+    t1: 1.3,
+    t2: 0.005,
     k: 16,
     dw: -2.75
   }
