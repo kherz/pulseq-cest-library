@@ -48,7 +48,7 @@ seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
 %% scanner limits
 % see pulseq doc for more ino
-lims = Get_scanner_limits();
+seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
@@ -56,31 +56,19 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = gyroRatio_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
-satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
 satPulse.signal = (satPulse.signal)./max(satPulse.signal)*B1peak*gyroRatio_hz;
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,1,gyroRatio_hz);
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
 seq_defs.B1cwpe = B1cwpe;
-
-% spoilers
-spoilRiseTime = 1e-3;
-spoilDuration = 4500e-6+ spoilRiseTime; % [s]
-% create pulseq gradient object
-[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
-
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
 
-% init sequence
-seq = mr.Sequence();
-
 % unsaturated m0
 for nSl = 1:seq_defs.nSlices
     seq.addBlock(mr.makeDelay(seq_defs.Tsat));
-    seq.addBlock(gxSpoil,gySpoil,gzSpoil);
-    seq.addBlock(pseudoADC); % readout trigger event
+    seq.addSpoilerGradients()
+    seq.addPseudoADCBlock(); % readout trigger event
 end
 
 % loop through offsets and set pulses and delays
@@ -97,10 +85,9 @@ for currentOffset = offsets_Hz
                 seq.addBlock(mr.makeDelay(td)); % add delay
             end
         end
-        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
-        seq.addBlock(pseudoADC); % readout trigger event
+        seq.addSpoilerGradients()
+        seq.addPseudoADCBlock(); % readout trigger event
     end
-    
 end
 
 
@@ -111,6 +98,4 @@ for n_id = 1:numel(def_fields)
 end
 seq.write(seq_filename, author);
 
-%% call standard sim
-M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
 

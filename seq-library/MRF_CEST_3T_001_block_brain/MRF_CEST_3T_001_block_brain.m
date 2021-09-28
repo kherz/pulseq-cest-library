@@ -44,27 +44,16 @@ seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
 %% scanner limits
 % see pulseq doc for more ino
-lims = Get_scanner_limits();
+seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 
-% spoilers
-spoilRiseTime = 1e-3;
-spoilDuration = 4500e-6+ spoilRiseTime; % [s]
-% create pulseq gradient object
-[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
-
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
-
-% init sequence
-seq = mr.Sequence();
 
 meas_id = 1;
 % loop through offsets and set pulses and delays
@@ -72,7 +61,7 @@ for currentOffset = offsets_Hz
     
     seq.addBlock(mr.makeDelay(Trec)); % recovery time
     fa_sat        = B1(meas_id)*gyroRatio_rad*tp; % flip angle of sat pulse
-    satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', lims);
+    satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys);
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
     for np = 1:n_pulses(meas_id)
@@ -88,9 +77,9 @@ for currentOffset = offsets_Hz
         end
     end
     if spoiling % spoiling before readout
-        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
+        seq.addSpoilerGradients()
     end
-    seq.addBlock(pseudoADC); % readout trigger event
+    seq.addPseudoADCBlock(); % readout trigger event
     meas_id = meas_id + 1;
 end
 
@@ -105,14 +94,9 @@ seq.write(seq_filename, author);
 %% write sequence
 seq.write(seq_filename);
 
-%%
-fig_seq = seq.plot('timeDisp','ms','rfDisp','uT','gammaHz',42.5764);
-
-set(fig_seq, 'Position', get(0, 'Screensize'));
-% get data and save figure
-f_data    = getframe(fig_seq);
-imwrite(f_data.cdata, fullfile([seq_defs.seq_id_string '.png']), 'png');
+%% plot
+saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
+M_z = simulate_pulseqcest(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
 

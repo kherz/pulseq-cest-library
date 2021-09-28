@@ -57,25 +57,18 @@ seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
 %% scanner limits
 % see pulseq doc for more ino
-lims = Get_scanner_limits();
+seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat = B1*gyroRatio_rad*tp;  % saturation pulse flip angle
-satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', lims); % block pusle cw
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,1,gyroRatio_hz);
+satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pusle cw
+[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
 
 seq_defs.B1cwpe = B1cwpe;
-% spoilers
-spoilRiseTime = 1e-3;
-spoilDuration = 4500e-6+ spoilRiseTime; % [s]
-% create pulseq gradient object
-[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
 
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 DC=tp/(tp+td);%Duty cycle
 
@@ -93,10 +86,10 @@ end
 
 % these rf times getting added in the run function of pulseq! If we want
 % the timing to be exact we have to take care of this
-if(slPauseTime-lims.rfDeadTime-lims.rfRingdownTime) <= 0
+if(slPauseTime-seq.sys.rfDeadTime-seq.sys.rfRingdownTime) <= 0
     error('slPauseTime is too short for hardware limits');
 end
-slPauseTime = slPauseTime-lims.rfDeadTime-lims.rfRingdownTime;
+slPauseTime = slPauseTime-seq.sys.rfDeadTime-seq.sys.rfRingdownTime;
 
 
 minFa = 0.38; % this is the limit for prep pulses to be played out
@@ -104,9 +97,6 @@ minFa = 0.38; % this is the limit for prep pulses to be played out
 
 %% loop through zspec offsets
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
-
-% init sequence
-seq = mr.Sequence();
 
 
 % loop through offsets and set pulses and delays
@@ -123,10 +113,10 @@ for currentOffset = offsets_Hz
     
     fa_sat        = B1*gyroRatio_rad*tp; % flip angle of sat pulse
     faSL = atan(gyroRatio_hz*B1/(currentOffset));   % thats the angle theta of the effective system
-    preSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', -pi/2,'system',lims);
-    satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp,'freqOffset', currentOffset, 'system', lims);
+    preSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', -pi/2,'system',seq.sys);
+    satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp,'freqOffset', currentOffset, 'system', seq.sys);
     accumPhase = currentOffset*360*tp*pi/180; % scanner needs the correct phase at the end of the sturation pulse
-    postSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', accumPhase+pi/2,'system',lims);
+    postSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', accumPhase+pi/2,'system',seq.sys);
         
     for np = 1:n_pulses
               
@@ -156,9 +146,9 @@ for currentOffset = offsets_Hz
         end
     end
     if spoiling % spoiling before readout
-        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
+        seq.addSpoilerGradients()
     end
-    seq.addBlock(pseudoADC); % readout trigger event
+    seq.addPseudoADCBlock(); % readout trigger event
 
 end
 
@@ -170,11 +160,11 @@ for n_id = 1:numel(def_fields)
 end
 seq.write(seq_filename, author);
 
-%% Plot sequence
-save_seq_plot(seq_filename);
+%% plot
+saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
+M_z = simulate_pulseqcest(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
 
-figure('Name','Z-asym');
-Plot_pulseq_cest_Simulation(M_z,offsets_ppm,m0_offset);
+%% plot
+plotSimulationResults(M_z,offsets_ppm, seq_defs.M0_offset);

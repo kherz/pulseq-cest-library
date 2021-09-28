@@ -3,18 +3,18 @@
 
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
-# Created by: Kai Herz
-# Created at: 10-Dec-2020 11:37:10
+# Created by: unknown
+# Created at: 28-Sep-2021 14:36:46
 
 [VERSION]
 major 1
 minor 3
-revision 0
+revision 1
 
 [DEFINITIONS]
 B0 3 
-B1cwpe 1.94716 
-DCsat 0.947867 
+B1cwpe 1.94716467 
+DCsat 0.947867299 
 M0_offset -1560 
 Trec 3.5 
 Trec_M0 3.5 

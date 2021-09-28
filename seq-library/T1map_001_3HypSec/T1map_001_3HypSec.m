@@ -36,7 +36,7 @@ seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
 %% scanner limits
 % see pulseq doc for more ino
-lims = Get_scanner_limits();
+seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
@@ -44,13 +44,14 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 
 % create pulseq object
-hs_pulse = Generate_HS_HP_pulseq_pulses(20,lims);
+hs_pulse = makeHSHalfPassagePulse(20,seq.sys);
 seq_defs.B1cwpe = B1pa;
 
 % spoilers
 rampTime = 1e-3;
 spoilDuration = 4500e-6 + rampTime; % in s
 
+lims = seq.sys;
 spoilAmplitude = 0.8 .* lims.maxGrad; % in Hz/m % FG: hard coded to 80% of maximum gradient, more should be possible
 gxSpoil1=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuration, 'riseTime', rampTime, 'system',lims);
 gySpoil1=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration, 'riseTime', rampTime, 'system',lims);
@@ -66,14 +67,9 @@ gxSpoil3=mr.makeTrapezoid('x','Amplitude',spoilAmplitude,'Duration',spoilDuratio
 gySpoil3=mr.makeTrapezoid('y','Amplitude',spoilAmplitude,'Duration',spoilDuration, 'riseTime', rampTime, 'system',lims);
 gzSpoil3=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration, 'riseTime', rampTime, 'system',lims);
 
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
-
 
 %% loop through "inversion" times (TI)
 % init sequence
-seq = mr.Sequence();
-
 hs_pulse.freqOffset = 0;
 
 for t_prep = TI
@@ -96,7 +92,7 @@ for t_prep = TI
     seq.addBlock(mr.makeDelay(t_prep));
     
     % add pseudo adc / readout trigger event
-    seq.addBlock(pseudoADC);
+    seq.addPseudoADCBlock();
 end
 
 %% write definitions
@@ -107,10 +103,12 @@ end
 seq.write(seq_filename, author);
 
 %% plot
-save_seq_plot(seq_filename);
+saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
-
+M_z = simulate_pulseqcest(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
+figure, plot(seq_defs.TI,M_z);
+xlabel('TI [s]');
+ylabel('Z [a.u.]')
 
 
