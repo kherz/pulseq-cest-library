@@ -13,6 +13,22 @@ simple text editor.
 | WM_001| 1.05       |  39.8       |    15.42/111      |    29       | 9/0.23         | [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
 | GLIO_002| 1.5       |  70       |    6/111      |    29       | 9/0.23         | WM_001 adjusted to match [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
 
+Below are multi B0 water properties from [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) that are not in yaml files yet
+
+|  3T      | T1 [s]       | T2 [ms]   |MTC fraction [%]   |  MTC k [Hz] | MTC T2 [µs]| pub |
+| ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
+|   WM     |     0.939    |  62       |         |           |          |  [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) |
+|   GM     |     0.939    |  62       |         |           |          |  [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) |
+
+|  7T      | T1 [s]       | T2 [ms]   |MTC fraction [%]   |  MTC k [Hz] | MTC T2 [µs]| pub |
+| ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
+|   WM     |     1.222    |  37       |                   |             |            |  [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) |
+|   GM     |     1.670    |  43       |                   |              |           |  [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) |
+
+|  9.4T      | T1 [s]       | T2 [ms]   |MTC fraction [%]   |  MTC k [Hz] | MTC T2 [µs]| pub |
+| ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
+|   WM     |     1.429    |  29       |                   |             |            |  [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) |
+|   GM     |     2002     |  35       |                   |              |           |  [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) |
 
 
 ## Detailed information about the .yaml files
