@@ -1,0 +1,68 @@
+####################################################################################
+# ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
+# ------------------------ https://pulseq-cest.github.io/ ------------------------ #
+####################################################################################
+# Simulation parameters for white matter at 3T 
+# following the Wang et al 2020 neuroimage paper: https://doi.org/10.1016/j.neuroimage.2020.116700
+# T2 of water and MT were not provided in this paper
+# Thus, we used the value T2w from Zhu et al http://hdl.handle.net/21.11116/0000-0001-32FE-9, and the T2mt from stanisz et al https://doi.org/10.1002/mrm.20605 
+#
+# adjustments:
+# To get negative asymetry around 12 ppm requires a shifted ssMT pool. 
+# As the Superlorentzian ssMT description has a pole at its frequency, we switched to a Lorentzian ssMT pool lineshape.
+# To adjust the width of the Lorentzian MT to coarsly match the SuperLorentzian with one can adjust the R2mt by a factor 0.23
+# - water pool with constant R1 of 0.4 Hz as given by Wang.
+#    wang did not report on R2 water so we used the parameters of   
+# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
+# - 0 CEST pools
+# - 0 NOE pool  
+# 
+# sources/references for settings in this file:
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2020.116700
+
+###### Pool settings
+#         f: relative pool size fraction (float)
+#        t1: longitudinal relaxation time T1 = 1/R1 [s] (float)
+#        t2: transversal relaxation time T2 = 1/R2 [s] (float)
+#         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
+#        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
+# lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
+
+### water pool  
+water_pool: {
+  f:  1,
+  t1: 2.5,
+  t2: 62e-3, #  from [Zhu 2014] http://hdl.handle.net/21.11116/0000-0001-32FE-9
+}
+
+### MT pool   # as in WM_3T_001  bit with increased f and decreased R2 to get shape of Z-spectra
+mt_pool: {
+  f: 0.289, 
+  t1: 4.0667,
+  t2: 3.9130e-05 ,   # 10e-6/0.23  # value from Stanisz et al. adjusted to have similar shape to SuperLorentzian
+  k:  4.7751, # 1.38/0.289
+  dw: -3.0,  # adjusted, this leads to most simlar MTRasym(3 ppm) at 15 ppm of - 3%
+  lineshape: 'Lorentzian'
+}
+
+}
+
+###### Scanner settings
+#       b0: field strength [T] (float)
+#    gamma: gyromagnetic ratio [rad / uT], default is 267.5153 (float)
+# b0_inhom: field inhomogeneity [ppm], default is 0.0 (float)
+#   rel_b1: relative amp inhomogeneity, default is 1.0 (float)
+b0: 3
+gamma: 267.5153
+b0_inhom: 0.0
+rel_b1: 1
+
+##### Additional simulation settings
+#           verbose: verbose output, default is False (bool)
+#    reset_init_mag: True to reset magnetization after each readout, default is True (bool)
+#             scale: relative magnetization after reset of magnetization, default is 1 (float)
+# max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
+verbose: False
+reset_init_mag: True
+scale: 1
+max_pulse_samples: 100
