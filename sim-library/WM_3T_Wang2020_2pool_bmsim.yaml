@@ -39,7 +39,7 @@ water_pool: {
 mt_pool: {
   f: 0.289, 
   t1: 4.0667,
-  t2: 3.9130e-05 ,   # 10e-6/0.23  # value from Stanisz et al. adjusted to have similar shape to SuperLorentzian
+  t2: 4.3478e-05  ,   # 10e-6/0.23  # value from Stanisz et al. adjusted to have similar shape to SuperLorentzian
   k:  4.7751, # 1.38/0.289
   dw: -3.0,  # adjusted, this leads to most simlar MTRasym(3 ppm) at 15 ppm of - 3%
   lineshape: 'Lorentzian'
