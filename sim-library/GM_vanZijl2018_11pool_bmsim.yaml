@@ -2,12 +2,10 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for white matter at 3T 
-# This file is inspired by WM_002, but all numbers are made simpler to form a easy to share default model
-#
-# - 3 CEST pools
-# - 1 NOE pool      
-# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
+# Simulation parameters for gray matter at 3T with
+# - 4 CEST pools
+# - 5 NOE pools      
+# - a SuperLorentzian shaped MT pool
 #
 # sources/references for settings in this file:
 # CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
@@ -20,62 +18,89 @@
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
-### water pool   # as in WM_3T_001
+### water pool
 water_pool: {
   f: 1.0,
-  t1: 1.0,
-  t2: 0.040
+  t1: 1.2,
+  t2: 0.069
 }
 
-### MT pool  pectra
+### MT pool
 mt_pool: {
-  f:  0.1351, #15 / 111,
-  t1: 1.0,
-  t2: 4.0e-05 ,  # adjusted to have similar shape to SuperLorentzian
-  k:  30,
-  dw: -3.0,  # leads to most simlar asym at 15 ppm of - 3%
-  lineshape: 'Lorentzian'
+  f: 0.0495, # 5.5 / 111,
+  t1: 1.3,
+  t2: 9.0e-6,
+  k: 40,
+  dw: 0,
+  lineshape: 'SuperLorentzian'
 }
 
-cest_pool: {  
+### CEST pool(s)
+cest_pool: {
   'amide': {
-    f: 0.0009009,  # 100e-3 / 111, 
-    t1: 1.0,
+    f: 0.00064865, # 72e-3 / 111,
+    t1: 1.3,
     t2: 0.1,
-    k: 50,
+    k: 30,
     dw: 3.5
   },
-  'guanidine_1': {       # eight times the value of WM_3T_001, needed to get the peak at 1.5 ppm in MTRasym
-    f: 0.0009009,  # 100e-3 / 111, 
-    t1: 1.0,
-    t2: 0.1,
-    k: 1000,
-    dw: 2
-  },
-  'amine_1': {
-    f: 0.0009009,  # 100e-3 / 111, 
-    t1: 1.0,
-    t2: 0.1,
-    k: 5000,
+  'amine': {
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.2,
+    k: 5500,
     dw: 3
   },
-  'OH_1': {
-    f: 0.0009009,  # 100e-3 / 111, 
-    t1: 1.0,
-    t2: 0.1,
-    k: 3500,
-    dw: 1.0
+  'guanidinium': {
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.17,
+    k: 1100,
+    dw: 2
   },
-
-  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
-    f: 0.0045, #500e-3 / 111,
+  'hydroxyl': {
+    f: 0.00040541, #45e-3 / 111,
+    t1: 1.3,
+    t2: 0.055,
+    k: 2000,
+    dw: 0.9
+  },
+  'rNOE_1': { 
+    f: 0.0009009, #100e-3 / 111,
     t1: 1.3,
     t2: 0.005,
-    k: 20,
-    dw: -3
+    k: 16,
+    dw: -1.75
+  },
+  'rNOE_2': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -2.25
+  },
+  'rNOE_3': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -2.75
+  },
+  'rNOE_4': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -3.25
+  },
+  'rNOE_5': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -3.75
   }
 }
-
 
 ###### Scanner settings
 #       b0: field strength [T] (float)
@@ -94,5 +119,5 @@ rel_b1: 1
 # max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
 verbose: False
 reset_init_mag: True
-scale: 0.5
+scale: 1
 max_pulse_samples: 300

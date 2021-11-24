@@ -2,23 +2,29 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for glioma at 3T 
+# Simulation parameters for white matter at 3T 
 # This file is not based on quantification, but purely heuristic on the visual match with measured Z-spectrum and MTRasym.
 # The file was initialized by WM_3T_001, but was adjusted to match the in vivo data acquired by Heo,..Zhou et al. 
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/figure/F2/
 # this data was acquired with the sequence APTw_3T_003 which can be found here:
 # https://github.com/kherz/pulseq-cest-library/tree/master/seq-library/APTw_3T_003_2uT_8block_DC95_834ms_braintumor
-# By simulating the APTw_3T_003 sequence with this yaml file we get a GLIOMA Z-spectrum that looks most similar as in the article
+# By simulating the APTw_3T_003 sequence with this yaml file we get a WM Z-spectrum that looks most similar as in the article
 # This was achieved by the following adjustments:
-# We first did all adjustments as in WM_3T_002. Please read the comments in that file to understand more.
-# we then adjusted the pool parameters to be "more liquid".
-# we prolonged the T1 of water from 1s to 1.5 s and the T2 of water from 40 ms to 70 ms.
-# we deceased the MT pool size fraction from  15.42 / 111 to  6 / 111 
-# we doubled the amide concentration and decreased the NOE fraction by 1/5.
+# The negative asymetry around 12 ppm requires a shifted ssMT pool. 
+# As the Superlorentzian ssMT description has a pole at its frequency, 
+# we switched to a Lorentzian ssMT pool lineshape.
+# To adjust the width of the Lorentzian MT to coarsly match the SuperLorentzian with one can adjust the R2ssmt by a factor 0.23
+# We then increased the MT to get the Z-value at 14 ppm to about 60% and the MTRasym value at 14 ppm to about -3% 
+# The CEST parameters were inspired by WM_3T_001 (deprecated file), but were adjusted mostly to generate the prominent peak in the WM MTRasym at around 1.5 ppm.
+# For this it was necessary to increase the guanidine (2 ppm) concentration to 150e-3 / 111. 
+# To get around 0 MTRasym at 3.5 ppm we also increased the amide concentration to 150e-3 / 111. 
+# This is also an interplay with the NOE pool which was kept identical to WM_3T_001.
+# amine and OH pools were added for completeness, but they do not affect the spectra significantly
+# 
 #
-# - 3 CEST pools
+# - 4 CEST pools
 # - 1 NOE pool      
-# - a Lorentzian shaped MT pool ( with adjusted R2x by a factor 0.23, this makes the pool shiftable
+# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
 #
 # sources/references for settings in this file:
 # CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
@@ -31,18 +37,18 @@
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
-### water pool
+### water pool   # as in WM_3T_001
 water_pool: {
   f: 1.0,
-  t1: 1.5,
-  t2: 0.07
+  t1: 1.05,
+  t2: 39.8e-3
 }
 
-### MT pool
+### MT pool   # as in WM_3T_001  bit with increased f and decreased R2 to get shape of Z-spectra
 mt_pool: {
-  f: 0.0541, # 6.0 / 111
+  f: 0.1389, #15.42 / 111,
   t1: 1.05,
-  t2: 3.9130e-05 ,  # 1/(0.23 / 9e-6), adjusted to have similar shape to SuperLorentzian
+  t2: 3.9130e-05 ,  # 0.23 / 9e-6,  # adjusted to have similar shape to SuperLorentzian
   k:  29,
   dw: -3.0,  # leads to most simlar asym at 15 ppm of - 3%
   lineshape: 'Lorentzian'
@@ -50,7 +56,7 @@ mt_pool: {
 
 cest_pool: {  
   'amide': {
-    f: 0.0009009,  # 100e-3 / 111,  increased compared to WM_3T_001/002
+    f: 0.00064865, # 72e-3 / 111,
     t1: 1.3,
     t2: 0.1,
     k: 30,
@@ -77,8 +83,8 @@ cest_pool: {
     k: 3500,
     dw: 1.3
   },
-  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
-    f: 0.0009009,  # 100e-3 / 111,  decreased compared to WM_3T_002
+  'NOE': { #average of 5 NOE pools from https://doi.org/10.1016/j.neuroimage.2017.04.045
+    f: 0.0045, #500e-3 / 111,
     t1: 1.3,
     t2: 0.005,
     k: 16,
@@ -105,5 +111,5 @@ rel_b1: 1
 # max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
 verbose: False
 reset_init_mag: True
-scale: 0.5
+scale: 1
 max_pulse_samples: 300

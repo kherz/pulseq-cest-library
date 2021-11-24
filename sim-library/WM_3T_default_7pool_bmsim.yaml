@@ -2,15 +2,15 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for white matter at 3T with parameters from Liu et al. 2013
-# https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.24560
-# This was originally 7T, so 3T water properties were used according to Heo et al. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/
-# - 1 CEST pools amides
+# Simulation parameters for white matter at 3T 
+# This file is inspired by WM_002, but all numbers are made simpler to form a easy to share default model
+#
+# - 4 CEST pools
 # - 1 NOE pool      
-# - a Lorentzian shaped MT pool ( with adjusted R2x by a factor 0.23, this makes the pool shiftable
+# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
 #
 # sources/references for settings in this file:
-# water, MT and CEST pools: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
@@ -20,41 +20,61 @@
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
-### water pool
-water_pool: { # only this was taken from 3T https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/ 
+### water pool   # as in WM_3T_001
+water_pool: {
   f: 1.0,
-  t1: 1.05,
-  r2: 39.8e-3
+  t1: 1.0,
+  t2: 0.040
 }
 
-### MT pool
+### MT pool  pectra
 mt_pool: {
-  f: 0.0618,
+  f:  0.1351, #15 / 111,
   t1: 1.0,
-  t2: 83.0e-6 ,
-  k: 67.5,
-  dw:  0,  # leads to most simlar asym at 15 ppm of - 3%
+  t2: 4.0e-05 ,  # adjusted to have similar shape to SuperLorentzian
+  k:  30,
+  dw: -3.0,  # leads to most simlar asym at 15 ppm of - 3%
   lineshape: 'Lorentzian'
 }
 
 cest_pool: {  
   'amide': {
-    f: 2.2e-3,    
+    f: 0.0009009,  # 100e-3 / 111, 
     t1: 1.0,
-    t2: 22.7e-3,
-    k: 281.2,
+    t2: 0.1,
+    k: 50,
     dw: 3.5
   },
-
-  'NOE': {
-    f: 23.9e-3,    
+  'guanidine_1': {       # eight times the value of WM_3T_001, needed to get the peak at 1.5 ppm in MTRasym
+    f: 0.0009009,  # 100e-3 / 111, 
     t1: 1.0,
-    t2: 318.0e-6,
-    k: 27.45,
-    dw: -3.5
+    t2: 0.1,
+    k: 1000,
+    dw: 2
+  },
+  'amine_1': {
+    f: 0.0009009,  # 100e-3 / 111, 
+    t1: 1.0,
+    t2: 0.1,
+    k: 5000,
+    dw: 3
+  },
+  'OH_1': {
+    f: 0.0009009,  # 100e-3 / 111, 
+    t1: 1.0,
+    t2: 0.1,
+    k: 3500,
+    dw: 1.0
+  },
+
+  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
+    f: 0.0045, #500e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 20,
+    dw: -3
   }
 }
-
 
 
 ###### Scanner settings
@@ -74,5 +94,5 @@ rel_b1: 1
 # max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
 verbose: False
 reset_init_mag: True
-scale: 0.5
+scale: 1
 max_pulse_samples: 300

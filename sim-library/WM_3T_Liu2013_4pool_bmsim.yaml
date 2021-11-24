@@ -2,11 +2,12 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for white matter at 3T with parameters from HEo et al.
-# https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/
+# Simulation parameters for white matter at 3T with parameters from Liu et al. 2013
+# https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.24560
+# This was originally 7T, so 3T water properties were used according to Heo et al. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/
 # - 1 CEST pools amides
 # - 1 NOE pool      
-# - a Lorentzian shaped MT pool ( with adjusted R2x by a factor 0.23, this makes the pool shiftable
+# - a Lorentzian shaped MT pool ( with adjusted R2x by a factor 0.23, this makes the pool shiftable, which was done to 3 ppm
 #
 # sources/references for settings in this file:
 # water, MT and CEST pools: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/
@@ -20,29 +21,37 @@
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
 ### water pool
-water_pool: {
+water_pool: { # only this was taken from 3T https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/ 
   f: 1.0,
   t1: 1.05,
-  t2: 39.8e-3
+  r2: 39.8e-3
 }
 
 ### MT pool
 mt_pool: {
-  f: 0.1009, #11.2 / 111,
+  f: 0.0618,
   t1: 1.0,
-  t2: 63.0e-6 ,
-  k: 29,
-  dw: -1.5,  # leads to most simlar asym at 15 ppm of - 3%
+  t2: 83.0e-6 ,
+  k: 67.5,
+  dw:  -3,  
   lineshape: 'Lorentzian'
 }
 
 cest_pool: {  
   'amide': {
-    f: 0.0018, # 198e-3 / 111,    
-    t1: 1.3,
-    t2: 2.5e-3,
-    k: 151,
+    f: 2.2e-3,    
+    t1: 1.0,
+    t2: 22.7e-3,
+    k: 281.2,
     dw: 3.5
+  },
+
+  'NOE': {
+    f: 23.9e-3,    
+    t1: 1.0,
+    t2: 318.0e-6,
+    k: 27.45,
+    dw: -3.5
   }
 }
 
