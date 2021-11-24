@@ -32,20 +32,19 @@
 water_pool: {
   f:  1,
   t1: 2.5,
-  t2: 62e-3, #  from [Zhu 2014] http://hdl.handle.net/21.11116/0000-0001-32FE-9
+  t2: 62e-3 #  from [Zhu 2014] http://hdl.handle.net/21.11116/0000-0001-32FE-9
 }
 
 ### MT pool   # as in WM_3T_001  bit with increased f and decreased R2 to get shape of Z-spectra
 mt_pool: {
   f: 0.289, 
-  t1: 4.0667,
+  t1: 0.2459,  # 3/12.2 at 3T
   t2: 4.3478e-05  ,   # 10e-6/0.23  # value from Stanisz et al. adjusted to have similar shape to SuperLorentzian
   k:  4.7751, # 1.38/0.289
   dw: -3.0,  # adjusted, this leads to most simlar MTRasym(3 ppm) at 15 ppm of - 3%
   lineshape: 'Lorentzian'
 }
 
-}
 
 ###### Scanner settings
 #       b0: field strength [T] (float)

@@ -3,11 +3,6 @@
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
 # Simulation parameters for white matter at 3T 
-# following the Wang et al 2020 neuroimage paper: https://doi.org/10.1016/j.neuroimage.2020.116700
-# T2 of water and MT were not provided in this paper
-# Thus, we used the value T2w from Zhu et al http://hdl.handle.net/21.11116/0000-0001-32FE-9, and the T2mt from stanisz et al https://doi.org/10.1002/mrm.20605 
-#
-# For the CEST pools:
 # This file is not based on quantification, but purely heuristic on the visual match with measured Z-spectrum and MTRasym.
 # The file was initialized by the van Zojl simulation (https://dx.doi.org/10.1016%2Fj.neuroimage.2017.04.045), but was adjusted to match the in vivo data acquired by Heo,..Zhou et al. 
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/figure/F2/
@@ -34,7 +29,7 @@
 # - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
 #
 # sources/references for settings in this file:
-# CEST pools: https://doi.org/10.1016/j.neuroimage.2020.116700
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
@@ -44,21 +39,23 @@
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
-### water pool  
+### water pool   # as in WM_3T_001
 water_pool: {
-  f:  1,
-  t1: 2.5,
-  t2: 62e-3, #  from [Zhu 2014] http://hdl.handle.net/21.11116/0000-0001-32FE-9
+  f: 1.0,
+  t1: 1.05,
+  t2: 39.8e-3,
+  #t2star: 0.0333, #0.0333
+  #isochromats: 1
 }
 
-### MT pool   # as in WM_3T_001  bit with increased f and decreased R2 to get shape of Z-spectra
+### MT pool  
 mt_pool: {
-  f: 0.289, 
-  t1: 0.2459,
-  t2: 4.3478e-05  ,   # 10e-6/0.23  # value from Stanisz et al. adjusted to have similar shape to SuperLorentzian
-  k:  4.7751, # 1.38/0.289
-  dw: -3.0,  # adjusted, this leads to most simlar MTRasym(3 ppm) at 15 ppm of - 3%
-  lineshape: 'Lorentzian'
+  f: 0.139, # 15.43 M / 111 M,
+  t1: 1.0,  # we can only assume here that it was set to R1=1 Hz, as they refer to this paper: https://doi.org/10.1002/mrm.1910290607
+  t2:  10e-6,  
+  k:  23,
+  dw: 0.0,  # this was not reported by Stanizs, but leads to most simlar MTRasym(2µT) at 15 ppm of - 3%
+  lineshape: 'SuperLorentzian'
 }
 
 cest_pool: {  
