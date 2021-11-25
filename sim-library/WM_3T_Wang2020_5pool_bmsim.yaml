@@ -57,13 +57,13 @@ mt_pool: {
   t1: 0.2459,
   t2: 4.3478e-05  ,   # 10e-6/0.23  # value from Stanisz et al. adjusted to have similar shape to SuperLorentzian
   k:  4.7751, # 1.38/0.289
-  dw: -3.0,  # adjusted, this leads to most simlar MTRasym(3 ppm) at 15 ppm of - 3%
+  dw: -3.5,  # adjusted, this leads to most simlar MTRasym(3 ppm) at 15 ppm of - 3%
   lineshape: 'Lorentzian'
 }
 
 cest_pool: {  
   'amide': {
-    f: 0.00064865, # 72e-3 / 111,
+    f: 0.0005, # reduced from 72e-3 / 111, to match 3T_APTw, also beause exchane rate was increased 
     t1: 1,
     t2: 0.015,
     k: 150,
@@ -91,9 +91,9 @@ cest_pool: {
     dw: 1.3
   },
   'NOE1': { #average of 5 NOE pools from https://doi.org/10.1016/j.neuroimage.2017.04.045
-    f: 0.009, #500e-3 / 111, 
+    f: 0.01, #500e-3 / 111,  # this was further increased from 0.045 to 0.01 to get higher NOE than CE at low B1, at teh same time T2 was shortened
     t1: 1,
-    t2: 0.005,
+    t2: 0.0025, # shortened by factor 2 to get broader NOE peak
     k: 16,
     dw: -2.75
   }
