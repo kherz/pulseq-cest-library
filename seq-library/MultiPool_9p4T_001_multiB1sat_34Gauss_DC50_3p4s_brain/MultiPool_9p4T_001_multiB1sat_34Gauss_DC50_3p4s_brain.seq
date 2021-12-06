@@ -4,16 +4,16 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Felix Glang
-# Created at: 02-Aug-2021 11:30:20
+# Created at: 28-Sep-2021 14:46:41
 
 [VERSION]
 major 1
 minor 3
-revision 0
+revision 1
 
 [DEFINITIONS]
 B0 9.4 
-B1cwpe 1.21436 
+B1cwpe 1.21436477 
 DCsat 0.5 
 M0_offset -300 
 Trec 3.5 

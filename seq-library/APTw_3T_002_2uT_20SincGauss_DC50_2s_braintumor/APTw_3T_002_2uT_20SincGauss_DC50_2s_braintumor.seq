@@ -4,16 +4,16 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 10-Dec-2020 11:39:57
+# Created at: 28-Sep-2021 14:36:18
 
 [VERSION]
 major 1
 minor 3
-revision 0
+revision 1
 
 [DEFINITIONS]
 B0 3 
-B1cwpe 1.99608 
+B1cwpe 1.99607896 
 DCsat 0.5 
 M0_offset -1560 
 Trec 3.5 

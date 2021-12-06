@@ -3,10 +3,6 @@
 % https://cest-sources.org/doku.php?id=standard_cest_protocols
 % MP_1 (//GUFI TH2//)
 
-%
-% Kai Herz 2020
-% kai.herz@tuebingen.mpg.de
-
 % author name for sequence file
 author = 'Felix Glang';
 
@@ -56,34 +52,23 @@ seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
 %% scanner limits
 % see pulseq doc for more ino
-lims = Get_scanner_limits();
+seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
 gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 
-% spoilers
-spoilRiseTime = 1e-3;
-spoilDuration = 4500e-6+ spoilRiseTime; % [s]
-% create pulseq gradient object
-[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
-
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through sequence
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
-
-% init sequence
-seq = mr.Sequence();
 
 for currentB1sat = B1pa % loop through B1sat's
 
     fa_sat        = currentB1sat*gyroRatio_rad*tp; % flip angle of sat pulse
     % create pulseq saturation pulse object
-    satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
-    [B1cwpe,B1cwae,B1cwae_pure,alpha]= calc_power_equivalents(satPulse,tp,td,1,gyroRatio_hz);
+    satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+    [B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
     seq_defs.B1cwpe = B1cwpe;
     
     % loop through offsets and set pulses and delays
@@ -102,10 +87,10 @@ for currentB1sat = B1pa % loop through B1sat's
                 seq.addBlock(mr.makeDelay(td)); % add delay
             end
         end
-        if spoiling % spoiling before readout
-            seq.addBlock(gxSpoil,gySpoil,gzSpoil);
-        end
-        seq.addBlock(pseudoADC); % readout trigger event
+    if spoiling % spoiling before readout
+        seq.addSpoilerGradients()
+    end
+    seq.addPseudoADCBlock(); % readout trigger event
     end
     fprintf('a B1sat is done\n')
 end
@@ -118,10 +103,9 @@ end
 seq.write(seq_filename, author);
 
 %% plot
-save_seq_plot(seq_filename);
+saveSaturationPhasePlot(seq_filename);
 
-%% call standard sim
-% M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
+
 
 
 

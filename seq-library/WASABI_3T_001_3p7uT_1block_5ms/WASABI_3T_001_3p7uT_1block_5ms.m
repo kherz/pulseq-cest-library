@@ -43,7 +43,7 @@ seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
 %% scanner limits
 % see pulseq doc for more ino
-lims = Get_scanner_limits();
+seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
@@ -52,22 +52,12 @@ gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat        = B1*gyroRatio_rad*tp; % flip angle of sat pulse
 
 % create pulseq saturation pulse object
-satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', lims); % block pulse
+satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pulse
 
-% spoilers
-spoilRiseTime = 1e-3;
-spoilDuration = 4500e-6+spoilRiseTime; % [s]
-% create pulseq gradient object
-[gxSpoil, gySpoil, gzSpoil] = Create_spoiler_gradients(lims, spoilDuration, spoilRiseTime);
-
-% pseudo adc, not played out
-pseudoADC = mr.makeAdc(1,'Duration', 1e-3);
 
 %% loop through zspec offsets
 offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
 
-% init sequence
-seq = mr.Sequence();
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
     if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
@@ -83,9 +73,9 @@ for currentOffset = offsets_Hz
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     seq.addBlock(satPulse) % add sat pulse
     if spoiling % spoiling before readout
-        seq.addBlock(gxSpoil,gySpoil,gzSpoil);
+        seq.addSpoilerGradients();
     end
-    seq.addBlock(pseudoADC); % readout trigger event
+    seq.addPseudoADCBlock(); % readout trigger event
 end
 
 %% write definitions
@@ -96,10 +86,10 @@ end
 seq.write(seq_filename, author);
 
 %% plot
-save_seq_plot(seq_filename);
+saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = Run_pulseq_cest_Simulation(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
+M_z = simulate_pulseqcest(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
 
-
-
+%% plot
+plotSimulationResults(M_z,offsets_ppm, seq_defs.M0_offset);

@@ -4,12 +4,12 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 10-Dec-2020 11:58:07
+# Created at: 06-Dec-2021 08:12:38
 
 [VERSION]
 major 1
 minor 3
-revision 0
+revision 1
 
 [DEFINITIONS]
 B0 3 
