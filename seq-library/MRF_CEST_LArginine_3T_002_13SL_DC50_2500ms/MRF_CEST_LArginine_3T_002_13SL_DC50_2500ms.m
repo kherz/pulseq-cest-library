@@ -116,4 +116,4 @@ seq.write(seq_filename, author);
 saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = simulate_pulseqcest(seq_filename,'../../sim-library/GM_3T_001_7pool_bmsim.yaml');
+M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');

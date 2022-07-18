@@ -23,6 +23,7 @@ seq_defs.TI            = [10 6 5 4 3 2.5 2 1.5 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2
 seq_defs.offsets_ppm   = zeros(1, numel(seq_defs.TI));
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm); % number of repetition
 seq_defs.seq_id_string = seqid           ; % unique seq id
+seq_defs.B0            = -1              ; % dummy b0
 
 %% get info from struct
 TI          = seq_defs.TI;          % "inversion" times [s]
