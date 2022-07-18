@@ -5,7 +5,7 @@
 # Simulation parameters for gray matter at 3T with
 # - 4 CEST pools
 # - 1 NOE pool      
-# - a SuperLorentzian shaped MT pool
+# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
 #
 # sources/references for settings in this file:
 # CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
@@ -14,7 +14,7 @@
 # Parameters used: T1w = 0.8, 1.2, 1.6 s, T2w = 72, 69, 62 ms (at 1.5, 3, 7 T, respectively);
 # but seem to follow Water and MT params of https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/ 
 # T2mt was different from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/
-
+#  MT was centered at  0ppm
 
 
 ###### Pool settings
@@ -38,8 +38,8 @@ mt_pool: {
   t1: 1.3,
   t2: 9.0e-6,
   k: 40,
-  dw: 0,
-  lineshape: 'SuperLorentzian'
+  dw: 0.0,  # leads to most simlar asym at 15 ppm of - 3%
+  lineshape: 'Lorentzian'
 }
 
 ### CEST pool(s)

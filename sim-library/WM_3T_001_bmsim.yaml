@@ -4,7 +4,7 @@
 ####################################################################################
 # Simulation parameters for white matter at 3T 
 # This file is not based on quantification, but purely heuristic on the visual match with measured Z-spectrum and MTRasym.
-# The file was initialized by WM_3T_001, but was adjusted to match the in vivo data acquired by Heo,..Zhou et al. 
+# The file was initialized by GM_3T_vanZijl2018, but was adjusted to match the in vivo data acquired by Heo,..Zhou et al. 
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/figure/F2/
 # this data was acquired with the sequence APTw_3T_003 which can be found here:
 # https://github.com/kherz/pulseq-cest-library/tree/master/seq-library/APTw_3T_003_2uT_8block_DC95_834ms_braintumor
@@ -15,7 +15,7 @@
 # we switched to a Lorentzian ssMT pool lineshape.
 # To adjust the width of the Lorentzian MT to coarsly match the SuperLorentzian with one can adjust the R2ssmt by a factor 0.23
 # We then increased the MT to get the Z-value at 14 ppm to about 60% and the MTRasym value at 14 ppm to about -3% 
-# The CEST parameters were inspired by WM_3T_001 (deprecated file), but were adjusted mostly to generate the prominent peak in the WM MTRasym at around 1.5 ppm.
+# The CEST parameters were inspired by GM_3T_vanZijl20181, but were adjusted mostly to generate the prominent peak in the WM MTRasym at around 1.5 ppm.
 # For this it was necessary to increase the guanidine (2 ppm) concentration to 150e-3 / 111. 
 # To get around 0 MTRasym at 3.5 ppm we also increased the amide concentration to 150e-3 / 111. 
 # This is also an interplay with the NOE pool which was kept identical to WM_3T_001.

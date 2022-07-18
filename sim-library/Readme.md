@@ -9,10 +9,10 @@ simple text editor.
 
 |  3T  | T1 [s]      | T2 [ms]     |MTC fraction [%]  |  MTC k [Hz] | MTC T2 [µs]| pub |
 | ---- |:-----------:|:-----------:| :---:            |:---:        |:---:         | ---- |
-| GM_001| 1.2        |   69        |     5.5/111      |    40       | 9         | [van Zijl 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650949/)   |
+| GM| 1.2        |   69        |     5.5/111      |    40       | 9         | [van Zijl 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650949/)   |
 | GM_vanZijl2018| 1.2         |   69        |     5.5/111      |   40        |  9         | [van Zijl 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5650949/)   |
-| WM_001| 1.05       |  39.8       |    15.42/111      |    29       | 9/0.23         | [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
-| GLIO_002| 1.5       |  70       |    6/111      |    29       | 9/0.23         | WM_001 adjusted to match [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
+| WM| 1.05       |  39.8       |    15.42/111      |    29       | 9/0.23         | [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
+| GLIO| 1.5       |  70       |    6/111      |    29       | 9/0.23         | WM_001 adjusted to match [Heo 2016](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4662920/) |
 
 Below are multi B0 water properties from [Zhu 2014](http://hdl.handle.net/21.11116/0000-0001-32FE-9) that are not in yaml files yet
 
@@ -34,7 +34,7 @@ Below are multi B0 water properties from [Zhu 2014](http://hdl.handle.net/21.111
 
 ## Detailed information about the .yaml files
 Here we give a detailed overview over the structure of the .yaml files and the parameters that must or can be defined. As
-an example, the [GM_3T_001_bmsim.yaml](GM_3T_001_bmsim.yaml) file is presented and explained.
+an example, a filled bmsim.yaml file is presented and explained.
 
 ### .yaml file header
 The header gives an overview over the pools that are defined in the file, some helpful information about the references

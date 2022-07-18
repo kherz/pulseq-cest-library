@@ -3,7 +3,7 @@
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
 # Simulation parameters for white matter at 3T 
-# This file is inspired by WM_002, but all numbers are made simpler to form a easy to share default model
+# This file is inspired by WM_001, but all numbers are made simpler to form a easy to share default model
 #
 # - 4 CEST pools
 # - 1 NOE pool      
