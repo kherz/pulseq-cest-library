@@ -3,6 +3,8 @@ The simulation parameters used in the [pulseq-cest project](https://pulseq-cest.
 readable [yaml](https://yaml.org/) file format. These yaml/simulation files can be read and written using a
 simple text editor. 
 
+# currently we use  WM_3T_default_7pool_bmsim.yaml as a standard file 
+
 
 
 ## Resources of T1, T2, MTC  and CEST parameters:
