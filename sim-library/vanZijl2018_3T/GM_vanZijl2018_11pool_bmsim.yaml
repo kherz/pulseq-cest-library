@@ -1,0 +1,123 @@
+####################################################################################
+# ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
+# ------------------------ https://pulseq-cest.github.io/ ------------------------ #
+####################################################################################
+# Simulation parameters for gray matter at 3T with
+# - 4 CEST pools
+# - 5 NOE pools      
+# - a SuperLorentzian shaped MT pool
+#
+# sources/references for settings in this file:
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
+
+###### Pool settings
+#         f: relative pool size fraction (float)
+#        t1: longitudinal relaxation time T1 = 1/R1 [s] (float)
+#        t2: transversal relaxation time T2 = 1/R2 [s] (float)
+#         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
+#        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
+# lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
+
+### water pool
+water_pool: {
+  f: 1.0,
+  t1: 1.2,
+  t2: 0.069
+}
+
+### MT pool
+mt_pool: {
+  f: 0.0495, # 5.5 / 111,
+  t1: 1.3,
+  t2: 9.0e-6,
+  k: 40,
+  dw: 0,
+  lineshape: 'SuperLorentzian'
+}
+
+### CEST pool(s)
+cest_pool: {
+  'amide': {
+    f: 0.00064865, # 72e-3 / 111,
+    t1: 1.3,
+    t2: 0.1,
+    k: 30,
+    dw: 3.5
+  },
+  'amine': {
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.2,
+    k: 5500,
+    dw: 3
+  },
+  'guanidinium': {
+    f: 0.00018018, # 20e-3 / 111,
+    t1: 1.3,
+    t2: 0.17,
+    k: 1100,
+    dw: 2
+  },
+  'hydroxyl': {
+    f: 0.00040541, #45e-3 / 111,
+    t1: 1.3,
+    t2: 0.055,
+    k: 2000,
+    dw: 0.9
+  },
+  'rNOE_1': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -1.75
+  },
+  'rNOE_2': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -2.25
+  },
+  'rNOE_3': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -2.75
+  },
+  'rNOE_4': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -3.25
+  },
+  'rNOE_5': { 
+    f: 0.0009009, #100e-3 / 111,
+    t1: 1.3,
+    t2: 0.005,
+    k: 16,
+    dw: -3.75
+  }
+}
+
+###### Scanner settings
+#       b0: field strength [T] (float)
+#    gamma: gyromagnetic ratio [rad / uT], default is 267.5153 (float)
+# b0_inhom: field inhomogeneity [ppm], default is 0.0 (float)
+#   rel_b1: relative amp inhomogeneity, default is 1.0 (float)
+b0: 3
+gamma: 267.5153
+b0_inhom: 0.0
+rel_b1: 1
+
+##### Additional simulation settings
+#           verbose: verbose output, default is False (bool)
+#    reset_init_mag: True to reset magnetization after each readout, default is True (bool)
+#             scale: relative magnetization after reset of magnetization, default is 1 (float)
+# max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
+verbose: False
+reset_init_mag: True
+scale: 1
+max_pulse_samples: 300

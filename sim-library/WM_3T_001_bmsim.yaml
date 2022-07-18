@@ -22,7 +22,7 @@
 # amine and OH pools were added for completeness, but they do not affect the spectra significantly
 # 
 #
-# - 3 CEST pools
+# - 4 CEST pools
 # - 1 NOE pool      
 # - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
 #
@@ -111,5 +111,5 @@ rel_b1: 1
 # max_pulse_samples: maximum number of samples for each shaped rf pulse, default is 500 (int)
 verbose: False
 reset_init_mag: True
-scale: 0.5
+scale: 1
 max_pulse_samples: 300
