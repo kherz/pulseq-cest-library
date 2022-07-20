@@ -3,6 +3,8 @@
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
 # Simulation parameters for white matter at 3T 
+# This model was used in https://doi.org/10.1002/nbm.4789 
+# and was based on the following works:
 # following the Wang et al 2020 neuroimage paper: https://doi.org/10.1016/j.neuroimage.2020.116700
 # T2 of water and MT were not provided in this paper
 # Thus, we used the value T2w from Zhu et al http://hdl.handle.net/21.11116/0000-0001-32FE-9, and the T2mt from stanisz et al https://doi.org/10.1002/mrm.20605 

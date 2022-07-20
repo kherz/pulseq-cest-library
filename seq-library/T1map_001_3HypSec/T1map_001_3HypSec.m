@@ -23,6 +23,7 @@ seq_defs.TI            = [10 6 5 4 3 2.5 2 1.5 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2
 seq_defs.offsets_ppm   = zeros(1, numel(seq_defs.TI));
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm); % number of repetition
 seq_defs.seq_id_string = seqid           ; % unique seq id
+seq_defs.B0            = -1              ; % dummy b0
 
 %% get info from struct
 TI          = seq_defs.TI;          % "inversion" times [s]
@@ -106,7 +107,7 @@ seq.write(seq_filename, author);
 saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = simulate_pulseqcest(seq_filename,'../../sim-library/GM_3T_001_bmsim.yaml');
+M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
 figure, plot(seq_defs.TI,M_z);
 xlabel('TI [s]');
 ylabel('Z [a.u.]')
