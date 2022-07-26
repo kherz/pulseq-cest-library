@@ -24,7 +24,7 @@
 water_pool: { # only this was taken from 3T https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6422734/ 
   f: 1.0,
   t1: 1.05,
-  r2: 39.8e-3
+  t2: 39.8e-3
 }
 
 ### MT pool
