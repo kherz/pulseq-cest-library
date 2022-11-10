@@ -2,33 +2,37 @@
 # Creates a sequence file for a L-Arginine CEST Fingerprinting protocol
 # Reference: tbd
 
-from cmath import atan
 import os
+
 import numpy as np
-from pypulseq.Sequence.sequence import Sequence
-from pypulseq.make_adc import make_adc
-from pypulseq.make_delay import make_delay
-from pypulseq.make_trap_pulse import make_trapezoid
-from pypulseq.make_block_pulse import make_block_pulse
-from pypulseq.opts import Opts
 from bmctool.utils.seq.write import write_seq
+from pypulseq import Opts
+from pypulseq import Sequence
+from pypulseq import make_adc
+from pypulseq import make_block_pulse
+from pypulseq import make_delay
+from pypulseq import make_trapezoid
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]
 
 # general settings
-author = 'Kai Herz'
+author = 'Kai Herz & Patrick Schuenke'
+plot_sequence = False  # plot preparation block?
 convert_to_1_3 = False  # convert seq-file to a version 1.3 file? Needed for pypulseq < v1.3.1 only!
+check_timing = True  # Perform a timing check at the end of the sequence
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
 num_meas = 30
-seq_defs:dict = {}
+seq_defs: dict = {}
 seq_defs['num_meas'] = 30
-seq_defs['b1cwpe']   = np.array([2.0, 2.0, 1.7, 1.5, 1.2, 1.2, 3.0, 0.5, 3.0, 1.0, 2.2, 3.2, 1.5, 0.7, 1.5, 2.2, 2.5, 1.2, 3.0, 0.2, 1.5, 2.5, 0.7, 4.0, 3.2, 3.5, 1.5, 2.7, 0.7, 0.5])
-tr = np.ones(seq_defs['num_meas'])*3.5
-seq_defs['tsat'] = np.ones(seq_defs['num_meas'])*2.5
+seq_defs['b1cwpe'] = np.array(
+    [2.0, 2.0, 1.7, 1.5, 1.2, 1.2, 3.0, 0.5, 3.0, 1.0, 2.2, 3.2, 1.5, 0.7, 1.5, 2.2, 2.5, 1.2, 3.0, 0.2, 1.5, 2.5, 0.7,
+     4.0, 3.2, 3.5, 1.5, 2.7, 0.7, 0.5])
+tr = np.ones(seq_defs['num_meas']) * 3.5
+seq_defs['tsat'] = np.ones(seq_defs['num_meas']) * 2.5
 seq_defs['trec'] = tr - seq_defs['tsat']
-seq_defs['offsets_ppm'] = np.ones(seq_defs['num_meas'])*3.0
+seq_defs['offsets_ppm'] = np.ones(seq_defs['num_meas']) * 3.0
 seq_defs['b0'] = 3  # B0 [T]
 seq_defs['n_pulses'] = 13  # number of pulses  #
 seq_defs['tp'] = 100e-3  # pulse duration [s]
@@ -50,10 +54,10 @@ gamma_hz = 42.5764
 # spin lock specific preparation
 # td should be between block pulses, so we fit the tipping pulses in the
 # delay between pulses
-tp_sl        = 1e-3                                  # duration of tipping pulse for sl
-td_sl        = (sys.rf_dead_time + sys.rf_ringdown_time) # delay between tip and sat pulse
-sl_time_per_sat = 2*(tp_sl+td_sl) # additional time of sl pulses for 1 sat pulse
-if any(seq_defs['trec']  < sl_time_per_sat):
+tp_sl = 1e-3  # duration of tipping pulse for sl
+td_sl = (sys.rf_dead_time + sys.rf_ringdown_time)  # delay between tip and sat pulse
+sl_time_per_sat = 2 * (tp_sl + td_sl)  # additional time of sl pulses for 1 sat pulse
+if any(seq_defs['trec'] < sl_time_per_sat):
     print('DC too high for SL prepatration pulses!')
     quit()
 
@@ -79,20 +83,21 @@ offsets_hz = seq_defs['offsets_ppm'] * gamma_hz * seq_defs['b0']  # convert from
 
 for m, b1 in enumerate(seq_defs['b1cwpe']):
 
-    
     # add delay
     seq.add_block(make_delay(seq_defs['trec'][m]))
 
     # prep sat_pulse
     flip_angle_sat = b1 * gamma_hz * 2 * np.pi * seq_defs['tp']
-    sat_pulse = make_block_pulse(flip_angle=flip_angle_sat, freq_offset=offsets_hz[m], duration=seq_defs['tp'], system=sys) #
-    accum_phase = np.mod(offsets_hz[m]*2*np.pi*seq_defs['tp'],2*np.pi)
+    sat_pulse = make_block_pulse(flip_angle=flip_angle_sat, freq_offset=offsets_hz[m], duration=seq_defs['tp'],
+                                 system=sys)  #
+    accum_phase = np.mod(offsets_hz[m] * 2 * np.pi * seq_defs['tp'], 2 * np.pi)
     # prep tipping pulses
-    flip_angle_tip = atan(b1/(seq_defs['offsets_ppm'][m]*seq_defs['b0']))
-    pre_sl_pulse  = make_block_pulse(flip_angle=flip_angle_tip, duration=tp_sl, phase_offset=-(np.pi/2), system=sys) #
-    post_sl_pulse = make_block_pulse(flip_angle=flip_angle_tip, duration=tp_sl, phase_offset=accum_phase+(np.pi/2), system=sys) #
+    flip_angle_tip = np.arctan(b1 / (seq_defs['offsets_ppm'][m] * seq_defs['b0']))
+    pre_sl_pulse = make_block_pulse(flip_angle=flip_angle_tip, duration=tp_sl, phase_offset=-(np.pi / 2), system=sys)  #
+    post_sl_pulse = make_block_pulse(flip_angle=flip_angle_tip, duration=tp_sl, phase_offset=accum_phase + (np.pi / 2),
+                                     system=sys)  #
     # sl phase cycling
-    phase_cycling = 50/180*np.pi
+    phase_cycling = 50 / 180 * np.pi
 
     for n in range(seq_defs['n_pulses']):
         pre_sl_pulse.phase_offset = pre_sl_pulse.phase_offset + phase_cycling
@@ -101,11 +106,19 @@ for m, b1 in enumerate(seq_defs['b1cwpe']):
         seq.add_block(pre_sl_pulse)
         seq.add_block(sat_pulse)
         seq.add_block(post_sl_pulse)
-        if n < seq_defs['n_pulses']-1:
-            seq.add_block(make_delay(seq_defs['td']-sl_time_per_sat))
+        if n < seq_defs['n_pulses'] - 1:
+            seq.add_block(make_delay(seq_defs['td'] - sl_time_per_sat))
 
     seq.add_block(gx_spoil, gy_spoil, gz_spoil)
     seq.add_block(pseudo_adc)
+
+if check_timing:
+    ok, error_report = seq.check_timing()
+    if ok:
+        print('\nTiming check passed successfully')
+    else:
+        print('\nTiming check failed! Error listing follows\n')
+        print(error_report)
 
 write_seq(seq=seq,
           seq_defs=seq_defs,
@@ -113,3 +126,7 @@ write_seq(seq=seq,
           author=author,
           use_matlab_names=True,
           convert_to_1_3=convert_to_1_3)
+
+# plot the sequence
+if plot_sequence:
+    seq.plot()  # to plot all offsets, remove time_range argument
