@@ -53,7 +53,7 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 fa_sat        = gamma_rad*tp; % dummy flip angle
 % create pulseq saturation pulse object
@@ -63,8 +63,8 @@ satPulse      = mr.makeSincPulse(fa_sat, 'Duration', tp, 'system', seq.sys,'time
 satPulse.signal = (satPulse.signal./max(satPulse.signal)).*B1peak*gamma_hz; 
 
 
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
-seq_defs.B1cwpe = B1cwpe;
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
+seq_defs.B1rms = B1rms;
 
 
 %% loop through zspec offsets

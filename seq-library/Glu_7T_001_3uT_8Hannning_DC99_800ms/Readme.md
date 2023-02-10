@@ -7,7 +7,7 @@
 ### Description
 Glutamate weighted protocol for 7T
 
-* B<sub>1,cwpe</sub> = 3 µT 
+* B<sub>1,rms</sub> = 3 µT 
 * T<sub>sat</sub> = 0.8 s
 * DC<sub>sat</sub> = 99 %
 

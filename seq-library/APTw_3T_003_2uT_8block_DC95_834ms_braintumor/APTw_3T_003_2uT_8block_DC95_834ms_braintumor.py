@@ -50,7 +50,7 @@ seq_filename = seq_defs['seq_id_string'] + '.seq'
 sys = Opts(max_grad=40, grad_unit='mT/m', max_slew=130, slew_unit='T/m/s',
            rf_ringdown_time=30e-6, rf_dead_time=100e-6, rf_raster_time=1e-6)
 
-gamma_hz = seq.sys.gamma*10e-6
+gamma_hz =seq.sys.gamma*10e-6
 
 # ===========
 # PREPARATION
@@ -68,7 +68,7 @@ gx_spoil, gy_spoil, gz_spoil = [make_trapezoid(channel=c, system=sys, amplitude=
 flip_angle_sat = b1 * gamma_hz * 2 * np.pi * seq_defs['tp']
 sat_pulse = make_block_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys)
 
-seq_defs['b1cwpe'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'],
+seq_defs['b1rms'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'],
                                            td=np.sum(seq_defs['td']) / 2, gamma_hz=gamma_hz)
 
 # ADC events

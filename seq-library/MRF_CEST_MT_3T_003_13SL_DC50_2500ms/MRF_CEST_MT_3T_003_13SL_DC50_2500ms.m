@@ -34,7 +34,7 @@ seq_defs.offsets_ppm   = offsets_ppm   ; % offset vector [ppm]
 seq_defs.Tsat          = Tsat          ;  % saturation time [s]
 seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
 seq_defs.seq_id_string = seqid         ; % unique seq id
-seq_defs.B1cwpe        = B1;
+seq_defs.B1rms        = B1;
 
 
 %% get info from struct
@@ -65,7 +65,7 @@ end
 
 %% create scanner events
 % satpulse
-gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 offsets_Hz = offsets_ppm*seq_defs.FREQ;
 

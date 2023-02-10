@@ -60,13 +60,13 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 fa_sat = B1*gamma_rad*tp;  % saturation pulse flip angle
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pusle cw
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
 
-seq_defs.B1cwpe = B1cwpe;
+seq_defs.B1rms = B1rms;
 
 
 DC=tp/(tp+td);%Duty cycle

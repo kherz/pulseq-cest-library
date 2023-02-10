@@ -46,7 +46,7 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 
 fa_sat = deg2rad(3772); % need to find a hanning pulse with that fa
@@ -54,8 +54,8 @@ fa_sat = deg2rad(3772); % need to find a hanning pulse with that fa
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys); % dummy pulse to get the object
 hanning_shape = hanning(numel(satPulse.signal));
 satPulse.signal = hanning_shape./trapz(satPulse.t,hanning_shape)*(fa_sat./(2*pi));
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
-seq_defs.B1cwpe = B1cwpe;
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
+seq_defs.B1rms = B1rms;
 
 
 %% loop through zspec offsets

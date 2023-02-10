@@ -41,12 +41,12 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 
 % create pulseq object
 hs_pulse = makeHSHalfPassagePulse(20,seq.sys);
-seq_defs.B1cwpe = B1pa;
+seq_defs.B1rms = B1pa;
 
 % spoilers
 rampTime = 1e-3;

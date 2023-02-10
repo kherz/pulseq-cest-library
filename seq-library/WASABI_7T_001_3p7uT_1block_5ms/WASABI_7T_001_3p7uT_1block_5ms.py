@@ -27,7 +27,7 @@ check_timing = True  # Perform a timing check at the end of the sequence
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
 seq_defs: dict = {}
-seq_defs['b1cwpe'] = 3.7  # B1 amplitude [µT]
+seq_defs['b1rms'] = 3.7  # B1 amplitude [µT]
 seq_defs['b0'] = 7  # B0 [T]
 seq_defs['n_pulses'] = 1  # number of pulses  #
 seq_defs['tp'] = 5e-3  # pulse duration [s]
@@ -46,7 +46,7 @@ seq_filename = seq_defs['seq_id_string'] + '.seq'
 sys = Opts(max_grad=40, grad_unit='mT/m', max_slew=130, slew_unit='T/m/s',
            rf_ringdown_time=30e-6, rf_dead_time=100e-6, rf_raster_time=1e-6)
 
-gamma_hz = seq.sys.gamma*10e-6
+gamma_hz =seq.sys.gamma*10e-6
 
 # ===========
 # PREPARATION
@@ -61,7 +61,7 @@ gx_spoil, gy_spoil, gz_spoil = [make_trapezoid(channel=c, system=sys, amplitude=
                                                rise_time=rise_time) for c in ['x', 'y', 'z']]
 
 # RF pulses
-flip_angle_sat = seq_defs['b1cwpe'] * gamma_hz * 2 * np.pi * seq_defs['tp']
+flip_angle_sat = seq_defs['b1rms'] * gamma_hz * 2 * np.pi * seq_defs['tp']
 rf_pulse = make_block_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys)
 
 # ADC events

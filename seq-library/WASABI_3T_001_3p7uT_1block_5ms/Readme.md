@@ -2,7 +2,7 @@
 
 ### Description
 WASABI protocol for simultaneous B0 and B1 mapping at 3T
-* B<sub>1,cwpe</sub> = 3.7 µT
+* B<sub>1,rms</sub> = 3.7 µT
 * t<sub>p</sub> = 5 ms
 * num<sub>meas</sub> = 32
 
