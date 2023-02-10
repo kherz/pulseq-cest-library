@@ -47,20 +47,20 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 
 fa_sat = deg2rad(3772); % need to find a hanning pulse with that fa
 % create pulseq saturation pulse object
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys); % dummy pulse to get the object
 hanning_shape = hanning(numel(satPulse.signal));
 satPulse.signal = hanning_shape./trapz(satPulse.t,hanning_shape)*(fa_sat./(2*pi));
-[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
 seq_defs.B1rms = B1rms;
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = offsets_ppm*gamma_hz*B0;
 
 % m0 is unsaturated
 % loop through offsets and set pulses and delays

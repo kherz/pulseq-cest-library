@@ -41,8 +41,8 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 
 % create pulseq object
 hs_pulse = makeHSHalfPassagePulse(20,seq.sys);
