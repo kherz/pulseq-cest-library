@@ -27,7 +27,7 @@ check_timing = True  # Perform a timing check at the end of the sequence
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
 seq_defs: dict = {}
-seq_defs['b1cwpe'] = 3.7  # B1 amplitude [µT]
+seq_defs['b1rms'] = 3.7  # B1 amplitude [µT]
 seq_defs['b0'] = 3  # B0 [T]
 seq_defs['n_pulses'] = 1  # number of pulses  #
 seq_defs['tp'] = 5e-3  # pulse duration [s]
@@ -61,7 +61,7 @@ gx_spoil, gy_spoil, gz_spoil = [make_trapezoid(channel=c, system=sys, amplitude=
                                                rise_time=rise_time) for c in ['x', 'y', 'z']]
 
 # RF pulses
-flip_angle_sat = seq_defs['b1cwpe'] * gamma_hz * 2 * np.pi * seq_defs['tp']
+flip_angle_sat = seq_defs['b1rms'] * gamma_hz * 2 * np.pi * seq_defs['tp']
 rf_pulse = make_block_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys)
 
 # ADC events

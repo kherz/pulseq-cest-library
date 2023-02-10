@@ -73,7 +73,7 @@ sat_pulse = make_gauss_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'],
                              time_bw_product=0.2, apodization=0.5)
 sat_pulse.signal *= (1 / np.max(sat_pulse.signal)) * b1 * gamma_hz
 
-seq_defs['b1cwpe'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'], td=seq_defs['td'], gamma_hz=gamma_hz)
+seq_defs['b1rms'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'], td=seq_defs['td'], gamma_hz=gamma_hz)
 
 # ADC events
 pseudo_adc = make_adc(num_samples=1, duration=1e-3)  # (not played out; just used to split measurements)

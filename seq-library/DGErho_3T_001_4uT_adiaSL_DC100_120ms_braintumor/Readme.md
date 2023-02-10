@@ -2,7 +2,7 @@
 
 ### Description
 DGEρ  protocol for 3T
-* B<sub>1,cwpe</sub> = 4 µT
+* B<sub>1,rms</sub> = 4 µT
 * T<sub>sat</sub> = 120 ms
 
 ### Publication

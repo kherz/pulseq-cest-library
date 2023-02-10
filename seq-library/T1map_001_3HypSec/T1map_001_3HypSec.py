@@ -27,7 +27,7 @@ TI = np.array([10, 6, 5, 4, 3, 2.5, 2, 1.5, 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
 seq_defs: dict = {}
-seq_defs['b1cwpe'] = 20
+seq_defs['b1rms'] = 20
 seq_defs['n_pulses'] = 3  # number of pulses  #
 seq_defs['tp'] = 8e-3  # pulse duration [s]
 seq_defs['trec'] = 1  # recovery time [s]
@@ -64,7 +64,7 @@ gx_spoil2, gy_spoil2, gz_spoil2 = [make_trapezoid(channel=c, system=sys, amplitu
                                                   rise_time=rise_time) for c in ['x', 'y', 'z']]
 
 # RF pulses
-hs_pulse = make_hypsec_half_passage_rf(amp=seq_defs['b1cwpe'], system=sys)
+hs_pulse = make_hypsec_half_passage_rf(amp=seq_defs['b1rms'], system=sys)
 
 # ADC events
 pseudo_adc = make_adc(num_samples=1, duration=1e-3)  # (not played out; just used to split measurements)

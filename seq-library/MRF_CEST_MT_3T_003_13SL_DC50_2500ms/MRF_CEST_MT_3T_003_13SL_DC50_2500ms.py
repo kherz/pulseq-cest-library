@@ -28,7 +28,7 @@ check_timing = True  # Perform a timing check at the end of the sequence
 num_meas = 30
 seq_defs: dict = {}
 seq_defs['num_meas'] = 30
-seq_defs['b1cwpe'] = np.array(
+seq_defs['b1rms'] = np.array(
     [2.0, 2.0, 1.7, 1.5, 1.2, 1.2, 3.0, 0.5, 3.0, 1.0, 2.2, 3.2, 1.5, 0.7, 1.5, 2.2, 2.5, 1.2, 3.0, 0.2, 1.5, 2.5, 0.7,
      4.0, 3.2, 3.5, 1.5, 2.7, 0.7, 0.5])
 seq_defs['offsets_ppm'] = np.array(
@@ -84,7 +84,7 @@ seq = Sequence()
 
 offsets_hz = seq_defs['offsets_ppm'] * gamma_hz * seq_defs['b0']  # convert from ppm to Hz
 
-for m, b1 in enumerate(seq_defs['b1cwpe']):
+for m, b1 in enumerate(seq_defs['b1rms']):
 
     # add delay
     seq.add_block(make_delay(seq_defs['trec'][m]))
