@@ -14,6 +14,11 @@ else
     [~, seqid] = fileparts(which(mfilename));
 end
 
+%% scanner limits
+% see pulseq doc for more ino
+seq = SequenceSBB(getScannerLimits());
+gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
 %% sequence definitions
 % everything in defs gets written as definition in .seq-file
 defs.n_pulses      = 36              ; % number of pulses
@@ -34,15 +39,12 @@ defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
 defs.seq_id_string = seqid           ; % unique seq id
 
-seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
 
-%% scanner limits
-% see pulseq doc for more ino
-seq = SequenceSBB(getScannerLimits());
+
 
 %% create scanner events
 % satpulse
-gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 fa_sat        = defs.B1pa*gamma_rad*defs.tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
