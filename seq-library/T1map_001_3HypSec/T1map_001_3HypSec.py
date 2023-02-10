@@ -3,15 +3,15 @@ Script to output a seq file for a T1 prep with an adiabatic hyperbolic secant pr
 """
 
 import os
-import numpy as np
-from pypulseq.Sequence.sequence import Sequence
-from pypulseq.make_adc import make_adc
-from pypulseq.make_delay import make_delay
-from pypulseq.make_trap_pulse import make_trapezoid
 
-from pypulseq.opts import Opts
-from bmctool.utils.seq.write import write_seq
+import numpy as np
 from bmctool.utils.pulses.make_hypsec_half_passage import make_hypsec_half_passage_rf
+from bmctool.utils.seq.write import write_seq
+from pypulseq import Opts
+from pypulseq import Sequence
+from pypulseq import make_adc
+from pypulseq import make_delay
+from pypulseq import make_trapezoid
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]
@@ -20,12 +20,13 @@ seqid = os.path.splitext(os.path.basename(__file__))[0]
 author = 'Patrick Schuenke'
 plot_sequence = False  # plot preparation block?
 convert_to_1_3 = True  # convert seq-file to a pseudo version 1.3 file?
+check_timing = True  # Perform a timing check at the end of the sequence
 
 # inversion times (number of inversion times defines the number of measurements)
 TI = np.array([10, 6, 5, 4, 3, 2.5, 2, 1.5, 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1])
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
-seq_defs:dict = {}
+seq_defs: dict = {}
 seq_defs['b1cwpe'] = 20
 seq_defs['n_pulses'] = 3  # number of pulses  #
 seq_defs['tp'] = 8e-3  # pulse duration [s]
@@ -101,13 +102,21 @@ for m, t_prep in enumerate(TI):
     # add pseudo adc
     seq.add_block(pseudo_adc)
 
+if check_timing:
+    ok, error_report = seq.check_timing()
+    if ok:
+        print('\nTiming check passed successfully')
+    else:
+        print('\nTiming check failed! Error listing follows\n')
+        print(error_report)
+
 write_seq(seq=seq,
           seq_defs=seq_defs,
-          filename=seqid+'.seq',
+          filename=seq_filename,
           author=author,
           use_matlab_names=True,
           convert_to_1_3=convert_to_1_3)
 
 # plot the sequence
 if plot_sequence:
-    seq.plot(time_range=[0, seq_defs['trec_m0']+seq_defs['tsat']])  # to plot all offsets, remove time_range argument
+    seq.plot()  # to plot all offsets, remove time_range argument

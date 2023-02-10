@@ -2,18 +2,19 @@
 # Creates a sequence file for an MRF-CEST protocol according to Figure 1 of:
 # doi:10.1016/j.neuroimage.2019.01.034.
 #
-# Patrick Schuenke 2020
+# Patrick Schuenke 2022
 # patrick.schuenke@ptb.de
 
 import os
+
 import numpy as np
-from pypulseq.Sequence.sequence import Sequence
-from pypulseq.make_adc import make_adc
-from pypulseq.make_delay import make_delay
-from pypulseq.make_trap_pulse import make_trapezoid
-from pypulseq.make_block_pulse import make_block_pulse
-from pypulseq.opts import Opts
 from bmctool.utils.seq.write import write_seq
+from pypulseq import Opts
+from pypulseq import Sequence
+from pypulseq import make_adc
+from pypulseq import make_block_pulse
+from pypulseq import make_delay
+from pypulseq import make_trapezoid
 
 # get id of generation file
 seqid = os.path.splitext(os.path.basename(__file__))[0]
@@ -22,9 +23,10 @@ seqid = os.path.splitext(os.path.basename(__file__))[0]
 author = 'Patrick Schuenke'
 plot_sequence = False  # plot preparation block?
 convert_to_1_3 = False  # convert seq-file to a version 1.3 file? Needed for pypulseq < v1.3.1 only!
+check_timing = True  # Perform a timing check at the end of the sequence
 
 # sequence definitions (everything in seq_defs will be written to definitions of the .seq-file)
-seq_defs:dict = {}
+seq_defs: dict = {}
 seq_defs['B1pa'] = np.array([1.2, 0.8, 2, 3])  # B1 peak amplitude [µT]
 seq_defs['b0'] = 3  # B0 [T]
 seq_defs['n_pulses'] = np.array([4, 2, 4, 3])  # number of pulses  #
@@ -94,20 +96,27 @@ for m, offset in enumerate(offsets_hz):
         sat_pulse.phase_offset = accum_phase % (2 * np.pi)
         seq.add_block(sat_pulse)
         accum_phase = (accum_phase + offset * 2 * np.pi * np.sum(np.abs(sat_pulse.signal) > 0) * 1e-6) % (2 * np.pi)
-        if n < seq_defs['n_pulses'][m]-1:
+        if n < seq_defs['n_pulses'][m] - 1:
             seq.add_block(td_delay)
 
     seq.add_block(gx_spoil, gy_spoil, gz_spoil)
     seq.add_block(pseudo_adc)
 
+if check_timing:
+    ok, error_report = seq.check_timing()
+    if ok:
+        print('\nTiming check passed successfully')
+    else:
+        print('\nTiming check failed! Error listing follows\n')
+        print(error_report)
 
 write_seq(seq=seq,
           seq_defs=seq_defs,
-          filename=seqid+'.seq',
+          filename=seq_filename,
           author=author,
           use_matlab_names=True,
           convert_to_1_3=convert_to_1_3)
 
 # plot the sequence
 if plot_sequence:
-    seq.plot(time_range=[0, seq_defs['trec_m0']+seq_defs['tsat']])  # to plot all offsets, remove time_range argument
+    seq.plot()  # to plot all offsets, remove time_range argument
