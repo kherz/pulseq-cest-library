@@ -27,6 +27,7 @@ seq_defs.offsets_ppm   = [seq_defs.M0_offset -299 0.6 0.9 1.2 1.5 -299 0.6 0.9 1
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm); % number of repetition
 seq_defs.Tsat          = seq_defs.tp + 2*12e-3;  % locking + 2 x adiabatic pulses
 seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
+seq_defs.B0            = seq_defs.FREQ/(seq.sys.gamma*1e-6);  % Calculate B0   
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
 %% get info from struct

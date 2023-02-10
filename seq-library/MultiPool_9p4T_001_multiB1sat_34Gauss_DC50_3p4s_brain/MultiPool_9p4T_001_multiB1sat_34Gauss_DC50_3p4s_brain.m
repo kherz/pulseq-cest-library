@@ -31,6 +31,7 @@ seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
 seq_defs.FREQ		   = 400.2182          % Approximately 9.4 T 
+seq_defs.B0            = seq_defs.FREQ/(seq.sys.gamma*1e-6);  % Calculate B0   
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
 
