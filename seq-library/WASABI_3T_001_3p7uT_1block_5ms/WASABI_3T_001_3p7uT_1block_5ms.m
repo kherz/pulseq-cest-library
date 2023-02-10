@@ -26,7 +26,7 @@ seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
 seq_defs.offsets_ppm   = [seq_defs.M0_offset linspace(-2, 2, 31)]; % offset vector [ppm]
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.tp     ;  % saturation time [s]
-seq_defs.B0            = 3               ; % B0 [T]
+seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
 
@@ -36,7 +36,6 @@ Trec        = seq_defs.Trec;        % recovery time between scans [s]
 Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
 B1          = seq_defs.B1rms;      % B1 [uT]
 spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
@@ -56,11 +55,11 @@ satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % 
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gamma_hz*B0;
+offsets_Hz = offsets_ppm*seq_defs.FREQ;
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gamma_hz*B0
+    if currentOffset == seq_defs.M0_offset*seq_defs.FREQ
         if Trec_M0 > 0
             seq.addBlock(mr.makeDelay(Trec_M0));
         end

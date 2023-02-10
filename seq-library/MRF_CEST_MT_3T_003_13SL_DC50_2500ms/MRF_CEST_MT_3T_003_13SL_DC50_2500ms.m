@@ -32,7 +32,7 @@ seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
 seq_defs.num_meas      = num_meas      ; % number of measurements
 seq_defs.offsets_ppm   = offsets_ppm   ; % offset vector [ppm]
 seq_defs.Tsat          = Tsat          ;  % saturation time [s]
-seq_defs.B0            = 3             ; % B0 [T]
+seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
 seq_defs.seq_id_string = seqid         ; % unique seq id
 seq_defs.B1rms        = B1;
 
@@ -42,7 +42,6 @@ Trec        = seq_defs.Trec;        % recovery time between scans [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 td          = seq_defs.td;          % delay between pulses [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
 spoiling    = 1;                    % 0=no spoiling, 1=before readout, Gradient in x,y,z
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
@@ -68,7 +67,7 @@ end
 % satpulse
 gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
-offsets_Hz = offsets_ppm*gamma_hz*B0;
+offsets_Hz = offsets_ppm*seq_defs.FREQ;
 
 % loop through measurements
 for m = 1:num_meas

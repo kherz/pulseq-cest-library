@@ -33,7 +33,7 @@ seq_defs.offsets_ppm   = [seq_defs.M0_offset -100 -50 -20 -12 -9 -7.25 -6.25 -5.
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
-seq_defs.B0            = 7               ; % B0 [T]
+seq_defs.FREQ		   = 298.0348         % Approximately 7 T  
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
 
@@ -44,7 +44,6 @@ Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 td          = seq_defs.td;          % delay between pulses [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
 
 %% two different b1 proocols
 B1pa        = 0.6;  % mean sat pulse b1 [uT]
@@ -72,11 +71,11 @@ satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys,'timeB
 seq_defs.B1rms = B1rms;
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gamma_hz*B0;
+offsets_Hz = offsets_ppm*seq_defs.FREQ;
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gamma_hz*B0
+    if currentOffset == seq_defs.M0_offset*seq_defs.FREQ
         
         seq.addBlock(mr.makeDelay(Trec_M0));
     end
