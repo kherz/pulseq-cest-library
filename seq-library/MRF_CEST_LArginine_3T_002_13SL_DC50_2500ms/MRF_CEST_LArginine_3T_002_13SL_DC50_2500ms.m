@@ -13,6 +13,14 @@ else
     [~, seqid] = fileparts(which(mfilename));
 end
 
+%% scanner limits
+% choose less demanding rf limits for very short sl breaks
+lims = getScannerLimits();
+lims.rfDeadTime     = 200e-6;
+lims.rfRingdownTime = 50e-6;
+seq = SequenceSBB(lims);
+gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
 %% varying MRF parameters
 num_meas    = 30;
 TR          = ones(num_meas,1)*3.5;
@@ -30,8 +38,8 @@ seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
 seq_defs.num_meas      = num_meas      ; % number of measurements
 seq_defs.offsets_ppm   = offsets_ppm   ; % offset vector [ppm]
 seq_defs.Tsat          = Tsat          ;  % saturation time [s]
-seq_defs.FREQ		   = 127.7292 ;         % Approximately 3 T 
-seq_defs.B0            = seq_defs.FREQ/(seq.sys.gamma*1e-6);  % Calculate B0    
+seq_defs.FREQ		   = 127.7292;          % Approximately 3 T 
+seq_defs.B0            = seq_defs.FREQ/(gamma_hz);  % Calculate B0    
 seq_defs.seq_id_string = seqid         ; % unique seq id
 seq_defs.B1rms        = B1;
 
@@ -44,12 +52,6 @@ n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if D
 spoiling    = 1;                    % 0=no spoiling, 1=before readout, Gradient in x,y,z
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
-%% scanner limits
-% choose less demanding rf limits for very short sl breaks
-lims = getScannerLimits();
-lims.rfDeadTime     = 200e-6;
-lims.rfRingdownTime = 50e-6;
-seq = SequenceSBB(lims);
 
 %% spin lock specific preparation
 % td should be between block pulses, so we fit the tipping pulses in the
@@ -64,7 +66,6 @@ end
 
 %% create scanner events
 % satpulse
-gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 offsets_Hz = offsets_ppm*seq_defs.FREQ;
 

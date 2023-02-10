@@ -19,6 +19,11 @@ else
     [~, seqid] = fileparts(which(mfilename));
 end
 
+%% scanner limits
+% see pulseq doc for more ino
+seq = SequenceSBB(getScannerLimits());
+gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
 %% sequence definitions
 % everything in seq_defs gets written as definition in .seq-file
 seq_defs.n_pulses      = 3              ; % number of pulses
@@ -26,12 +31,12 @@ seq_defs.tp            = 100e-3           ; % pulse duration [s]
 seq_defs.td            = 10e-3            ; % interpulse delay [s]
 seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
 seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
-seq_defs.offsets_ppm   = [seq_defs.M0_offset  -3.5:0.1:-2.5, -0.3:0.1:0.3, 2.5:0.1:3.5]; % ?3.5 to ?2.5 ppm, ?0.3 to +0.3 ppm, and +2.5 to +3.5 ppm, all in increments of 0.1 ppm
+seq_defs.offsets_ppm   = [-3.5:0.1:-2.5, -0.3:0.1:0.3, 2.5:0.1:3.5]; % ?3.5 to ?2.5 ppm, ?0.3 to +0.3 ppm, and +2.5 to +3.5 ppm, all in increments of 0.1 ppm
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)+1   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
-seq_defs.FREQ		   = 127.7292 ;         % Approximately 3 T 
-seq_defs.B0            = seq_defs.FREQ/(seq.sys.gamma*1e-6);  % Calculate B0    
+seq_defs.FREQ		   = 127.7292;          % Approximately 3 T 
+seq_defs.B0            = seq_defs.FREQ/(gamma_hz);  % Calculate B0    
 seq_defs.seq_id_string = seqid           ; % unique seq id
 seq_defs.nSlices       = 25;  % 
 
@@ -47,13 +52,8 @@ spoiling    = 1;  % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
-%% scanner limits
-% see pulseq doc for more ino
-seq = SequenceSBB(getScannerLimits());
-
 %% create scanner events
 % satpulse
-gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 fa_sat        = gamma_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
