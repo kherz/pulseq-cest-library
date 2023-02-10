@@ -27,7 +27,7 @@ seq_defs.offsets_ppm   = [seq_defs.M0_offset -4:0.25:4]; % offset vector [ppm]
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
                          seq_defs.td ;  % saturation time [s]
-seq_defs.FREQ		   = 127.7292          % Approximately 3 T
+seq_defs.FREQ		   = 127.7292 ;         % Approximately 3 T
 seq_defs.B0            = seq_defs.FREQ/(seq.sys.gamma*1e-6);   % Calculate B0    
 seq_defs.seq_id_string = seqid           ; % unique seq id
 

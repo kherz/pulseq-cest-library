@@ -31,7 +31,7 @@ end
 
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
-seq_defs.FREQ		   = 298.0348         % Approximately 7 T 
+seq_defs.FREQ		   = 298.0348 ;        % Approximately 7 T 
 seq_defs.B0            = seq_defs.FREQ/(seq.sys.gamma*1e-6);  % Calculate B0    
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
