@@ -66,16 +66,16 @@ end
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
+offsets_Hz = offsets_ppm*gamma_hz*B0;
 
 % loop through measurements
 for m = 1:num_meas
     seq.addBlock(mr.makeDelay(Trec(m))); % recovery time
     % calculate spin lock pulses for current B1
     cB1 = B1(m); % get current B1 from schedule
-    satFa = cB1*gyroRatio_rad*tp;  % saturation pulse flip angle
+    satFa = cB1*gamma_rad*tp;  % saturation pulse flip angle
     faSL = atan(cB1/(offsets_ppm(m)*B0));
     
     preSL = mr.makeBlockPulse(faSL,'Duration',tp_sl, 'Phase', -pi/2,'system',lims);

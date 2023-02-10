@@ -49,7 +49,7 @@ seq_filename = seq_defs['seq_id_string'] + '.seq'
 sys = Opts(max_grad=40, grad_unit='mT/m', max_slew=130, slew_unit='T/m/s',
            rf_ringdown_time=30e-6, rf_dead_time=100e-6, rf_raster_time=1e-6)
 
-gamma_hz = 42.5764
+gamma_hz = seq.sys.gamma*10e-6
 
 # ===========
 # PREPARATION

@@ -48,19 +48,19 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
+gamma_hz  = seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = offsets_ppm*gamma_hz*B0;
 
 meas_id = 1;
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
     
     seq.addBlock(mr.makeDelay(Trec)); % recovery time
-    fa_sat        = B1(meas_id)*gyroRatio_rad*tp; % flip angle of sat pulse
+    fa_sat        = B1(meas_id)*gamma_rad*tp; % flip angle of sat pulse
     satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys);
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     accumPhase=0;
