@@ -26,7 +26,7 @@ seq_defs.DCsat         =               1; % duty cycle
 seq_defs.offsets_ppm   = [seq_defs.M0_offset -299 0.6 0.9 1.2 1.5 -299 0.6 0.9 1.2 1.5]; % offset vector [ppm]
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm); % number of repetition
 seq_defs.Tsat          = seq_defs.tp + 2*12e-3;  % locking + 2 x adiabatic pulses
-seq_defs.B0            = 3               ; % B0 [T]
+seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
 %% get info from struct
@@ -35,7 +35,6 @@ Trec        = seq_defs.Trec;        % recovery time between scans [s]
 Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
 B1pa        = 4;  % mean sat pulse b1 [uT]
 spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
@@ -57,7 +56,7 @@ seq_defs.B1cwpe = B1pa;
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gamma_hz*B0; % Z spec offsets [Hz]
+offsets_Hz = offsets_ppm*seq_defs.FREQ; % Z spec offsets [Hz]
 
 % loop through offsets and set pulses and delays
 pre_sl = [];
@@ -65,7 +64,7 @@ post_sl = [];
 accumPhase = 0;
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gamma_hz*B0
+    if currentOffset == seq_defs.M0_offset*seq_defs.FREQ
         if Trec_M0 > 0
             seq.addBlock(mr.makeDelay(Trec_M0));
         end
