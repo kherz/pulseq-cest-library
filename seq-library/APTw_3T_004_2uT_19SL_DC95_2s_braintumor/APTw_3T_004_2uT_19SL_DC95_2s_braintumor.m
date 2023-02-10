@@ -65,9 +65,9 @@ gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
 gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 fa_sat = B1*gyroRatio_rad*tp;  % saturation pulse flip angle
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pusle cw
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
 
-seq_defs.B1cwpe = B1cwpe;
+seq_defs.B1rms = B1rms;
 
 
 DC=tp/(tp+td);%Duty cycle

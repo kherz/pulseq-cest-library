@@ -46,7 +46,7 @@ gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
 
 % create pulseq object
 hs_pulse = makeHSHalfPassagePulse(20,seq.sys);
-seq_defs.B1cwpe = B1pa;
+seq_defs.B1rms = B1pa;
 
 % spoilers
 rampTime = 1e-3;

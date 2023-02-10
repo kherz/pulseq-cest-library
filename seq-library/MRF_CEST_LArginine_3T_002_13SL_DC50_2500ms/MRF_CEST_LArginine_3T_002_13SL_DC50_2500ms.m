@@ -32,7 +32,7 @@ seq_defs.offsets_ppm   = offsets_ppm   ; % offset vector [ppm]
 seq_defs.Tsat          = Tsat          ;  % saturation time [s]
 seq_defs.B0            = 3             ; % B0 [T]
 seq_defs.seq_id_string = seqid         ; % unique seq id
-seq_defs.B1cwpe        = B1;
+seq_defs.B1rms        = B1;
 
 
 %% get info from struct

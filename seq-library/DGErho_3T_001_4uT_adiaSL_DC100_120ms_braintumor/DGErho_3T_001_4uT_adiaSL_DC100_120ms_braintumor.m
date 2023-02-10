@@ -53,7 +53,7 @@ fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys);
 adia_SL       = makeSLExpPulses(B1pa, seq.sys);
-seq_defs.B1cwpe = B1pa;
+seq_defs.B1rms = B1pa;
 
 
 %% loop through zspec offsets

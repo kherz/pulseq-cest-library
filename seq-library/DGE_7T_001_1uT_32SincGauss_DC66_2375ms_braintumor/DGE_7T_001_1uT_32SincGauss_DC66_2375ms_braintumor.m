@@ -64,8 +64,8 @@ satPulse      = mr.makeSincPulse(fa_sat, 'Duration', tp, 'system', seq.sys,'time
 satPulse.signal = (satPulse.signal./max(satPulse.signal)).*B1peak*gyroRatio_hz; 
 
 
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
-seq_defs.B1cwpe = B1cwpe;
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+seq_defs.B1rms = B1rms;
 
 
 %% loop through zspec offsets

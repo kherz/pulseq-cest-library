@@ -57,8 +57,8 @@ fa_sat        = B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
 %satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
 satPulse      = mr.makeSincPulse(fa_sat, 'Duration', tp, 'system', seq.sys,'timeBwProduct', 2,'apodization', 0.15); % philips-like sinc
 
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
-seq_defs.B1cwpe = B1cwpe;
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+seq_defs.B1rms = B1rms;
 
 
 %% loop through zspec offsets

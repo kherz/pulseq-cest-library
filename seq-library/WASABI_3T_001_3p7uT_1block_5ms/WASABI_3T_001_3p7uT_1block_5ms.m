@@ -18,7 +18,7 @@ end
 %% sequence definitions
 % everything in seq_defs gets written as definition in .seq-file
 seq_defs.n_pulses      = 1              ; % number of pulses
-seq_defs.B1cwpe        = 3.7            ; % b1 for 1 block is cqpe
+seq_defs.B1rms        = 3.7            ; % b1 for 1 block is cqpe
 seq_defs.tp            = 5e-3           ; % pulse duration [s]
 seq_defs.Trec          = 3              ; % recovery time [s]
 seq_defs.Trec_M0       = 12             ; % recovery time before M0 [s]
@@ -37,7 +37,7 @@ Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
 B0          = seq_defs.B0;          % B0 [T]
-B1          = seq_defs.B1cwpe;      % B1 [uT]
+B1          = seq_defs.B1rms;      % B1 [uT]
 spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
