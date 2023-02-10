@@ -24,9 +24,9 @@ end
 seq_defs.n_pulses      = 3              ; % number of pulses
 seq_defs.tp            = 100e-3           ; % pulse duration [s]
 seq_defs.td            = 10e-3            ; % interpulse delay [s]
-seq_defs.M0_offset     = []           ; % m0 offset [ppm]
+seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
 seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
-seq_defs.offsets_ppm   = [-3.5:0.1:-2.5, -0.3:0.1:0.3, 2.5:0.1:3.5]; % ?3.5 to ?2.5 ppm, ?0.3 to +0.3 ppm, and +2.5 to +3.5 ppm, all in increments of 0.1 ppm
+seq_defs.offsets_ppm   = [seq_defs.M0_offset  -3.5:0.1:-2.5, -0.3:0.1:0.3, 2.5:0.1:3.5]; % ?3.5 to ?2.5 ppm, ?0.3 to +0.3 ppm, and +2.5 to +3.5 ppm, all in increments of 0.1 ppm
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)+1   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
