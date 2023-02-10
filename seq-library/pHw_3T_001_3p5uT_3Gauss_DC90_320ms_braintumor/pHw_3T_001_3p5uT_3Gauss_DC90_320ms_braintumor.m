@@ -30,7 +30,7 @@ seq_defs.offsets_ppm   = [seq_defs.M0_offset  -3.5:0.1:-2.5, -0.3:0.1:0.3, 2.5:0
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)+1   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
     seq_defs.td ;  % saturation time [s]
-seq_defs.B0            = 3               ; % B0 [T]
+seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
 seq_defs.seq_id_string = seqid           ; % unique seq id
 seq_defs.nSlices       = 25;  % 
 
@@ -40,7 +40,7 @@ offsets_ppm = seq_defs.offsets_ppm; % [ppm]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 td          = seq_defs.td;          % delay between pulses [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
+
 B1peak      = 6;  % mean sat pulse b1 [uT]
 spoiling    = 1;  % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
@@ -52,17 +52,17 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat        = gyroRatio_rad*tp; % flip angle of sat pulse
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
+fa_sat        = gamma_rad*tp; % flip angle of sat pulse
 % create pulseq saturation pulse object
 satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
-satPulse.signal = (satPulse.signal)./max(satPulse.signal)*B1peak*gyroRatio_hz;
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
-seq_defs.B1cwpe = B1cwpe;
+satPulse.signal = (satPulse.signal)./max(satPulse.signal)*B1peak*gamma_hz;
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
+seq_defs.B1rms = B1rms;
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = offsets_ppm*seq_defs.FREQ;
 
 % unsaturated m0
 for nSl = 1:seq_defs.nSlices

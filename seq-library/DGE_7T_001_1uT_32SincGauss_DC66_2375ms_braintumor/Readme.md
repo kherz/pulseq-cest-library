@@ -5,7 +5,7 @@
 ### Description
 Dynamic glucose enhanced (DGE) brain tumor protocol for 7T
 
-* B<sub>1,cwpe</sub> = 1 µT 
+* B<sub>1,rms</sub> = 1 µT 
 * T<sub>sat</sub> = 2.375 s
 * DC<sub>sat</sub> = 66 %
 

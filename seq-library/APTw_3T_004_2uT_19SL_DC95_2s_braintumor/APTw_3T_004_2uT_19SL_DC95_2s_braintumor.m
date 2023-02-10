@@ -36,7 +36,7 @@ seq_defs.DCsat         = seq_defs.tp/(seq_defs.tp+seq_defs.td); % duty cycle
 seq_defs.offsets_ppm   = [seq_defs.M0_offset -4:0.1:4]; % offset vector [ppm]
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.n_pulses.*(seq_defs.tp+ seq_defs.td)-seq_defs.td;
-seq_defs.B0            = 3               ; % B0 [T]
+seq_defs.FREQ		   = 127.7292          % Approximately 3 T  
 seq_defs.seq_id_string = seqid           ; % unique seq id
 seq_defs.B1pa           = [2]   ;
 
@@ -49,7 +49,6 @@ Trec_M0     = seq_defs.Trec;        % recovery time between scans [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 td          = seq_defs.td;          % delay between pulses [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
 B1          = seq_defs.B1pa;          % mean sat pulse b1 [uT]
 spoiling    = 1;                   % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
@@ -61,13 +60,13 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat = B1*gyroRatio_rad*tp;  % saturation pulse flip angle
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
+fa_sat = B1*gamma_rad*tp;  % saturation pulse flip angle
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pusle cw
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gamma_hz);
 
-seq_defs.B1cwpe = B1cwpe;
+seq_defs.B1rms = B1rms;
 
 
 DC=tp/(tp+td);%Duty cycle
@@ -96,12 +95,12 @@ minFa = 0.38; % this is the limit for prep pulses to be played out
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = offsets_ppm*seq_defs.FREQ;
 
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
+    if currentOffset == seq_defs.M0_offset*seq_defs.FREQ
         if Trec_M0 > 0
             seq.addBlock(mr.makeDelay(Trec_M0));
         end
@@ -111,8 +110,8 @@ for currentOffset = offsets_Hz
         end
     end
     
-    fa_sat        = B1*gyroRatio_rad*tp; % flip angle of sat pulse
-    faSL = atan(gyroRatio_hz*B1/(currentOffset));   % thats the angle theta of the effective system
+    fa_sat        = B1*gamma_rad*tp; % flip angle of sat pulse
+    faSL = atan(gamma_hz*B1/(currentOffset));   % thats the angle theta of the effective system
     preSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', -pi/2,'system',seq.sys);
     satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp,'freqOffset', currentOffset, 'system', seq.sys);
     accumPhase = currentOffset*360*tp*pi/180; % scanner needs the correct phase at the end of the sturation pulse

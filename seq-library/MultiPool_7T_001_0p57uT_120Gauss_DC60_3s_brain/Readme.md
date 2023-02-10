@@ -3,7 +3,7 @@
 ### Description
 Multi-pool protocol for 7 T
 
-* B<sub>1,cwpe</sub> = 0.57 µT 
+* B<sub>1,rms</sub> = 0.57 µT 
 * T<sub>sat</sub> = 2.99 s
 * DC<sub>sat</sub> = 60 %
 

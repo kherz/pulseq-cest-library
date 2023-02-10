@@ -18,7 +18,7 @@ end
 %% sequence definitions
 % everything in seq_defs gets written as definition in .seq-file
 seq_defs.n_pulses      = 1              ; % number of pulses
-seq_defs.B1cwpe        = 3.7            ; % b1 for 1 block is cqpe
+seq_defs.B1rms        = 3.7            ; % b1 for 1 block is cqpe
 seq_defs.tp            = 5e-3           ; % pulse duration [s]
 seq_defs.Trec          = 3              ; % recovery time [s]
 seq_defs.Trec_M0       = 12             ; % recovery time before M0 [s]
@@ -26,7 +26,7 @@ seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
 seq_defs.offsets_ppm   = [seq_defs.M0_offset linspace(-1.5, 1.5, 31)]; % offset vector [ppm]
 seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
 seq_defs.Tsat          = seq_defs.tp     ;  % saturation time [s]
-seq_defs.B0            = 7               ; % B0 [T]
+seq_defs.FREQ		   = 298.0348         % Approximately 7 T  
 seq_defs.seq_id_string = seqid           ; % unique seq id
 
 
@@ -36,8 +36,7 @@ Trec        = seq_defs.Trec;        % recovery time between scans [s]
 Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
 tp          = seq_defs.tp;          % sat pulse duration [s]
 n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
-B1          = seq_defs.B1cwpe;      % B1 [uT]
+B1          = seq_defs.B1rms;      % B1 [uT]
 spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
 
@@ -47,19 +46,19 @@ seq = SequenceSBB(getScannerLimits());
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat        = B1*gyroRatio_rad*tp; % flip angle of sat pulse
+gamma_hz  =seq.sys.gamma*10e-6;                  % for H [Hz/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
+fa_sat        = B1*gamma_rad*tp; % flip angle of sat pulse
 
 % create pulseq saturation pulse object
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pulse
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = offsets_ppm*seq_defs.FREQ;
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
+    if currentOffset == seq_defs.M0_offset*seq_defs.FREQ
         if Trec_M0 > 0
             seq.addBlock(mr.makeDelay(Trec_M0));
         end

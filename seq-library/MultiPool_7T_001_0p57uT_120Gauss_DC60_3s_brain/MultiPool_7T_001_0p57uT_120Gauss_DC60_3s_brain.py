@@ -55,7 +55,7 @@ seq_filename = seq_defs['seq_id_string'] + '.seq'
 sys = Opts(max_grad=40, grad_unit='mT/m', max_slew=130, slew_unit='T/m/s',
            rf_ringdown_time=30e-6, rf_dead_time=100e-6, rf_raster_time=1e-6)
 
-gamma_hz = 42.5764
+gamma_hz =seq.sys.gamma*10e-6
 
 # ===========
 # PREPARATION
@@ -74,7 +74,7 @@ flip_angle_sat = b1 * gamma_hz * 2 * np.pi * seq_defs['tp']
 sat_pulse = make_gauss_pulse(flip_angle=flip_angle_sat, duration=seq_defs['tp'], system=sys,
                              time_bw_product=0.2, apodization=0.5)  # siemens-like gauss
 
-seq_defs['b1cwpe'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'], td=seq_defs['td'], gamma_hz=gamma_hz)
+seq_defs['b1rms'] = calc_power_equivalent(rf_pulse=sat_pulse, tp=seq_defs['tp'], td=seq_defs['td'], gamma_hz=gamma_hz)
 
 # ADC events
 pseudo_adc = make_adc(num_samples=1, duration=1e-3)  # (not played out; just used to split measurements)

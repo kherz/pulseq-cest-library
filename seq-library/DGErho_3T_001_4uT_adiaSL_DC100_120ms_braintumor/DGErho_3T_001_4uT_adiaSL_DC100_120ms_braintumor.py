@@ -29,7 +29,7 @@ check_timing = True  # Perform a timing check at the end of the sequence
 b1: float = 4  # B1 peak amplitude [µT] (the cw power equivalent will be calculated and written to seq_defs below)
 seq_defs: dict = {}
 seq_defs['b0'] = 3  # B0 [T]
-seq_defs['b1cwpe'] = b1
+seq_defs['b1rms'] = b1
 seq_defs['n_pulses'] = 1  # number of pulses  #
 seq_defs['tp'] = 120e-3  # pulse duration [s]
 seq_defs['trec'] = 4  # recovery time [s]
@@ -49,7 +49,7 @@ seq_filename = seq_defs['seq_id_string'] + '.seq'
 sys = Opts(max_grad=40, grad_unit='mT/m', max_slew=130, slew_unit='T/m/s',
            rf_ringdown_time=30e-6, rf_dead_time=100e-6, rf_raster_time=1e-6)
 
-gamma_hz = 42.5764
+gamma_hz =seq.sys.gamma*10e-6
 
 # ===========
 # PREPARATION
