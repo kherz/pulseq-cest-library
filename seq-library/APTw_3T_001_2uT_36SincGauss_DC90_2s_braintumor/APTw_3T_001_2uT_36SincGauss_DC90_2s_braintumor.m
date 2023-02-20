@@ -33,7 +33,7 @@ defs.num_meas      = numel(defs.offsets_ppm)   ; % number of repetition
 defs.Tsat          = defs.n_pulses*(defs.tp+defs.td) - ...
                          defs.td ;  % saturation time [s]
 defs.FREQ		   = 127.7292 ;         % Approximately 3 T
-defs.B0            = defs.FREQ/(seq.sys.gamma*1e-6);   % Calculate B0    
+defs.B0            = defs.FREQ/(gamma_hz);   % Calculate B0    
 defs.B1pa        = 1.78;  % mean sat pulse b1 [uT]
 defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 

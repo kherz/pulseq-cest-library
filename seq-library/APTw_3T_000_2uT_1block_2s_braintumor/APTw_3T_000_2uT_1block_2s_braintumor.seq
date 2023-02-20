@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Moritz Zaiss
-# Created at: 10-Feb-2023 15:15:25
+# Created at: 20-Feb-2023 07:56:09
 
 [VERSION]
 major 1
@@ -14,16 +14,18 @@ revision 1
 [DEFINITIONS]
 B0 3 
 B1cwpe 1.99999975 
+B1pa 2 
 DCsat 1 
 FREQ 127.7292 
-M0_offset -1560 
+M0_offset -300 
 Trec 3.5 
 Trec_M0 3.5 
 Tsat 2 
 n_pulses 1 
 num_meas 34 
-offsets_ppm -1560 -4 -3.75 -3.5 -3.25 -3 -2.75 -2.5 -2.25 -2 -1.75 -1.5 -1.25 -1 -0.75 -0.5 -0.25 0 0.25 0.5 0.75 1 1.25 1.5 1.75 2 2.25 2.5 2.75 3 3.25 3.5 3.75 4 
+offsets_ppm -300 -4 -3.75 -3.5 -3.25 -3 -2.75 -2.5 -2.25 -2 -1.75 -1.5 -1.25 -1 -0.75 -0.5 -0.25 0 0.25 0.5 0.75 1 1.25 1.5 1.75 2 2.25 2.5 2.75 3 3.25 3.5 3.75 4 
 seq_id_string APTw_3T_000_2uT_1block_2s_braintumor 
+spoiling 1 
 td 0 
 tp 2 
 
@@ -171,7 +173,7 @@ tp 2
 # id amplitude mag_id phase_id delay freq phase
 # ..        Hz   ....     ....    us   Hz   rad
 [RF]
-1      85.1528 1 2 100 -199258 0
+1      85.1528 1 2 100 -38318.8 0
 2      85.1528 1 2 100 -510.917 0
 3      85.1528 1 2 100 -478.985 0
 4      85.1528 1 2 100 -447.052 0
