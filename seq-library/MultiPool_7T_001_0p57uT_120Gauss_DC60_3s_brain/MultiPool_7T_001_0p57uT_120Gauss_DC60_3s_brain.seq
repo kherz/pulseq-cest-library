@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 10-Feb-2023 15:34:31
+# Created at: 05-Mar-2023 08:52:14
 
 [VERSION]
 major 1
@@ -13,6 +13,7 @@ revision 1
 
 [DEFINITIONS]
 B0 7 
+B1pa 0.6 
 B1rms 0.570115695 
 DCsat 0.6 
 FREQ 298.0348 
@@ -24,6 +25,7 @@ n_pulses 120
 num_meas 56 
 offsets_ppm -300 -100 -50 -20 -12 -9 -7.25 -6.25 -5.5 -4.7 -4 -3.3 -2.7 -2 -1.7 -1.5 -1.1 -0.9 -0.6 -0.4 0 0.4 0.6 0.95 1.1 1.25 1.4 1.55 1.7 1.85 2 2.15 2.3 2.45 2.6 2.75 2.9 3.05 3.2 3.35 3.5 3.65 3.8 3.95 4.1 4.25 4.4 4.7 5.25 6.25 8 12 20 50 100 -300 
 seq_id_string MultiPool_7T_001_0p57uT_120Gauss_DC60_3s_brain 
+spoiling 1 
 td 0.01 
 tp 0.015 
 

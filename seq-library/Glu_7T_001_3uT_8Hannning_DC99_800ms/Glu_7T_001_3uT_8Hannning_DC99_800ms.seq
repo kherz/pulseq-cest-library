@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 28-Sep-2021 14:37:38
+# Created at: 05-Mar-2023 08:37:15
 
 [VERSION]
 major 1
@@ -15,12 +15,15 @@ revision 1
 B0 7 
 B1rms 3.01656831 
 DCsat 0.998 
+FREQ 298.0348 
+M0_offset -100 
 Trec 15 
 Tsat 0.7998 
 n_pulses 8 
 num_meas 30 
 offsets_ppm -100 -20 -4.2 -4 -3.8 -3.6 -3.4 -3.2 -3 -2.8 -2.6 -2.4 -2.2 -2 -1.8 1.8 2 2.2 2.4 2.6 2.8 3 3.2 3.4 3.6 3.8 4 4.2 20 100 
 seq_id_string Glu_7T_001_3uT_8Hannning_DC99_800ms 
+spoiling 1 
 td 0.0002 
 tp 0.0998 
 
@@ -817,7 +820,7 @@ tp 0.0998
 # id amplitude rise flat fall delay
 # ..      Hz/m   us   us   us    us
 [TRAP]
- 1  1.36243e+06 1000 4500 1000   0
+ 1  1.36244e+06 1000 4500 1000   0
 
 # Format of ADC events:
 # id num dwell delay freq phase

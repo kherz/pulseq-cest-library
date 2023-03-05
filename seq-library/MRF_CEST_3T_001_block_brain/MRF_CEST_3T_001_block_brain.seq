@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: unknown
-# Created at: 28-Sep-2021 14:39:15
+# Created at: 05-Mar-2023 08:38:59
 
 [VERSION]
 major 1
@@ -15,12 +15,14 @@ revision 1
 B0 3 
 B1pa 1.2 0.8 2 3 
 DCsat 0.952380952 
+FREQ 127.7292 
 Trec 2.5 
 Tsat 0.83 0.41 0.83 0.62 
 n_pulses 4 2 4 3 
 num_meas 4 
 offsets_ppm 4 3 3.5 10 
 seq_id_string MRF_CEST_3T_001_block_brain 
+spoiling 1 
 td 0.01 
 tp 0.2 
 
@@ -84,7 +86,7 @@ tp 0.2
 # id amplitude rise flat fall delay
 # ..      Hz/m   us   us   us    us
 [TRAP]
- 1  1.36243e+06 1000 4500 1000   0
+ 1  1.36244e+06 1000 4500 1000   0
 
 # Format of ADC events:
 # id num dwell delay freq phase

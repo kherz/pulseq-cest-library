@@ -104,4 +104,4 @@ warndlg(' This sequence will not run on all scanners with DC limits and can cras
 M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
 figure('Name','Z-asym');
 plotSimulationResults(M_z,defs.offsets_ppm,defs.M0_offset);
-
+writematrix(M_z', ['M_z_' seq_filename '.txt']);
