@@ -39,7 +39,7 @@ defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
 defs.seq_id_string = seqid           ; % unique seq id
 
-
+seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
 
 
 %% create scanner events

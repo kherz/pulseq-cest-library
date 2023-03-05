@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 05-Mar-2023 08:27:05
+# Created at: 05-Mar-2023 09:55:58
 
 [VERSION]
 major 1
@@ -13,8 +13,12 @@ revision 1
 
 [DEFINITIONS]
 B0 3 
+B1 3.7 
+B1cwpe 1.99999975 
 B1pa 4 
+B1peak 1.96 
 B1rms 3.99999167 
+DC 0.952380952 
 DCsat 1 
 FREQ 127.7292 
 M0_offset -300 
@@ -26,6 +30,7 @@ num_meas 11
 offsets_ppm -300 -299 0.6 0.9 1.2 1.5 -299 0.6 0.9 1.2 1.5 
 seq_id_string DGErho_3T_001_4uT_adiaSL_DC100_120ms_braintumor 
 spoiling 1 
+td 0.025 
 tp 0.12 
 
 # Format of blocks:
