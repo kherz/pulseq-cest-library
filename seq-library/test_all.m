@@ -22,7 +22,7 @@ for i = 1:numel(subfolders)
     run(folder_name);
     
     % call standard sim
-    if 0
+    if 0 % not neccesary in new m files, as it is done there already
     M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
     writematrix(M_z', ['M_z_' seq_filename '.txt']);
     end
