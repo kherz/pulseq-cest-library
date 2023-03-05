@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: unknown
-# Created at: 05-Mar-2023 09:55:15
+# Created at: 05-Mar-2023 12:27:09
 
 [VERSION]
 major 1
@@ -13,8 +13,6 @@ revision 1
 
 [DEFINITIONS]
 B0 B0 
-B1 B1 
-B1cwpe B1cwpe 
 B1pa B1pa 
 B1rms B1rms 
 DCsat DCsat 

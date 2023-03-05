@@ -36,6 +36,7 @@ defs.n_pulses      = [19]       ; % number of pulses
 defs.tp            = 100e-3          ; % pulse duration [s]
 defs.td            = 5e-3           ; % interpulse delay [s]
 defs.Trec          = 3.5             ; % approx [s]
+defs.Trec_M0       = 3.5             ; % approx [s]
 defs.M0_offset     = -300           ; % m0 offset [ppm]
 defs.DCsat         = defs.tp/(defs.tp+defs.td); % duty cycle
 defs.offsets_ppm   = [defs.M0_offset -4:0.1:4]; % offset vector [ppm]

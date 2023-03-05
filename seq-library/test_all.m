@@ -17,8 +17,9 @@ for i = 1:numel(subfolders)
     % Change to the subfolder directory
     folder_path = fullfile(main_dir, folder_name);
     cd(folder_path);
-    
+    clearvars -except folder_name main_dir subfolders
     % Run the .m file in the subfolder
+    disp(['run ' folder_name]);
     run(folder_name);
     
     % call standard sim

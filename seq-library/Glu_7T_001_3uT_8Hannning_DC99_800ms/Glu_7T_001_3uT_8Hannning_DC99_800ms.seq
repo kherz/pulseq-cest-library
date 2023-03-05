@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 05-Mar-2023 09:56:15
+# Created at: 05-Mar-2023 12:28:12
 
 [VERSION]
 major 1
@@ -13,17 +13,11 @@ revision 1
 
 [DEFINITIONS]
 B0 7 
-B1 3.7 
-B1cwpe 1.99999975 
-B1pa 4 
-B1peak 1.96 
 B1rms 3.01656831 
-DC 0.952380952 
 DCsat 0.998 
 FREQ 298.0348 
 M0_offset -100 
 Trec 15 
-Trec_M0 12 
 Tsat 0.7998 
 n_pulses 8 
 num_meas 30 

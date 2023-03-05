@@ -15,4 +15,7 @@ solves issues
 - renamed  seq_defs to defs to make files shorter
 - simplified all files 
 - added test_all 
+- M_z_simulation txt files were generated with pulseq-CEST version: https://github.com/kherz/pulseq-cest/commit/a80f833f5a7521e4197f8487fef073a6286cbc1b
+
+
 
