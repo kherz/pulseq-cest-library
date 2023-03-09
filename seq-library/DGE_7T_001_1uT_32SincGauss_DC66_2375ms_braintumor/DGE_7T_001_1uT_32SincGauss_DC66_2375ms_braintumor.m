@@ -40,7 +40,7 @@ defs.FREQ		   = 298.0348 ;        % Approximately 7 T
 defs.B0            = defs.FREQ/(gamma_hz);  % Calculate B0    
 defs.seq_id_string = seqid           ; % unique seq id
 
-defs.B1peak      = 1.96;  % peak b1 of saturation pulse 
+defs.B1pa      = 1.96;  % peak b1 of saturation pulse 
 defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 
 seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
@@ -54,7 +54,7 @@ fa_sat        = gamma_rad*defs.tp; % dummy flip angle
 
 %satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', t_p,'system',lims,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
 satPulse      = mr.makeSincPulse(fa_sat, 'Duration', defs.tp, 'system', seq.sys,'timeBwProduct', 2,'apodization', 0.15); % philips-like sinc
-satPulse.signal = (satPulse.signal./max(satPulse.signal)).*defs.B1peak*gamma_hz; 
+satPulse.signal = (satPulse.signal./max(satPulse.signal)).*defs.B1pa*gamma_hz; 
 
 
 [B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,defs.tp,defs.td,1,gamma_hz);
