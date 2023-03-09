@@ -53,8 +53,8 @@ fa_sat        = defs.B1pa*gamma_rad*defs.tp; % flip angle of sat pulse
 %satPulse      = mr.makeSincPulse(fa_sat, 'Duration', tp, 'system', lims,'timeBwProduct', 2,'apodization', 0.15); % philips-like sinc
 satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', defs.tp, 'system', seq.sys); % block pusle cw
 
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,defs.tp,defs.td,1,gamma_hz);
-defs.B1cwpe = B1cwpe;
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,defs.tp,defs.td,1,gamma_hz);
+defs.B1rms = B1rms;
 
 
 %% loop through zspec offsets
