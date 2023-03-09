@@ -93,7 +93,7 @@ end
 %% write definitions
 def_fields = fieldnames(defs);
 for n_id = 1:numel(def_fields)
-    seq.setDefinition(def_fields{n_id},(def_fields{n_id}));
+    seq.setDefinition(def_fields{n_id}, defs.(def_fields{n_id}));
 end
 seq.write(seq_filename, author);
 
