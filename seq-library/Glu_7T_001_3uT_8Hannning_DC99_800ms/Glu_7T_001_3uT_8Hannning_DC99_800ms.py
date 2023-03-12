@@ -1,5 +1,5 @@
-# APTw_3T_000_2uT_1block_2s_braintumor
-# APTw protocol with one single cw (block) pulse. This sequence will not run on some real Systems! It serves as a reference for other schemes.
+# Glu_7T_001_3uT_8Hannning_DC99_800ms
+# Glutamate weighted protocol according to https://doi.org/10.1002/mrm.27362
 #
 # IMPORTANT INFO: if you get an AssertionError in the timing check, just comment out the corresponding assert statement:
 #       "assert abs(duration - block_duration) < eps"
