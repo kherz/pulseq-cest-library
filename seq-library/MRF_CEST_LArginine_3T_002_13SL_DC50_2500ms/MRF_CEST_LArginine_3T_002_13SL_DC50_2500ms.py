@@ -23,7 +23,7 @@ seqid = Path(__file__).stem + "_python"
 folder = Path(__file__).parent
 
 # general settings
-AUTHOR = "Patrick Schuenke"
+AUTHOR = 'Kai Herz & Patrick Schuenke'
 FLAG_PLOT_SEQUENCE = False  # plot preparation block?
 FLAG_CHECK_TIMING = False  # perform a timing check at the end of the sequence?
 FLAG_POST_PREP_SPOIL = True  # add spoiler after preparation block?
