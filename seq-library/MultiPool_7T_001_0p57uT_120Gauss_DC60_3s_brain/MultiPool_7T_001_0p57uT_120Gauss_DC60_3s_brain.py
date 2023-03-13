@@ -1,5 +1,6 @@
-# APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor
-# APTw protocol with Sinc-Gaussian pulses, 90% DC and tsat of 2 s
+# MultiPool_7T_001_0p57uT_120Gauss_DC60_3s_brain
+# Multi pool protocol for 7T according to
+# https://cest-sources.org/doku.php?id=standard_cest_protocols
 #
 # IMPORTANT INFO: if you get an AssertionError in the timing check, just comment out the corresponding assert statement:
 #       "assert abs(duration - block_duration) < eps"
