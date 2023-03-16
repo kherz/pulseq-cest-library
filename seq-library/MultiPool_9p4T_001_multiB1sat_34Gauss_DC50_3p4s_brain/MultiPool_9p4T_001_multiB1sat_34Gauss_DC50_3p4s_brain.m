@@ -49,19 +49,21 @@ seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
 %% loop through sequence
 gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 offsets_Hz = defs.offsets_ppm*defs.FREQ;
-
+B1rms = [];
 for currentB1sat = defs.B1pa % loop through B1sat's
 
     fa_sat        = currentB1sat*gamma_rad*defs.tp; % flip angle of sat pulse
     % create pulseq saturation pulse object
     satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', defs.tp,'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
-    [B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,defs.tp,defs.td,1,gamma_hz);
-    defs.B1rms = B1rms;
+    [B1rms_current,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,defs.tp,defs.td,1,gamma_hz);
+    B1rms(end+1) = B1rms_current; % collect power equivalents for putting them into seq_defs later
     
     % loop through offsets and set pulses and delays
     for currentOffset = offsets_Hz
         if currentOffset == defs.M0_offset*defs.FREQ
             seq.addBlock(mr.makeDelay(defs.Trec_M0));
+        else
+            seq.addBlock(mr.makeDelay(defs.Trec));
         end
         satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
         accumPhase=0;
@@ -83,6 +85,7 @@ for currentB1sat = defs.B1pa % loop through B1sat's
 end
 
 %% write definitions
+defs.B1rms = B1rms;
 def_fields = fieldnames(defs);
 for n_id = 1:numel(def_fields)
     seq.setDefinition(def_fields{n_id}, defs.(def_fields{n_id}));
