@@ -170,10 +170,10 @@ seq = pp.Sequence()
 # RUN
 # ===
 
-defs["b1rms"] = []
+defs["b1rms"] = np.zeros_like(defs["b1pa"])
 offsets_hz = defs["offsets_ppm"] * defs["freq"]  # convert from ppm to Hz
 
-for b1pa in defs["b1pa"]:
+for n, b1pa in enumerate(defs["b1pa"]):
     # RF pulses
     flip_angle_sat = b1pa * GAMMA_HZ * 2 * np.pi * defs["tp"]
     sat_pulse = pp.make_gauss_pulse(
@@ -181,7 +181,7 @@ for b1pa in defs["b1pa"]:
     )
 
     b1rms = calc_power_equivalent(rf_pulse=sat_pulse, tp=defs["tp"], td=defs["td"], gamma_hz=GAMMA_HZ)
-    defs["b1rms"].append(b1rms)
+    defs["b1rms"][n] = round(b1rms, 9)
 
     for m, offset in enumerate(offsets_hz):
         # print progress/offset
@@ -196,8 +196,7 @@ for b1pa in defs["b1pa"]:
                 seq.add_block(m0_delay)
         else:
             if defs["trec"] > 0:
-                # seq.add_block(trec_delay)
-                pass
+                seq.add_block(trec_delay)
 
         # set sat_pulse
         sat_pulse.freq_offset = offset
@@ -207,7 +206,7 @@ for b1pa in defs["b1pa"]:
             accum_phase = (accum_phase + offset * 2 * np.pi * np.sum(np.abs(sat_pulse.signal) > 0) * 1e-6) % (2 * np.pi)
             if n < defs["n_pulses"] - 1:
                 seq.add_block(td_delay)
-        
+
         if FLAG_POST_PREP_SPOIL:
             seq.add_block(gx_spoil, gy_spoil, gz_spoil)
         seq.add_block(pseudo_adc)
