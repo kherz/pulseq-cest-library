@@ -25,52 +25,42 @@ else
     [~, seqid] = fileparts(which(mfilename));
 end
 
-%% sequence definitions
-% everything in seq_defs gets written as definition in .seq-file
-seq_defs.n_pulses      = [19]       ; % number of pulses
-seq_defs.tp            = 100e-3          ; % pulse duration [s]
-seq_defs.td            = 5e-3           ; % interpulse delay [s]
-seq_defs.Trec          = 3.5             ; % approx [s]
-seq_defs.M0_offset     = -1560           ; % m0 offset [ppm]
-seq_defs.DCsat         = seq_defs.tp/(seq_defs.tp+seq_defs.td); % duty cycle
-seq_defs.offsets_ppm   = [seq_defs.M0_offset -4:0.1:4]; % offset vector [ppm]
-seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
-seq_defs.Tsat          = seq_defs.n_pulses.*(seq_defs.tp+ seq_defs.td)-seq_defs.td;
-seq_defs.B0            = 3               ; % B0 [T]
-seq_defs.seq_id_string = seqid           ; % unique seq id
-seq_defs.B1pa           = [2]   ;
-
-
-%% get info from struct
-m0_offset=seq_defs.M0_offset;
-offsets_ppm = seq_defs.offsets_ppm; % [ppm]
-Trec        = seq_defs.Trec;        % recovery time between scans [s]
-Trec_M0     = seq_defs.Trec;        % recovery time between scans [s]
-tp          = seq_defs.tp;          % sat pulse duration [s]
-td          = seq_defs.td;          % delay between pulses [s]
-n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
-B1          = seq_defs.B1pa;          % mean sat pulse b1 [uT]
-spoiling    = 1;                   % 0=no spoiling, 1=before readout, Gradient in x,y,z
-
-seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
-
 %% scanner limits
 % see pulseq doc for more ino
 seq = SequenceSBB(getScannerLimits());
+gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
+%% sequence definitions
+% everything in defs gets written as definition in .seq-file
+defs.n_pulses      = [19]       ; % number of pulses
+defs.tp            = 100e-3          ; % pulse duration [s]
+defs.td            = 5e-3           ; % interpulse delay [s]
+defs.Trec          = 3.5             ; % approx [s]
+defs.Trec_M0       = 3.5             ; % approx [s]
+defs.M0_offset     = -300           ; % m0 offset [ppm]
+defs.DCsat         = defs.tp/(defs.tp+defs.td); % duty cycle
+defs.offsets_ppm   = [defs.M0_offset -4:0.1:4]; % offset vector [ppm]
+defs.num_meas      = numel(defs.offsets_ppm)   ; % number of repetition
+defs.Tsat          = defs.n_pulses.*(defs.tp+ defs.td)-defs.td;
+defs.FREQ		   = 127.7292 ;         % Approximately 3 T
+defs.B0            = defs.FREQ/(gamma_hz);  % Calculate B0     
+defs.seq_id_string = seqid           ; % unique seq id
+defs.B1pa           = [2]   ;
+defs.spoiling    = 1;                   % 0=no spoiling, 1=before readout, Gradient in x,y,z
+
+seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat = B1*gyroRatio_rad*tp;  % saturation pulse flip angle
-satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pusle cw
-[B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
+fa_sat = defs.B1pa *gamma_rad*defs.tp;  % saturation pulse flip angle
+satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', defs.tp, 'system', seq.sys); % block pusle cw
+[B1rms,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,defs.tp,defs.td,1,gamma_hz);
 
-seq_defs.B1cwpe = B1cwpe;
+defs.B1rms = B1rms;
 
 
-DC=tp/(tp+td);%Duty cycle
+defs.DC=defs.tp/(defs.tp+defs.td);%Duty cycle
 
 % SL pulses are played out during the interpulse delay. We need to make
 % sure that they fit in the DC here
@@ -79,7 +69,7 @@ slPauseTime = 250e-6;
 
 
 additionalSLPrepTime = 2*slPrepPulseTime+2*slPauseTime;
-td = td - additionalSLPrepTime; % DC is between block bulses SL is in between
+td = defs.td - additionalSLPrepTime; % DC is between block bulses SL is in between
 if td < 100e-6
     error('DC too high for SL prepatration pulses!');
 end
@@ -96,32 +86,32 @@ minFa = 0.38; % this is the limit for prep pulses to be played out
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = defs.offsets_ppm*defs.FREQ;
 
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
-        if Trec_M0 > 0
-            seq.addBlock(mr.makeDelay(Trec_M0));
+    if currentOffset == defs.M0_offset*defs.FREQ
+        if defs.Trec_M0 > 0
+            seq.addBlock(mr.makeDelay(defs.Trec_M0));
         end
     else
-        if Trec > 0
-            seq.addBlock(mr.makeDelay(Trec)); % recovery time
+        if defs.Trec > 0
+            seq.addBlock(mr.makeDelay(defs.Trec)); % recovery time
         end
     end
     
-    fa_sat        = B1*gyroRatio_rad*tp; % flip angle of sat pulse
-    faSL = atan(gyroRatio_hz*B1/(currentOffset));   % thats the angle theta of the effective system
+    fa_sat        = defs.B1pa*gamma_rad*defs.tp; % flip angle of sat pulse
+    faSL = atan(gamma_hz*defs.B1pa/(currentOffset));   % thats the angle theta of the effective system
     preSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', -pi/2,'system',seq.sys);
-    satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp,'freqOffset', currentOffset, 'system', seq.sys);
-    accumPhase = currentOffset*360*tp*pi/180; % scanner needs the correct phase at the end of the sturation pulse
+    satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', defs.tp,'freqOffset', currentOffset, 'system', seq.sys);
+    accumPhase = currentOffset*360*defs.tp*pi/180; % scanner needs the correct phase at the end of the sturation pulse
     postSL = mr.makeBlockPulse(faSL,'Duration',slPrepPulseTime, 'Phase', accumPhase+pi/2,'system',seq.sys);
         
-    for np = 1:n_pulses
+    for np = 1:defs.n_pulses
               
         if fa_sat == 0 % pulses with amplitude/FA 0 have to be replaced by delay
-            seq.addBlock(mr.makeDelay(tp));
+            seq.addBlock(mr.makeDelay(defs.tp));
             seq.addBlock(mr.makeDelay(additionalSLPrepTime));
         else
             if abs(faSL) > minFa/180*pi
@@ -139,13 +129,13 @@ for currentOffset = offsets_Hz
             end
         end
         
-        if np < n_pulses % delay between pulses
+        if np < defs.n_pulses % delay between pulses
             
             seq.addBlock(mr.makeDelay(td)); % add delay
             
         end
     end
-    if spoiling % spoiling before readout
+    if defs.spoiling % spoiling before readout
         seq.addSpoilerGradients()
     end
     seq.addPseudoADCBlock(); % readout trigger event
@@ -154,9 +144,9 @@ end
 
 
 %% write definitions
-def_fields = fieldnames(seq_defs);
+def_fields = fieldnames(defs);
 for n_id = 1:numel(def_fields)
-    seq.setDefinition(def_fields{n_id}, seq_defs.(def_fields{n_id}));
+    seq.setDefinition(def_fields{n_id}, defs.(def_fields{n_id}));
 end
 seq.write(seq_filename, author);
 
@@ -167,4 +157,5 @@ saveSaturationPhasePlot(seq_filename);
 M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
 
 %% plot
-plotSimulationResults(M_z,offsets_ppm, seq_defs.M0_offset);
+plotSimulationResults(M_z,defs.offsets_ppm, defs.M0_offset);
+writematrix(M_z', ['M_z_' seq_filename '.txt']);

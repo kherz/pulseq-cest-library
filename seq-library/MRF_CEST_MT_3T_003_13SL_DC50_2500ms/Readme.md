@@ -2,7 +2,7 @@
 
 ### Description
 CEST Fingerprinting Protocol for MT
-* B<sub>1,cwpe</sub> = 0 - 4 µT
+* B<sub>1,rms</sub> = 0 - 4 µT
 * T<sub>sat</sub> = 2.5 s
 * DC<sub>sat</sub> = 50 % 
 

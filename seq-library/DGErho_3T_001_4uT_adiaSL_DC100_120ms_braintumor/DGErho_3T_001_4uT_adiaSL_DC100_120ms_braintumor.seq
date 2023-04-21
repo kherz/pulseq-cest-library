@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Kai Herz
-# Created at: 06-Dec-2021 08:12:38
+# Created at: 05-Mar-2023 12:27:54
 
 [VERSION]
 major 1
@@ -13,8 +13,10 @@ revision 1
 
 [DEFINITIONS]
 B0 3 
-B1cwpe 4 
+B1pa 4 
+B1rms 3.99999167 
 DCsat 1 
+FREQ 127.7292 
 M0_offset -300 
 Trec 4 
 Trec_M0 12 
@@ -23,6 +25,7 @@ n_pulses 1
 num_meas 11 
 offsets_ppm -300 -299 0.6 0.9 1.2 1.5 -299 0.6 0.9 1.2 1.5 
 seq_id_string DGErho_3T_001_4uT_adiaSL_DC100_120ms_braintumor 
+spoiling 1 
 tp 0.12 
 
 # Format of blocks:
@@ -122,7 +125,7 @@ tp 0.12
 # id amplitude rise flat fall delay
 # ..      Hz/m   us   us   us    us
 [TRAP]
- 1  1.36243e+06 1000 4500 1000   0
+ 1  1.36244e+06 1000 4500 1000   0
 
 # Format of ADC events:
 # id num dwell delay freq phase

@@ -15,73 +15,66 @@ else
     [~, seqid] = fileparts(which(mfilename));
 end
 
-%% sequence definitions
-% everything in seq_defs gets written as definition in .seq-file
-seq_defs.n_pulses      = 1              ; % number of pulses
-seq_defs.B1cwpe        = 3.7            ; % b1 for 1 block is cqpe
-seq_defs.tp            = 5e-3           ; % pulse duration [s]
-seq_defs.Trec          = 3              ; % recovery time [s]
-seq_defs.Trec_M0       = 12             ; % recovery time before M0 [s]
-seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
-seq_defs.offsets_ppm   = [seq_defs.M0_offset linspace(-2, 2, 31)]; % offset vector [ppm]
-seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
-seq_defs.Tsat          = seq_defs.tp     ;  % saturation time [s]
-seq_defs.B0            = 3               ; % B0 [T]
-seq_defs.seq_id_string = seqid           ; % unique seq id
-
-
-%% get info from struct
-offsets_ppm = seq_defs.offsets_ppm; % [ppm]
-Trec        = seq_defs.Trec;        % recovery time between scans [s]
-Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
-tp          = seq_defs.tp;          % sat pulse duration [s]
-n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B0          = seq_defs.B0;          % B0 [T]
-B1          = seq_defs.B1cwpe;      % B1 [uT]
-spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
-seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
-
 %% scanner limits
 % see pulseq doc for more ino
 seq = SequenceSBB(getScannerLimits());
+gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
+%% sequence definitions
+% everything in defs gets written as definition in .seq-file
+defs.n_pulses      = 1              ; % number of pulses
+defs.B1rms        = 3.7            ; % b1 for 1 block is cqpe
+defs.tp            = 5e-3           ; % pulse duration [s]
+defs.Trec          = 3              ; % recovery time [s]
+defs.Trec_M0       = 12             ; % recovery time before M0 [s]
+defs.M0_offset     = -300           ; % m0 offset [ppm]
+defs.offsets_ppm   = [defs.M0_offset linspace(-2, 2, 31)]; % offset vector [ppm]
+defs.num_meas      = numel(defs.offsets_ppm)   ; % number of repetition
+defs.Tsat          = defs.tp     ;  % saturation time [s]
+defs.FREQ		   = 127.7292;          % Approximately 3 T 
+defs.B0            = defs.FREQ/(gamma_hz);  % Calculate B0    
+defs.seq_id_string = seqid           ; % unique seq id
+defs.B1          = defs.B1rms;      % B1 [uT]
+defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
+seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
-fa_sat        = B1*gyroRatio_rad*tp; % flip angle of sat pulse
+
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
+fa_sat        = defs.B1*gamma_rad*defs.tp; % flip angle of sat pulse
 
 % create pulseq saturation pulse object
-satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pulse
+satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', defs.tp, 'system', seq.sys); % block pulse
 
 
 %% loop through zspec offsets
-offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+offsets_Hz = defs.offsets_ppm*defs.FREQ;
 
 % loop through offsets and set pulses and delays
 for currentOffset = offsets_Hz
-    if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
-        if Trec_M0 > 0
-            seq.addBlock(mr.makeDelay(Trec_M0));
+    if currentOffset == defs.M0_offset*defs.FREQ
+        if defs.Trec_M0 > 0
+            seq.addBlock(mr.makeDelay(defs.Trec_M0));
         end
     else
-        if Trec > 0
-            seq.addBlock(mr.makeDelay(Trec)); % recovery time
+        if defs.Trec > 0
+            seq.addBlock(mr.makeDelay(defs.Trec)); % recovery time
         end
     end
     % add single pulse
     satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
     seq.addBlock(satPulse) % add sat pulse
-    if spoiling % spoiling before readout
+    if defs.spoiling % spoiling before readout
         seq.addSpoilerGradients();
     end
     seq.addPseudoADCBlock(); % readout trigger event
 end
 
 %% write definitions
-def_fields = fieldnames(seq_defs);
+def_fields = fieldnames(defs);
 for n_id = 1:numel(def_fields)
-    seq.setDefinition(def_fields{n_id}, seq_defs.(def_fields{n_id}));
+    seq.setDefinition(def_fields{n_id}, defs.(def_fields{n_id}));
 end
 seq.write(seq_filename, author);
 
@@ -92,4 +85,5 @@ saveSaturationPhasePlot(seq_filename);
 M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
 
 %% plot
-plotSimulationResults(M_z,offsets_ppm, seq_defs.M0_offset);
+plotSimulationResults(M_z,defs.offsets_ppm, defs.M0_offset);
+writematrix(M_z', ['M_z_' seq_filename '.txt']);

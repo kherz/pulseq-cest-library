@@ -14,39 +14,34 @@ else
     [~, seqid] = fileparts(which(mfilename));
 end
 
-%% sequence definitions
-% everything in seq_defs gets written as definition in .seq-file
-seq_defs.n_pulses      = 3              ; % number of pulses
-seq_defs.tp            = 8e-3         ; % pulse duration [s]
-seq_defs.Trec          = 1              ; % recovery time [s]
-seq_defs.TI            = [10 6 5 4 3 2.5 2 1.5 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1];
-seq_defs.offsets_ppm   = zeros(1, numel(seq_defs.TI));
-seq_defs.num_meas      = numel(seq_defs.offsets_ppm); % number of repetition
-seq_defs.seq_id_string = seqid           ; % unique seq id
-seq_defs.B0            = -1              ; % dummy b0
-
-%% get info from struct
-TI          = seq_defs.TI;          % "inversion" times [s]
-Trec        = seq_defs.Trec;        % recovery time between scans [s]
-tp          = seq_defs.tp;          % sat pulse duration [s]
-n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
-B1pa        = 20;  % mean sat pulse b1 [uT]
-spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
-
-seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
-
 %% scanner limits
 % see pulseq doc for more ino
 seq = SequenceSBB(getScannerLimits());
+gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+
+%% sequence definitions
+% everything in defs gets written as definition in .seq-file
+defs.n_pulses      = 3              ; % number of pulses
+defs.tp            = 8e-3         ; % pulse duration [s]
+defs.Trec          = 1              ; % recovery time [s]
+defs.TI            = [10 6 5 4 3 2.5 2 1.5 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1];
+defs.offsets_ppm   = zeros(1, numel(defs.TI));
+defs.num_meas      = numel(defs.offsets_ppm); % number of repetition
+defs.seq_id_string = seqid           ; % unique seq id
+defs.B0            = -1              ; % dummy b0
+defs.B1pa        = 20;  % mean sat pulse b1 [uT]
+defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
+
+seq_filename = strcat(defs.seq_id_string,'.seq'); % filename
+
 
 %% create scanner events
 % satpulse
-gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
-gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
+gamma_rad = gamma_hz*2*pi;        % [rad/uT]
 
 % create pulseq object
 hs_pulse = makeHSHalfPassagePulse(20,seq.sys);
-seq_defs.B1cwpe = B1pa;
+defs.B1rms = defs.B1pa;
 
 % spoilers
 rampTime = 1e-3;
@@ -73,12 +68,12 @@ gzSpoil3=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuratio
 % init sequence
 hs_pulse.freqOffset = 0;
 
-for t_prep = TI
-    if Trec > 0
-        seq.addBlock(mr.makeDelay(Trec)); % recovery time
+for t_prep = defs.TI
+    if defs.Trec > 0
+        seq.addBlock(mr.makeDelay(defs.Trec)); % recovery time
     end
         
-    for np = 1:n_pulses
+    for np = 1:defs.n_pulses
         seq.addBlock(hs_pulse);
         if mod(np-1,3) == 0
             seq.addBlock(gxSpoil1,gySpoil2,gzSpoil3);
@@ -97,9 +92,9 @@ for t_prep = TI
 end
 
 %% write definitions
-def_fields = fieldnames(seq_defs);
+def_fields = fieldnames(defs);
 for n_id = 1:numel(def_fields)
-    seq.setDefinition(def_fields{n_id}, seq_defs.(def_fields{n_id}));
+    seq.setDefinition(def_fields{n_id}, defs.(def_fields{n_id}));
 end
 seq.write(seq_filename, author);
 
@@ -108,8 +103,9 @@ saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
 M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
-figure, plot(seq_defs.TI,M_z);
+figure, plot(defs.TI,M_z);
 xlabel('TI [s]');
 ylabel('Z [a.u.]')
 
 
+writematrix(M_z', ['M_z_' seq_filename '.txt']);

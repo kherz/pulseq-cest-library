@@ -1,27 +1,30 @@
 # Pulseq sequence file
-# Created by PyPulseq
+# Created by MATLAB mr toolbox
 
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
-# Created by: Patrick Schuenke
-# Created at: 21-Jan-2021 08:52:54
+# Created by: Kai Herz
+# Created at: 05-Mar-2023 12:44:13
 
 [VERSION]
 major 1
 minor 3
-revision 0
+revision 1
 
 [DEFINITIONS]
 B0 3 
-B1cwpe 3.7 
+B1 3.7 
+B1rms 3.7 
+FREQ 127.7292 
 M0_offset -300 
 Trec 3 
 Trec_M0 12 
 Tsat 0.005 
 n_pulses 1 
 num_meas 32 
-offsets_ppm -300 -2 -1.86667 -1.73333 -1.6 -1.46667 -1.33333 -1.2 -1.06667 -0.933333 -0.8 -0.666667 -0.533333 -0.4 -0.266667 -0.133333 0 0.133333 0.266667 0.4 0.533333 0.666667 0.8 0.933333 1.06667 1.2 1.33333 1.46667 1.6 1.73333 1.86667 2 
+offsets_ppm -300 -2 -1.86666667 -1.73333333 -1.6 -1.46666667 -1.33333333 -1.2 -1.06666667 -0.933333333 -0.8 -0.666666667 -0.533333333 -0.4 -0.266666667 -0.133333333 0 0.133333333 0.266666667 0.4 0.533333333 0.666666667 0.8 0.933333333 1.06666667 1.2 1.33333333 1.46666667 1.6 1.73333333 1.86666667 2 
 seq_id_string WASABI_3T_001_3p7uT_1block_5ms 
+spoiling 1 
 tp 0.005 
 
 # Format of blocks:
@@ -197,7 +200,7 @@ tp 0.005
 # id amplitude rise flat fall delay
 # ..      Hz/m   us   us   us    us
 [TRAP]
- 1  1.36243e+06 1000 4500 1000   0
+ 1  1.36244e+06 1000 4500 1000   0
 
 # Format of ADC events:
 # id num dwell delay freq phase

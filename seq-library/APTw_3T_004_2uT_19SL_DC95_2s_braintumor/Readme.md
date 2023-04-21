@@ -2,7 +2,7 @@
 
 ### Description
 APTw brain tumor protocol for 3T
-* B<sub>1,cwpe</sub> = B1pure = 2 µT
+* B<sub>1,rms</sub> = B1pure = 2 µT
 * T<sub>sat</sub> = 1.990 s
 * DC<sub>sat</sub> = 95 % 
 
