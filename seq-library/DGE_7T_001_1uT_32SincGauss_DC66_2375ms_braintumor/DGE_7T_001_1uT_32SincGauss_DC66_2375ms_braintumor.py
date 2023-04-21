@@ -31,7 +31,7 @@ FLAG_POST_PREP_SPOIL = True  # add spoiler after preparation block?
 
 # sequence definitions
 defs: dict = {}
-defs["b1pa"] = 1.96  # B1 peak amplitude [µT] (b1rms calculated below)
+defs["b1peak"] = 1.96  # B1 peak amplitude [µT]
 defs["b0"] = 7  # B0 [T]
 defs["n_pulses"] = 32  # number of pulses  #
 defs["tp"] = 50e-3  # pulse duration [s]
@@ -77,11 +77,11 @@ gx_spoil, gy_spoil, gz_spoil = [
 ]
 
 # RF pulses
-flip_angle_sat = defs["b1pa"] * GAMMA_HZ * 2 * np.pi * defs["tp"]
+flip_angle_sat = defs["b1peak"] * GAMMA_HZ * 2 * np.pi * defs["tp"]
 sat_pulse = pp.make_sinc_pulse(
     flip_angle=flip_angle_sat, duration=defs["tp"], system=sys, time_bw_product=2, apodization=0.15
 )
-sat_pulse.signal = (sat_pulse.signal / np.max(sat_pulse.signal)) * defs["b1pa"] * GAMMA_HZ
+sat_pulse.signal = (sat_pulse.signal / np.max(sat_pulse.signal)) * defs["b1peak"] * GAMMA_HZ
 
 defs["b1rms"] = calc_power_equivalent(rf_pulse=sat_pulse, tp=defs["tp"], td=defs["td"], gamma_hz=GAMMA_HZ)
 
