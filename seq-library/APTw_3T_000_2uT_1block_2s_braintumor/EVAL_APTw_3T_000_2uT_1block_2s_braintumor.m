@@ -18,6 +18,7 @@ M_z = load('M_z_APTw_3T_000_2uT_1block_2s_braintumor.seq.txt');
 collection = dicomCollection('W:\radiologie\data\MR-Physik\Mitarbeiter\Schuere\Miniskript\dcm\PULSEQ_HYBRID_GRE_2_2_5_APTW_001_RR_0015');
 V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
 subplot(1,2,1), imagesc(V(:,:,6,1));  subplot(1,2,2), plot(squeeze(V(50,50,1,:)));
+sz=size(V);
 maskInd=1:sz(1)*sz(2)*sz(3);
 V_M_z=permute(V,[4 1 2 3]); M_z=V_M_z(:,maskInd); M_z=double(M_z); figure, plot(M_z(:,5050:5060));
 
@@ -32,9 +33,12 @@ Z_corr=zeros(size(Z,1),size(Z,2)); dB0_stack=zeros(1,size(Z,2));
 for ii=1:size(Z,2)
     try
         pp = csaps(w, Z(:,ii), 0.95);
-        [dB0, y_at_min] = fminbnd(@(x) ppval(pp, x), -1, 1); % Find the minimum of the spline
+        ppval(pp, x)
+        options = optimset('TolX',1,'MaxIter',50,'MaxFunEvals',50);
+        [dB0, y_at_min] = fminbnd(@(x) ppval(pp, x), -1, 1, options); % Find the minimum of the spline
         dB0_stack(1,ii)=dB0;
         Z_corr(:,ii)= ppval(pp, w+dB0); 
+        disp(ii/size(Z,2));
     end
 end
 
@@ -52,5 +56,7 @@ if size(Z,2)>0
     V_Z_corr(:,maskInd)=Z_corr; 
 end
 
-figure, imagesc(squeeze(V_Z_corr(10,:,:,2)),[-0.05 0.05]);
+figure, imagesc(squeeze(V_Z_corr(10,:,:,2)));
+figure, imagesc(squeeze(V_MTRasym(10,:,:,2)),[-0.05 0.05]);
+
 % colormap(gca,RAINBOW)
