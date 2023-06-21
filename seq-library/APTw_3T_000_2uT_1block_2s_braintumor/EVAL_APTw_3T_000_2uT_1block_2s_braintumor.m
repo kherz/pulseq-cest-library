@@ -30,19 +30,22 @@ Z=M_z(2:end,:)./M0;
 w=defs.offsets_ppm(2:end);
 Z_corr=zeros(size(Z,1),size(Z,2)); dB0_stack=zeros(1,size(Z,2));
 % Perform smoothing spline interpolation
+tic
 for ii=1:size(Z,2)
     try
-        pp = csaps(w, Z(:,ii), 0.95);
-        ppval(pp, x)
-        options = optimset('TolX',1,'MaxIter',50,'MaxFunEvals',50);
-        [dB0, y_at_min] = fminbnd(@(x) ppval(pp, x), -1, 1, options); % Find the minimum of the spline
-        dB0_stack(1,ii)=dB0;
-        Z_corr(:,ii)= ppval(pp, w+dB0); 
-        disp(ii/size(Z,2));
+        if  isfinite(Z(:,ii))
+            pp = csaps(w, Z(:,ii), 0.95);
+            w_fine=-1:0.005:1;
+            Z_fine = ppval(pp, w_fine); 
+            [~, MINidx] = min(Z_fine);
+            dB0=w_fine(MINidx);
+            dB0_stack(1,ii)=dB0;
+            Z_corr(:,ii)= ppval(pp, w+dB0); 
+    %         disp(ii/size(Z,2));
+        end
     end
 end
-
-figure, mesh(Z_corr)
+toc
 
 figure, plot(w,Z(:,8000),w,Z_corr(:,8000));
 % [Z_corrExt_denoised,used_components] = pcca_3D(Z_corrExt,P, (1:numel(P.SEQ.w)), 0, Segment); %principle component analysis (for denoising)
@@ -56,7 +59,8 @@ if size(Z,2)>0
     V_Z_corr(:,maskInd)=Z_corr; 
 end
 
-figure, imagesc(squeeze(V_Z_corr(10,:,:,2)));
-figure, imagesc(squeeze(V_MTRasym(10,:,:,2)),[-0.05 0.05]);
+figure, imagesc(squeeze(V_Z_corr(31,:,:,6)));
+figure, imagesc(squeeze(V_MTRasym(31,:,:,6)),[-0.05 0.05]);
+w(31)
 
 % colormap(gca,RAINBOW)
