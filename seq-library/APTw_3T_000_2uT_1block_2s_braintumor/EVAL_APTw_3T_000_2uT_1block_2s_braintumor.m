@@ -4,116 +4,104 @@
 %
 % Moritz Zaiss 2023
 
-
-%% PULSEQ-CEST SIMULATION
-%=================================================================================================================================
-
 %% 1)  read in associated seq file
-cd('W:\radiologie\data\MR-Physik\Mitarbeiter\Schuere\pulseq-cest-library\seq-library\APTw_3T_000_2uT_1block_2s_braintumor')
+%cd('pulseq-cest-library\seq-library\APTw_3T_000_2uT_1block_2s_braintumor')
 seq = SequenceSBB(getScannerLimits());
 gamma_hz  = seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 seq.read('APTw_3T_000_2uT_1block_2s_braintumor.seq');
 defs.offsets_ppm   = seq.definitions('offsets_ppm');
 Nmeas=numel(defs.offsets_ppm);
 
-
-%% 2)  read in data from simulation and Calc Zspec and MTRasym
+%% 2a)  read in data from simulation
 M_z = load(['M_z_APTw_3T_000_2uT_1block_2s_braintumor.seq.txt']);
-M_zref = M_z(end:-1:1);
-MTRasym = M_zref(1:end-1)-M_z(2:end);
 
+%% 2b)  re-simulate
+M_z = simulate_pulseqcest('APTw_3T_000_2uT_1block_2s_braintumor.seq','../../sim-library/WM_3T_default_7pool_bmsim.yaml');
+M_z=M_z';
 
-%% 3)  Plots and further graphics
-
-% Zspec and MTrasym 
-figure;
-subplot(1,2,1)
-plot(defs.offsets_ppm(2:end),M_z(2:end),'r.-')
-subplot(1,2,2)
-plot(defs.offsets_ppm(2:end),MTRasym,'b.-')
-
-% Parametric Plot of MTRasym at 3.5 ppm
-figure, imagesc(squeeze(V_MTRasym(31,:,:,6)),[-0.05 0.05]);
-
-
-%=================================================================================================================================
-
-
-
-%% PULSEQ-CEST MEASURMENT
-%=================================================================================================================================
-%% 1)  read in data from measurement (dicom)
-opath=uigetdir('','Go to DICOM Directory');cd(opath)
+%% 2c)  read data from measurement (dicom)
+dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
 
 % Question if seq File is still the same
-question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s')
+question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
 if strcmpi(question, 'y')
+    % use above definitions from sction 1)
 else
-[seqfile vpath]=uigetfile('','.seq');cd(vpath)
-seq.read(seqfile);
-defs.offsets_ppm   = seq.definitions('offsets_ppm');
-Nmeas=numel(defs.offsets_ppm);
+    [seqfile, seqpath]=uigetfile('','*.seq');
+    seq.read(fullfile(seqpath,seqfile));
+    defs.offsets_ppm   = seq.definitions('offsets_ppm');
+    Nmeas=numel(defs.offsets_ppm);
 end
 
-
-cd(opath)
-collection = dicomCollection(opath);
+cd(dcmpath)
+collection = dicomCollection(dcmpath);
 V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
 %figure;subplot(1,2,1), imagesc(V(:,:,6,1));  subplot(1,2,2), plot(squeeze(V(50,50,1,:)));
-
-%% 2)  Vectorization Forwards
+% Vectorization Forwards
 sz=size(V);
 maskInd=1:sz(1)*sz(2)*sz(3);
-V_M_z=permute(V,[4 1 2 3]); M_z=V_M_z(:,maskInd); M_z=double(M_z); 
-%figure, plot(M_z(:,5050:5060));
-%figure, montage1t(squeeze(V_M_z(4,:,:,:)))
+V_M_z=double(permute(V,[4 1 2 3]));
 
-%% 3)  B0 Correction
+M_z=V_M_z(:,maskInd);
+
+
+%% 3) Evaluation
 M0=M_z(1,:);
-Z=M_z(2:end,:)./M0; 
+M0(M0<0.2*mean(M0,2))=0;  % filter pixels that gave less than 10% of the mean intensity
+Z=M_z(2:end,:)./M0; % Normalization
 w=defs.offsets_ppm(2:end);
 Z_corr=zeros(size(Z,1),size(Z,2)); dB0_stack=zeros(1,size(Z,2));
 % Perform smoothing spline interpolation
 tic
-for ii=1:size(Z,2)
-    try
+for ii=1:size(Z,2)    % B0 Correction
         if  isfinite(Z(:,ii))
             pp = csaps(w, Z(:,ii), 0.95);
             w_fine=-1:0.005:1;
-            Z_fine = ppval(pp, w_fine); 
+            Z_fine = ppval(pp, w_fine);
             [~, MINidx] = min(Z_fine);
             dB0=w_fine(MINidx);
             dB0_stack(1,ii)=dB0;
-            Z_corr(:,ii)= ppval(pp, w+dB0); 
-    %         disp(ii/size(Z,2));
+            Z_corr(:,ii)= ppval(pp, w+dB0);
+            %         disp(ii/size(Z,2));
         end
-    end
 end
 toc
 
-%% 4)  Calc Zspec and MTRasym
+% Denoising here
+% [st, rs] = system('git clone https://github.com/cest-sources/CEST-AdaptiveDenoising --depth 1');
+% [Data_denoised,k] =
+% AdaptiveDenoising(Data,Segment,CriterionOrNumber,verbosity);
 % [Z_corrExt_denoised,used_components] = pcca_3D(Z_corrExt,P, (1:numel(P.SEQ.w)), 0, Segment); %principle component analysis (for denoising)
+
+
+%  Calc Zspec and MTRasym
 Zref = Z_corr(end:-1:1,:);
 MTRasym = Zref-Z_corr;
 
 %Vectorization Backwards
-if size(Z,2)>0
-    V_MTRasym=double(V_M_z(2:end,:,:,:))*0;   
+if size(Z,2)>1
+    V_MTRasym=double(V_M_z(2:end,:,:,:))*0;
     V_MTRasym(:,maskInd)=MTRasym;
-    V_Z_corr=double(V_M_z(2:end,:,:,:))*0; 
-    V_Z_corr(:,maskInd)=Z_corr; 
+    V_Z_corr=double(V_M_z(2:end,:,:,:))*0;
+    V_Z_corr(:,maskInd)=Z_corr;
 end
 
 
-%% 5)  Plots and further graphics
-sliceofinterest=6;                   % Pick slice for Evaluation
-
+%% 4)  Plots and further graphics
 figure;
-subplot(1,3,1);imshow(squeeze(V_Z_corr(sliceofinterest,:,:,1)),[0.5 1]);[aa bb]=ginput(1);aa=round(aa);bb=round(bb);hold on;plot(aa,bb,'r+');
-subplot(1,3,2);plot(w,V_Z_corr(:,bb,aa,sliceofinterest),'r.-');
-subplot(1,3,3);plot(w,V_MTRasym(:,bb,aa,sliceofinterest),'b.-')
+subplot(1,2,1); plot(w,mean(Z_corr,2),'r.-'); title('Mean Z-spectrum'); set(gca,'Xdir','reverse');
+subplot(1,2,2); plot(w,mean(MTRasym,2),'b.-'); title('Mean MTRasym-spectrum'); xlim([0 Inf]);set(gca,'Xdir','reverse');
 
-offsetofinterest=find(defs.offsets_ppm == 3.5);
-figure, imagesc(squeeze(V_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]);
-%colormap(gca,RAINBOW)
-%=================================================================================================================================
+if size(Z,2)>1
+    figure;
+    sliceofinterest=6;   % Pick slice for Evaluation
+    offsetofinterest=32; % Pick offset for Evaluation
+    w(offsetofinterest)
+    
+    subplot(1,2,1);
+    imagesc(squeeze(V_Z_corr(offsetofinterest,:,:,sliceofinterest)),[0.5 1]);  title(sprintf('Z(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+    subplot(1,2,2);
+    imagesc(squeeze(V_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+    %colormap(gca,RAINBOW)
+end
+
