@@ -22,7 +22,7 @@ M_z=M_z';
 %% 2c)  read data from measurement (dicom)
 dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
 
-% Question if seq File is still the same
+% Question if seq file is still the same
 question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
 if strcmpi(question, 'y')
     % use above definitions from sction 1)
@@ -36,12 +36,10 @@ end
 cd(dcmpath)
 collection = dicomCollection(dcmpath);
 V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
-%figure;subplot(1,2,1), imagesc(V(:,:,6,1));  subplot(1,2,2), plot(squeeze(V(50,50,1,:)));
-% Vectorization Forwards
-sz=size(V);
-maskInd=1:sz(1)*sz(2)*sz(3);
+% Vectorization
 V_M_z=double(permute(V,[4 1 2 3]));
-
+sz=size(V_M_z);
+maskInd=1:sz(2)*sz(3)*sz(4);
 M_z=V_M_z(:,maskInd);
 
 
@@ -52,27 +50,23 @@ Z=M_z(2:end,:)./M0; % Normalization
 w=defs.offsets_ppm(2:end);
 Z_corr=zeros(size(Z,1),size(Z,2)); dB0_stack=zeros(1,size(Z,2));
 % Perform smoothing spline interpolation
-tic
-for ii=1:size(Z,2)    % B0 Correction
-        if  isfinite(Z(:,ii))
-            pp = csaps(w, Z(:,ii), 0.95);
-            w_fine=-1:0.005:1;
-            Z_fine = ppval(pp, w_fine);
-            [~, MINidx] = min(Z_fine);
-            dB0=w_fine(MINidx);
-            dB0_stack(1,ii)=dB0;
-            Z_corr(:,ii)= ppval(pp, w+dB0);
-            %         disp(ii/size(Z,2));
-        end
+for ii=1:size(Z,2)    % min Z, B0 Correction
+    if  isfinite(Z(:,ii))
+        pp = csaps(w, Z(:,ii), 0.95);
+        w_fine=-1:0.005:1;
+        Z_fine = ppval(pp, w_fine);
+        [~, MINidx] = min(Z_fine);
+        dB0=w_fine(MINidx);
+        dB0_stack(1,ii)=dB0;
+        Z_corr(:,ii)= ppval(pp, w+dB0);
+        %         disp(ii/size(Z,2));
+    end
 end
-toc
 
 % Denoising here
 % [st, rs] = system('git clone https://github.com/cest-sources/CEST-AdaptiveDenoising --depth 1');
-% [Data_denoised,k] =
 % AdaptiveDenoising(Data,Segment,CriterionOrNumber,verbosity);
 % [Z_corrExt_denoised,used_components] = pcca_3D(Z_corrExt,P, (1:numel(P.SEQ.w)), 0, Segment); %principle component analysis (for denoising)
-
 
 %  Calc Zspec and MTRasym
 Zref = Z_corr(end:-1:1,:);
