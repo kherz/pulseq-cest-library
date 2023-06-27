@@ -23,7 +23,7 @@ M_z=M_z';
 dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
 
 % Question if seq file is still the same
-question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
+question = input('Were the DICOM Files acquired with the same protocol parameters from the PulseqCEST Library? [y/n]','s');
 if strcmpi(question, 'y')
     % use above definitions from sction 1)
 else
