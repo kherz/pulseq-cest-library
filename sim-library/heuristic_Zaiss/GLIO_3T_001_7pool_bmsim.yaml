@@ -10,11 +10,12 @@
 # https://github.com/kherz/pulseq-cest-library/tree/master/seq-library/APTw_3T_003_2uT_8block_DC95_834ms_braintumor
 # By simulating the APTw_3T_003 sequence with this yaml file we get a GLIOMA Z-spectrum that looks most similar as in the article
 # This was achieved by the following adjustments:
-# We first did all adjustments as in WM_3T_002. Please read the comments in that file to understand more.
+# We first did all adjustments as in WM_3T_001. Please read the comments in that file to understand more.
 # we then adjusted the pool parameters to be "more liquid".
 # we prolonged the T1 of water from 1s to 1.5 s and the T2 of water from 40 ms to 70 ms.
 # we deceased the MT pool size fraction from  15.42 / 111 to  6 / 111 
 # we doubled the amide concentration and decreased the NOE fraction by 1/5.
+# check simulated spectra at https://github.com/kherz/pulseq-cest-library/issues/44
 #
 # - 4 CEST pools
 # - 1 NOE pool      

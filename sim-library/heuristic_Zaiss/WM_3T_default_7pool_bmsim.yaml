@@ -3,7 +3,7 @@
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
 # Simulation parameters for white matter at 3T 
-# This file is inspired by WM_002, but all numbers are made simpler to form a easy to share default model
+# This file is inspired by WM_001, but all numbers are made simpler to form a easy to share default model
 #
 # - 4 CEST pools
 # - 1 NOE pool      
@@ -67,7 +67,7 @@ cest_pool: {
     dw: 1.0
   },
 
-  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
+  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.0 ppm with 5 fold concentration
     f: 0.0045, #500e-3 / 111,
     t1: 1.3,
     t2: 0.005,
