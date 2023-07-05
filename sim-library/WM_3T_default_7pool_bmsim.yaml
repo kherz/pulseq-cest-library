@@ -67,7 +67,7 @@ cest_pool: {
     dw: 1.0
   },
 
-  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.5 ppm with 5 fold concentration
+  'NOE_1': { #% until now, all 4 pools from the reference paper combined in one at -3.0 ppm with 5 fold concentration
     f: 0.0045, #500e-3 / 111,
     t1: 1.3,
     t2: 0.005,
