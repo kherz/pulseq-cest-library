@@ -22,6 +22,9 @@
 # amine and OH pools were added for completeness, but they do not affect the spectra significantly
 # 
 #
+# check simulated spectra at https://github.com/kherz/pulseq-cest-library/issues/44
+#
+#
 # - 4 CEST pools
 # - 1 NOE pool      
 # - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
