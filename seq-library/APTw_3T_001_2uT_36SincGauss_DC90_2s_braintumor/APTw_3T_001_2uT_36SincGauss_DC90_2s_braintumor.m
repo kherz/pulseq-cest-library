@@ -21,10 +21,10 @@ gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 
 %% sequence definitions
 % everything in defs gets written as definition in .seq-file
-defs.n_pulses      = 36              ; % number of pulses
-defs.tp            = 50e-3           ; % pulse duration [s]
-defs.td            = 5e-3            ; % interpulse delay [s]
-defs.Trec          = 3.5             ; % recovery time [s]
+defs.n_pulses      = 36              ; % number of pulses    %36
+defs.tp            = 50e-3           ; % pulse duration [s] %50
+defs.td            = 5e-3            ; % interpulse delay [s] %5
+defs.Trec          = 3.5             ; % recovery time [s] %3.5
 defs.Trec_M0       = 3.5             ; % recovery time before M0 [s]
 defs.M0_offset     = -300            ; % m0 offset [ppm]
 defs.DCsat         = (defs.tp)/(defs.tp+defs.td); % duty cycle
@@ -98,8 +98,12 @@ seq.write(seq_filename, author);
 saveSaturationPhasePlot(seq_filename);
 
 %% call standard sim
-M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml');
+%M_z = simulate_pulseqcest(seq_filename,'../../sim-library/WM_3T_default_7pool_bmsim.yaml'); 
 
+M_z = simulate_pulseqcest(seq_filename,'WM_3T_default_3pool_bmsim_jschuere_water_cest_mt_40mM_modified_b0_0p5ppm.yaml');
+
+sim_filename='WM_3T_default_2pool_bmsim_jschuere_water_cest_zyste_27mM_b0_1p0.yaml';
+M_z = simulate_pulseqcest('aptw_3t_001_2ut_36sincgauss_dc90_2s_braintumor_python.seq',sim_filename);
 %% plot
 plotSimulationResults(M_z,defs.offsets_ppm, defs.M0_offset);
 writematrix(M_z', ['M_z_' seq_filename '.txt']);

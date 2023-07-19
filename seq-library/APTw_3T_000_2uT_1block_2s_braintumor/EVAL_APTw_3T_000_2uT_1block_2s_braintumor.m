@@ -36,6 +36,17 @@ end
 cd(dcmpath)
 collection = dicomCollection(dcmpath);
 V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+figure;
+
+dcm_image = imagesc(squeeze(V(:, :, 11, 18)));colormap gray
+colorbar
+hold on;
+plot(65,132,'r+')
+
+sizes=size(V);
+figure
+plot(1:sizes(4),squeeze(V(100,90, 6,:)));
+
 % Vectorization
 V_M_z=double(permute(V,[4 1 2 3]));
 sz=size(V_M_z);
@@ -49,7 +60,7 @@ M0(M0<0.2*mean(M0,2))=0;  % filter pixels that gave less than 10% of the mean in
 Z=M_z(2:end,:)./M0; % Normalization
 w=defs.offsets_ppm(2:end);
 Z_corr=zeros(size(Z,1),size(Z,2)); dB0_stack=zeros(1,size(Z,2));
-% Perform smoothing spline interpolation
+% % Perform smoothing spline interpolation
 for ii=1:size(Z,2)    % min Z, B0 Correction
     if  isfinite(Z(:,ii))
         pp = csaps(w, Z(:,ii), 0.95);
@@ -71,13 +82,12 @@ end
 %  Calc Zspec and MTRasym
 Zref = Z_corr(end:-1:1,:);
 MTRasym = Zref-Z_corr;
-
 %Vectorization Backwards
 if size(Z,2)>1
     V_MTRasym=double(V_M_z(2:end,:,:,:))*0;
-    V_MTRasym(:,maskInd)=MTRasym;
+    V_MTRasym(:,maskInd)= MTRasym;
     V_Z_corr=double(V_M_z(2:end,:,:,:))*0;
-    V_Z_corr(:,maskInd)=Z_corr;
+    V_Z_corr(:,maskInd)= Z_corr;
 end
 
 
