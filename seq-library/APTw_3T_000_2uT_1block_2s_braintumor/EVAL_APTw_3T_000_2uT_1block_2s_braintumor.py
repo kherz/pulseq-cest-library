@@ -13,6 +13,8 @@ from csaps import csaps
 import os
 import  pydicom
 seq = pp.Sequence()
+from bmctool.simulate import simulate
+
 # we assume you are in the path of the present file
 # cd('pulseq-cest-library\seq-library\APTw_3T_000_2uT_1block_2s_braintumor')
 
@@ -29,12 +31,20 @@ Nmeas = len(offsets)
 
 # %% 2a)  read in data from simulation
 m_z = np.loadtxt('M_z_APTw_3T_000_2uT_1block_2s_braintumor.seq.txt');
-m_z=np.expand_dims(m_z, axis=1)
+m_z = np.expand_dims(m_z, axis=1)
 
+# %% 2c) re-simulate using a ymal file
+
+# we assume you are in the path of the present file
+# cd('pulseq-cest-library/sim-library')
+config_path ='WM_3T_default_7pool_bmsim.yaml';
+sim = simulate(config_file=config_path, seq_file=seq_path)
+m_z = sim.get_zspec()[1]
+m_z = np.expand_dims(m_z, axis=1)
 
 # %% 2c)  read data from measurement (dicom)
-#change to the directory containing the Dicom files
-dcmpath = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/Testordner/dcm/PULSEQ_HYBRID_GRE_2_2_5_APTW_001_RR_0015'
+# move to the directory containing the Dicom files
+dcmpath = 'dcm/PULSEQ_HYBRID_GRE_2_2_5_APTW_001_RR_0015'
 os.chdir(dcmpath)
 
 #read data from dicom directory
@@ -109,8 +119,6 @@ if Z.shape[1] > 1:
     V_Z_corr_reshaped = V_Z_corr.reshape(V.shape[3], V.shape[0], V.shape[1], V.shape[2]).transpose(1,2,3,0)
     
 # %% 4)  Plots and further graphics
-    
-#plots and further graphics
 plt.figure(figsize=(10, 4))
 plt.subplot(1, 2, 1)
 plt.plot(w, np.mean(Z_corr, axis=1), 'r.-')
@@ -124,11 +132,25 @@ plt.gca().invert_xaxis()
 plt.title('Mean MTRasym-spectrum')
 plt.show()
 
+# %% 5) display the images
 
-  
+slice_of_interest = 5   #pick slice for Evaluation
+offset_of_interest = 31 #pick offset for Evaluation
+w_offset_of_interest = w[offset_of_interest]
+
+plt.figure(figsize=(10, 4))
+
+plt.subplot(1, 2, 1)
+plt.imshow(V_Z_corr_reshaped[:, :, slice_of_interest, offset_of_interest], vmin=0.5, vmax=1)
+plt.colorbar()
+plt.title('Z(Δω) = %.2f ppm' % w_offset_of_interest)
+
+plt.subplot(1, 2, 2)
+plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest], vmin=-0.05, vmax=0.05)
+plt.colorbar()
+plt.title('MTRasym(Δω) = %.2f ppm' % w_offset_of_interest)
+
+plt.show()
  
-
-
-    
     
     
