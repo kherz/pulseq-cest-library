@@ -3,6 +3,7 @@
 Created on Wed Jun 28 13:12:35 2023
 
 @author: kouemoin
+
 """
 
 import numpy as np
@@ -12,9 +13,11 @@ from csaps import csaps
 import os
 import  pydicom
 seq = pp.Sequence()
+# we assume you are in the path of the present file
+# cd('pulseq-cest-library\seq-library\APTw_3T_000_2uT_1block_2s_braintumor')
 
-
-seq_path = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/matlab/pulseq-cest-library/seq-library/APTw_3T_000_2uT_1block_2s_braintumor/APTw_3T_000_2uT_1block_2s_braintumor.seq'  # can be a str or a Path
+# %% 1)  read in associated seq file
+seq_path = 'APTw_3T_000_2uT_1block_2s_braintumor.seq'  # can be a str or a Path
 
 seq.read(seq_path)
 
@@ -24,6 +27,12 @@ offsets = seq.get_definition('offsets_ppm')
 
 Nmeas = len(offsets)
 
+# %% 2a)  read in data from simulation
+m_z = np.loadtxt('M_z_APTw_3T_000_2uT_1block_2s_braintumor.seq.txt');
+m_z=np.expand_dims(m_z, axis=1)
+
+
+# %% 2c)  read data from measurement (dicom)
 #change to the directory containing the Dicom files
 dcmpath = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/Testordner/dcm/PULSEQ_HYBRID_GRE_2_2_5_APTW_001_RR_0015'
 os.chdir(dcmpath)
@@ -42,6 +51,9 @@ mask = np.squeeze(V[:,:,:,0]) > 100
 mask_idx = np.where(mask.ravel())[0]
 V_m_z =  V.reshape(-1, Nmeas).T
 m_z = V_m_z[:, mask_idx]
+
+
+# %% 3)  Evaluation
 
 M0_idx = np.where(offsets == m0_offset)[0]
 
@@ -95,6 +107,8 @@ if Z.shape[1] > 1:
     V_Z_corr = np.zeros((V_m_z.shape[0], V_m_z.shape[1]), dtype=float)
     V_Z_corr[1:, mask_idx] = Z_corr
     V_Z_corr_reshaped = V_Z_corr.reshape(V.shape[3], V.shape[0], V.shape[1], V.shape[2]).transpose(1,2,3,0)
+    
+# %% 4)  Plots and further graphics
     
 #plots and further graphics
 plt.figure(figsize=(10, 4))
