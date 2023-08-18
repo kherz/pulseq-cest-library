@@ -12,9 +12,9 @@ import pypulseq as pp
 from csaps import csaps
 import os
 import  pydicom
-seq = pp.Sequence()
 from bmctool.simulate import simulate
 
+seq = pp.Sequence()
 # we assume you are in the path of the present file
 # cd('pulseq-cest-library\seq-library\APTw_3T_000_2uT_1block_2s_braintumor')
 
@@ -135,7 +135,7 @@ plt.show()
 # %% 5) display the images
 
 slice_of_interest = 5   #pick slice for Evaluation
-offset_of_interest = 31 #pick offset for Evaluation
+offset_of_interest = 30 #pick offset for Evaluation
 w_offset_of_interest = w[offset_of_interest]
 
 plt.figure(figsize=(10, 4))
