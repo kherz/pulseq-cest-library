@@ -1,8 +1,5 @@
 function EVAL_T1map_001_HypSec
 
-%% 0 Scannerlimits
-seq = SequenceSBB(getScannerLimits());
-gamma_hz  = seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 
 %% 1 read data from measurement (dicom)
 dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
@@ -24,7 +21,7 @@ P=logread(seqname,seqpath)
 TI = [10 6 5 4 3 2.5 2 1.5 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1].*1000;  % conversion from s to ms as starting values in loadGui are in ms
 P.SEQ.w = TI;
 P.SEQ.TI_list = TI;
-P.SEQ.FREQ=gamma_hz*P.SEQ.B0;
+P.SEQ.FREQ=gamma_*P.SEQ.B0;
 
 
 %% T1 mapping (T1eval_levmar)
