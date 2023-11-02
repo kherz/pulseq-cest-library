@@ -5,6 +5,9 @@ Created on Wed Jun 28 13:12:35 2023
 @author: kouemoin
 
 """
+#requires
+#pip install pydicom
+#pip install csaps
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,10 +19,11 @@ from bmctool.simulate import simulate
 
 seq = pp.Sequence()
 # we assume you are in the path of the present file
-# cd('pulseq-cest-library\seq-library\APTw_3T_000_2uT_1block_2s_braintumor')
+# cd('pulseq-cest-library\eval-examples\MTRasym')
 
-# %% 1)  read in associated seq file
-seq_path = 'APTw_3T_000_2uT_1block_2s_braintumor.seq'  # can be a str or a Path
+# %% 1)  read in associated seq file from Pulse-CEST library
+seq_fn ='APTw_3T_000_2uT_1block_2s_braintumor'
+seq_path = '../../seq-library/'+seq_fn+'/'+seq_fn+'.seq'  # can be a str or a Path
 
 seq.read(seq_path)
 
