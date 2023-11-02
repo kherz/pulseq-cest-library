@@ -68,8 +68,16 @@ dcm_folder = Path.cwd().parent.parent / "dcm"
 dcm_path = dcm_folder / dcm_name
 assert dcm_path.is_dir(), "dicom folder not found"
 
-# read all dicom files in the directory
-collection = [pydicom.dcmread(str(fname)) for fname in dcm_path.glob("*.IMA")]
+# Question if seq file is still the same
+question = input('Are the DICOM Files acquired with the same Protocol Parameters from the PulseqCEST Library? [y/n] ')
+if question.lower() == 'n':
+    seqfile = input('Please enter the path to your seq file: ')
+    seq.read(seqfile)
+    offsets = seq.get_definition('offsets_ppm')
+    Nmeas = len(offsets)
+
+#read data from dicom directory
+collection = [pydicom.dcmread(dcmpath+filename) for filename in os.listdir(dcmpath)]
 
 # extract the volume data
 V = np.stack([dcm.pixel_array for dcm in collection])
