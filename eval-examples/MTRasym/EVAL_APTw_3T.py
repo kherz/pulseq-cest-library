@@ -51,6 +51,14 @@ m_z = np.expand_dims(m_z, axis=1)
 # move to the directory containing the Dicom files
 dcmpath = '../example_data/dcm/PULSEQ_HYBRID_GRE_2_2_5_APTW_001/'
 
+# Question if seq file is still the same
+question = input('Are the DICOM Files acquired with the same Protocol Parameters from the PulseqCEST Library? [y/n] ')
+if question.lower() == 'n':
+    seqfile = input('Please enter the path to your seq file: ')
+    seq.read(seqfile)
+    offsets = seq.get_definition('offsets_ppm')
+    Nmeas = len(offsets)
+
 #read data from dicom directory
 collection = [pydicom.dcmread(dcmpath+filename) for filename in os.listdir(dcmpath)]
 
