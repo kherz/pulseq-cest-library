@@ -64,7 +64,7 @@ m_z_sim = np.expand_dims(m_z_sim, axis=1)
 # %% ====================================
 # 2c)  read data from measurement (dicom)
 # =======================================
-dcm_folder = Path.cwd().parent.parent / "dcm"
+dcm_folder = Path.cwd().parent.parent / "eval-examples" / "example_data" / "dcm"
 dcm_path = dcm_folder / dcm_name
 assert dcm_path.is_dir(), "dicom folder not found"
 
@@ -77,7 +77,7 @@ if question.lower() == 'n':
     Nmeas = len(offsets)
 
 #read data from dicom directory
-collection = [pydicom.dcmread(dcmpath+filename) for filename in os.listdir(dcmpath)]
+collection = [pydicom.dcmread(dcm_path / filename) for filename in os.listdir(dcm_path)]
 
 # extract the volume data
 V = np.stack([dcm.pixel_array for dcm in collection])
@@ -96,7 +96,7 @@ m_z = V_m_z[:, mask_idx]
 # 3) Evaluation
 # =============
 
-M0_idx = np.where(offsets >= m0_offset)[0]
+M0_idx = np.where(abs(offsets) >= abs(m0_offset))[0]
 if len(M0_idx) > 0:
     M0 = np.mean(m_z[M0_idx, :], 0)
     offsets = np.delete(offsets, M0_idx)
