@@ -13,38 +13,35 @@ seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq';
 seq_file_folder_path= [pulseq_path '\seq-library\' extractBefore(seq_filename, '.seq')];
 seq_file_path= [seq_file_folder_path '\' seq_filename];
 
-
 % Go to seq file
 seq = SequenceSBB(getScannerLimits());
-gamma_hz  = seq.sys.gamma*1e-6;                  % for H [Hz/uT]
+gamma_hz  = seq.sys.gamma*1e-6;     % for H [Hz/uT]
+%get the seq file from the library
+seq.read(seq_file_path);
+defs.offsets_ppm   = seq.definitions('offsets_ppm');
+Nmeas=numel(defs.offsets_ppm);
 
-%% 2)  read data from measurement (dicom)
+%% 2a)  read in data from simulation in pulseq folder
+M_z = load([seq_file_folder_path '\M_z_' seq_filename '.txt']);
+
+%% 2b)  re-simulate
+M_z = simulate_pulseqcest(seq_filename, [pulseq_path '\sim-library\WM_3T_default_7pool_bmsim.yaml']);
+M_z=M_z';
+
+%% 2c)  read data from measurement (dicom)
 dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
 
 % Question if seq file is still the same
 question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
 if strcmpi(question, 'y')
-    % 2a) get the seq file from the library
-    seq.read(seq_file_path);
-    defs.offsets_ppm   = seq.definitions('offsets_ppm');
-    Nmeas=numel(defs.offsets_ppm);
+   %do nothing 
 else
-    % 2b) search your seqfile and resimulate the data, if there is not an
+    %search your seqfile and resimulate the data, if there is not an
     % "M_z" textfile apparent
     [seqfile, seqpath]=uigetfile('','');
     seq.read(fullfile(seqpath,seqfile));
     defs.offsets_ppm   = seq.definitions('offsets_ppm');
     Nmeas=numel(defs.offsets_ppm);
-
-    % 2c) check if M_z.txt is there, if not resimulate
-    try 
-        M_z_sim = load([seqpath extractBefore(seqfile, '.seq') '.txt']);
-    catch
-        disp('Simulation of M_z as a text file not found, doing re-simulation')
-        M_z_sim = simulate_pulseqcest(fullfile(seqpath,seqfile),[pulseq_path '/sim-library/WM_3T_default_7pool_bmsim.yaml']);
-        M_z_sim=M_z_sim'; %transpose M_z
-        M_z_sim_MTRasym=M_z_sim(end:-1:2)-M_z_sim(2:end);%M0 offset is apparent
-    end
 end
 
 cd(dcmpath)
@@ -108,9 +105,7 @@ end
 %% 4)  Plots and further graphics
 figure;
 subplot(1,2,1); plot(w,mean(Z_corr,2),'r.-', 'DisplayName', 'Measurement'); title('Mean Z-spectrum'); set(gca,'Xdir','reverse');
-    hold on; plot(w,M_z_sim(2:end),'k.-', 'DisplayName', 'Simulation'); hold off; legend('Location', 'north')
 subplot(1,2,2); plot(w,mean(MTRasym,2),'r.-', 'DisplayName', 'Measurement'); title('Mean MTRasym-spectrum'); xlim([0 Inf]);set(gca,'Xdir','reverse');
-    hold on; plot(w,M_z_sim_MTRasym,'k.-', 'DisplayName', 'Simulation'); hold off; legend('Location', 'south')
 
 if size(Z,2)>1
     figure;
