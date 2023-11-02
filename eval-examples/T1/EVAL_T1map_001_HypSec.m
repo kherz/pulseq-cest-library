@@ -1,31 +1,50 @@
-function EVAL_T1map_001_HypSec
+%% EVAL T1map_001_Hypsec
+% minimalistic data evaluation for T1 IR data acquired with
+% T1map_001_3HypSec.seq
+%
+% Moritz Fabian 2023
+
+%% 0) get the seq file infos
+pulseq_struct=what('pulseq-cest-library');
+pulseq_path=pulseq_struct.path;
+seq_filename='T1map_001_3HypSec.seq';
+seq_file_folder_path= [pulseq_path '\seq-library\' extractBefore(seq_filename, '.seq')];
+seq_file_path= [seq_file_folder_path '\' seq_filename];
+
+%initiate seq file
+seq = SequenceSBB(getScannerLimits());
+
+question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
+if strcmpi(question, 'y')
+   %get the seq file from the library
+    seq.read(seq_file_path);
+    defs.TI   = seq.definitions('TI');
+    Nmeas=numel(defs.TI);
+else
+    %search your seqfile of the measurement
+    [seq_filename, seq_file_folder_path]=uigetfile('','');
+    seq.read(fullfile(seq_file_folder_path,seq_filename));
+    defs.TI   = seq.definitions('TI');
+    Nmeas=numel(defs.TI);
+end
 
 
 %% 1 read data from measurement (dicom)
-dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
+dcmpath=uigetdir('','Go to DICOM Directory of T1map_001_3HypSec data'); cd(dcmpath)
 collection = dicomCollection(fullfile(dcmpath));
-seriesDescription = "T1map_001_3HypSec_QUASS";                              % Series  Description
-indices = find(strcmp(collection.SeriesDescription, seriesDescription));    % Find Dicom File
-filePaths = collection.Filenames(indices)
-for k=1:numel(filePaths)
-V(:,:,:,k) = double(squeeze(dicomreadVolume(filePaths{k,1})));
-end
+cd(dcmpath)
+V = double(dicomreadVolume(collection)); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
 
-%% Define Segment
+%% 2) Define Segment
 Segment = ones(size(V(:,:,:,1)));
-%% get times from seq file
-seq = SequenceSBB(getScannerLimits());
-[seqname seqpath]=uigetfile('','Go to Seq Path','*.seq'); cd(seqpath)
-seq.read(seqname)
-P=logread(seqname,seqpath)
-TI = [10 6 5 4 3 2.5 2 1.5 1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1].*1000;  % conversion from s to ms as starting values in loadGui are in ms
-P.SEQ.w = TI;
-P.SEQ.TI_list = TI;
+%% 3) get times from seq file
+P=logread(seq_filename,seq_file_folder_path);
+P.SEQ.w = P.SEQ.TI_list.*1000;% conversion from s to ms as starting values in loadGui are in ms
 P.SEQ.FREQ=gamma_*P.SEQ.B0;
+P.SEQ.B1=seq.definitions('B1pa');
 
-
-%% T1 mapping (T1eval_levmar)
-TImaxstack=squeeze(V(:,:,:,1))
+%% 4) T1 mapping (T1eval_levmar)
+TImaxstack=squeeze(V(:,:,:,1));
 [image] = NORM_ZSTACK(V,TImaxstack,P,Segment);  %Normalization with max TI
 P.SEQ.stack_dim=size(image);
 
