@@ -34,25 +34,25 @@ offsets = seq.get_definition('offsets_ppm')
 Nmeas = len(offsets)
 
 # %% 2a)  read in data from simulation
-m_z = np.loadtxt('M_z_APTw_3T_000_2uT_1block_2s_braintumor.seq.txt');
+txt_path = '../../seq-library/'+seq_fn+'/M_z_'+seq_fn+'.seq.txt'  
+m_z = np.loadtxt(txt_path);
 m_z = np.expand_dims(m_z, axis=1)
 
-# %% 2c) re-simulate using a ymal file
+# %% 2b) re-simulate using a ymal file
 
 # we assume you are in the path of the present file
 # cd('pulseq-cest-library/sim-library')
-config_path ='WM_3T_default_7pool_bmsim.yaml';
+config_path ='../../sim-library/WM_3T_default_7pool_bmsim.yaml';
 sim = simulate(config_file=config_path, seq_file=seq_path)
 m_z = sim.get_zspec()[1]
 m_z = np.expand_dims(m_z, axis=1)
 
 # %% 2c)  read data from measurement (dicom)
 # move to the directory containing the Dicom files
-dcmpath = 'dcm/PULSEQ_HYBRID_GRE_2_2_5_APTW_001_RR_0015'
-os.chdir(dcmpath)
+dcmpath = '../example_data/dcm/PULSEQ_HYBRID_GRE_2_2_5_APTW_001/'
 
 #read data from dicom directory
-collection = [pydicom.dcmread(filename) for filename in os.listdir(dcmpath)]
+collection = [pydicom.dcmread(dcmpath+filename) for filename in os.listdir(dcmpath)]
 
 #extract the volume data
 V = np.stack([dcm.pixel_array for dcm in collection])
