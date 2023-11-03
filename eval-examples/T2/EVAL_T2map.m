@@ -8,8 +8,8 @@
 pulseq_struct=what('pulseq-cest-library');
 pulseq_path=pulseq_struct.path;
 seq_filename='T2map_001_T2prep.seq';
-seq_file_folder_path= [pulseq_path '\seq-library\' extractBefore(seq_filename, '.seq')];
-seq_file_path= [seq_file_folder_path '\' seq_filename];
+seq_file_folder_path= [pulseq_path filesep 'seq-library\' filesep extractBefore(seq_filename, '.seq')];
+seq_file_path= [seq_file_folder_path filesep seq_filename];
 
 %initiate seq file
 seq = SequenceSBB(getScannerLimits());

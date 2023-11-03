@@ -10,8 +10,8 @@
 pulseq_struct=what('pulseq-cest-library');
 pulseq_path=pulseq_struct.path;
 seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq';
-seq_file_folder_path= [pulseq_path '\seq-library\' extractBefore(seq_filename, '.seq')];
-seq_file_path= [seq_file_folder_path '\' seq_filename];
+seq_file_folder_path= [pulseq_path filesep 'seq-library' filesep extractBefore(seq_filename, '.seq')];
+seq_file_path= [seq_file_folder_path filesep seq_filename];
 
 % Go to seq file
 seq = SequenceSBB(getScannerLimits());
@@ -22,10 +22,10 @@ defs.offsets_ppm   = seq.definitions('offsets_ppm');
 Nmeas=numel(defs.offsets_ppm);
 
 %% 2a)  read in data from simulation in pulseq folder
-M_z = load([seq_file_folder_path '\M_z_' seq_filename '.txt']);
+M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
 
 %% 2b)  re-simulate
-M_z = simulate_pulseqcest(seq_filename, [pulseq_path '\sim-library\WM_3T_default_7pool_bmsim.yaml']);
+M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
 M_z=M_z';
 
 %% 2c)  read data from measurement (dicom)
