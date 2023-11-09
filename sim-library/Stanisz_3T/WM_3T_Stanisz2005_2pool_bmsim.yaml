@@ -36,7 +36,7 @@ mt_pool: {
   t1: 1.0,  # we can only assume here that it was set to R1=1 Hz, as they refer to this paper: https://doi.org/10.1002/mrm.1910290607
   t2:  4.3478e-05,  # 10e-6/0.23,  # adjusted to have similar shape to SuperLorentzian
   k:  23,
-  dw: -3.0,  # this was not reported by Stanizs, but leads to most simlar MTRasym(2µT) at 15 ppm of - 3%
+  dw: -3.0,  # this was not reported by Stanizs, but leads to most simlar MTRasym(2ï¿½T) at 15 ppm of - 3%
   lineshape: 'Lorentzian'
 }
 
@@ -50,7 +50,7 @@ mt_pool: {
 # b0_inhom: field inhomogeneity [ppm], default is 0.0 (float)
 #   rel_b1: relative amp inhomogeneity, default is 1.0 (float)
 b0: 3
-gamma: 267.5153
+gamma: 267.5154109126009
 b0_inhom: 0.0
 rel_b1: 1
 
