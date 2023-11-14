@@ -14,40 +14,45 @@ import pypulseq as pp
 from scipy.optimize import curve_fit
 from bmctool.simulate import simulate
 
-#%% read the sequence
 seq = pp.Sequence()
 
-seq_path = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/NeueCESTMessung_Phantom/WASABI_3T_001_3p7uT_1block_5ms.seq'  # can be a str or a Path
+#%% read in associated seq file from Pulse-CEST library
+
+seq_fn = 'WASABI_3T_001_3p7uT_1block_5ms'
+seq_path = '../../seq-library/'+seq_fn+'/'+seq_fn+'.seq'  # can be a str or a Path
 
 seq.read(seq_path)
 
-#%% initialisation of some variables
+#%%
+
 offsets = seq.get_definition('offsets_ppm')  # offset vector [ppm]
 m0_offset = seq.get_definition('M0_offset') # corresponds to the first element in the offset vector
 freq = seq.get_definition('FREQ') # frequency [MHz]
-B1 = seq.get_definition('B1cwpe') # excitation field (B1) peak amplitude [µT]
+B1 = seq.get_definition('B1') # excitation field (B1) peak amplitude [µT]
 gamma_ = 42.578 
 t_p = seq.get_definition('tp') # pulse duration [s]
 w = offsets[1:]
 Nmeas = len(offsets) # number of repetition
 
 # %% 2a)  read in data from simulation
-m_z = np.loadtxt('W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/matlab/pulseq-cest-library/seq-library/WASABI_3T_001_3p7uT_1block_5ms/M_z_WASABI_3T_001_3p7uT_1block_5ms.seq.txt');
+txt_path = '../../seq-library/'+seq_fn+'/M_z_'+seq_fn+'.seq.txt' 
+m_z = np.loadtxt(txt_path);
 m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vector
 
 # %% 2c) re-simulate using a ymal file
 # we assume you are in the path of the present file
-# cd('pulseq-cest-library/sim-library')
-config_path ='W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/matlab/pulseq-cest-library/sim-library/WM_3T_default_7pool_bmsim.yaml';
+
+config_path = '../../sim-library/WM_3T_default_7pool_bmsim.yaml';
 sim = simulate(config_file=config_path, seq_file=seq_path) # we simulate the sequence using the sequence file and yaml file
 m_z = sim.get_zspec()[1]
 m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vector
 
 #%% read the wasabi dicom file, create a collection and vectorize the data volume
-wsbpath = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/NeueCESTMessung_Phantom/PULSEQ_HYBRID_GRE_2_2_5_WASABI_2_0009'  # we define a variable wsbpath and we assign it a string containing the file path to a directory
-os.chdir(wsbpath) #  we change the current working directory of our Python script to the directory specified in the path variable
 
-collection = [pydicom.dcmread(filename) for filename in os.listdir(wsbpath)] # we create a collection of DICOM objects from the files in the directory
+wsbpath = '../example_data/dcm/PULSEQ_HYBRID_GRE_2_2_5_WASABI_1/'  # we define a variable wsbpath and we assign it a string containing the file path to a directory
+
+collection = [pydicom.dcmread(wsbpath+filename) for filename in os.listdir(wsbpath)] # we create a collection of DICOM objects from the files in the directory
+
 V = np.stack([dcm.pixel_array for dcm in collection]) # we create an array using list comprehension to extract the pixel arrays from each dicom objects in collection
 V = np.transpose(V, (2, 1, 0)) # we transpose V into a right shape
 sz = V.shape
@@ -127,7 +132,7 @@ if Z.shape[1] > 1:
 fig, ax = plt.subplots()
 
 fit=Z_fit_stack[62,62,5,:]
-data=Z_stack[32,36,5,:]
+data=Z_stack[62,62,5,:]
 
 ax.plot(w, fit, label='fit')
 ax.plot(w, data, '.', label='data')
@@ -156,6 +161,4 @@ plt.title('Wasabi B1 map')
 
 plt.show()
 
-#%%
 
-np.save('W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/code/dB0_APTw_003.txt', B0_reshaped)

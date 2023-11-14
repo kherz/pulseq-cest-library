@@ -111,6 +111,7 @@ for ii in range(Z.shape[1]):
 Z_ref = Z_corr[::-1,:]
 MTRasym = Z_ref - Z_corr
 
+#%%
 #Vectorization Backwards
 if Z.shape[1] > 1:
     
