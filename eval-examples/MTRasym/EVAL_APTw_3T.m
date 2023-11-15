@@ -3,7 +3,10 @@
 % APTw_3T_000_2uT_1block_2s_braintumor.seq
 %
 % Moritz Zaiss 2023
-
+%
+% The following flag determines, if you want to operate on real data or
+% simulate the data
+data_flag= 'real_data'; % simulation, re_simulation or real_data
 %% 1)  read in associated seq file 
 
 %get the user specific pulseq path
@@ -21,39 +24,41 @@ seq.read(seq_file_path);
 defs.offsets_ppm   = seq.definitions('offsets_ppm');
 Nmeas=numel(defs.offsets_ppm);
 
-%% 2a)  read in data from simulation in pulseq folder
-M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
-
-%% 2b)  re-simulate
-M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
-M_z=M_z';
-
-%% 2c)  read data from measurement (dicom)
-dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
-
-% Question if seq file is still the same
-question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
-if strcmpi(question, 'y')
-   %do nothing 
-else
-    %search your seqfile and resimulate the data, if there is not an
-    % "M_z" textfile apparent
-    [seqfile, seqpath]=uigetfile('','');
-    seq.read(fullfile(seqpath,seqfile));
-    defs.offsets_ppm   = seq.definitions('offsets_ppm');
-    Nmeas=numel(defs.offsets_ppm);
+switch data_flag
+    case 'simulation'
+        %% 2a)  read in data from simulation in pulseq folder
+        M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
+    case 're_simulation'
+        %% 2b)  re-simulate
+        M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
+        M_z=M_z';
+    case 'real_data' 
+        %% 2c)  read data from measurement (dicom)
+        dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
+        
+        % Question if seq file is still the same
+        question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
+        if strcmpi(question, 'y')
+           %do nothing 
+        else
+            %search your seqfile and resimulate the data, if there is not an
+            % "M_z" textfile apparent
+            [seqfile, seqpath]=uigetfile('','');
+            seq.read(fullfile(seqpath,seqfile));
+            defs.offsets_ppm   = seq.definitions('offsets_ppm');
+            Nmeas=numel(defs.offsets_ppm);
+        end
+        
+        cd(dcmpath)
+        collection = dicomCollection(dcmpath);
+        V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+        
+        % Vectorization
+        V_M_z=double(permute(V,[4 1 2 3]));
+        sz=size(V_M_z);
+        maskInd=1:sz(2)*sz(3)*sz(4);
+        M_z=V_M_z(:,maskInd);
 end
-
-cd(dcmpath)
-collection = dicomCollection(dcmpath);
-V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
-
-% Vectorization
-V_M_z=double(permute(V,[4 1 2 3]));
-sz=size(V_M_z);
-maskInd=1:sz(2)*sz(3)*sz(4);
-M_z=V_M_z(:,maskInd);
-
 
 %% 3) Evaluation
 M0=M_z(1,:);

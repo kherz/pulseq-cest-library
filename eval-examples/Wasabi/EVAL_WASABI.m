@@ -1,6 +1,8 @@
 %% EVAL WASABI 
-
-%% 0 Build up Filename, Structure, Paths
+% The following flag determines, if you want to operate on real data or
+% simulate the data
+data_flag= 'real_data'; % simulation, re_simulation or real_data
+%% 1) Build up Filename, Structure, Paths
 
 %get the user specific pulseq path
 pulseq_struct=what('pulseq-cest-library');                  % look in Matlabpath if Folder is already included
@@ -18,36 +20,38 @@ seq.read(seq_file_path);
 defs.offsets_ppm   = seq.definitions('offsets_ppm');
 Nmeas=numel(defs.offsets_ppm);  
 
-%% 2a)  read in data from simulation in pulseq folder
-M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
-
-%% 2b)  re-simulate
-M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
-M_z=M_z';
-
-%% 2c)  read data from measurement (dicom)
-dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
-
-cd(dcmpath)
-collection = dicomCollection(fullfile(dcmpath));
-
-V= dicomreadVolume(collection); 
-sz=size(V); 
-V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); 
-V= permute(V,[1 2 4 3]); size(V)
-
-figure;
-dcm_image = imagesc(squeeze(V(:, :, 6, 18)));colormap gray;colorbar
-
-Segment=squeeze(V(:, :, :, 1)) > 100;
-Segment_resh=reshape(Segment, size(Segment,1)*size(Segment,2)*size(Segment,3),1)';    % size Segment: 112x92x12
-
-%Vectorize
-V_M_z=double(permute(V,[4 1 2 3]));       % Changes from 112x92x12x32 to 32x112x92x12
-sz=size(V_M_z);
-maskInd=1:sz(2)*sz(3)*sz(4);
-M_z=V_M_z(:,maskInd);
-
+switch data_flag
+    case 'simulation'
+        %% 2a)  read in data from simulation in pulseq folder
+        M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
+    case 're_simulation'
+        %% 2b)  re-simulate
+        M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
+        M_z=M_z';
+    case 'real_data'
+        %% 2c)  read data from measurement (dicom)
+        dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
+        
+        cd(dcmpath)
+        collection = dicomCollection(fullfile(dcmpath));
+        
+        V= dicomreadVolume(collection); 
+        sz=size(V); 
+        V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); 
+        V= permute(V,[1 2 4 3]); size(V)
+        
+        figure;
+        dcm_image = imagesc(squeeze(V(:, :, 6, 18)));colormap gray;colorbar
+        
+        Segment=squeeze(V(:, :, :, 1)) > 100;
+        Segment_resh=reshape(Segment, size(Segment,1)*size(Segment,2)*size(Segment,3),1)';    % size Segment: 112x92x12
+        
+        %Vectorize
+        V_M_z=double(permute(V,[4 1 2 3]));       % Changes from 112x92x12x32 to 32x112x92x12
+        sz=size(V_M_z);
+        maskInd=1:sz(2)*sz(3)*sz(4);
+        M_z=V_M_z(:,maskInd);
+end
 
 %% 3) Evaluation
 % Normalization

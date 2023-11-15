@@ -3,8 +3,12 @@
 % T2map_001_T2prep.seq
 %
 % Moritz Fabian 2023
+%
+% The following flag determines, if you want to operate on real data or
+% simulate the data
+data_flag= 'real_data'; % simulation, re_simulation or real_data
 
-%% 0) get the seq file infos
+%% 1) get the seq file infos
 pulseq_struct=what('pulseq-cest-library');
 pulseq_path=pulseq_struct.path;
 seq_filename='T2map_001_T2prep.seq';
@@ -28,20 +32,28 @@ else
     Nmeas=numel(defs.TE);
 end
 
-%% 1 read data from measurement (dicom)
-dcmpath=uigetdir('','Go to DICOM Directory of T2map_001_T2prep  data'); cd(dcmpath)
-collection = dicomCollection(fullfile(dcmpath));
-cd(dcmpath)
-V = double(dicomreadVolume(collection)); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+switch data_flag
+    case 'simulation'
+        %% 2a)  read in data from simulation in pulseq folder
+        M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
+    case 're_simulation'
+        %% 2b)  re-simulate
+        M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
+        M_z=M_z';
+    case 'real_data'
+        %% 2c)  read data from measurement (dicom)
+        dcmpath=uigetdir('','Go to DICOM Directory of T2map_001_T2prep  data'); cd(dcmpath)
+        collection = dicomCollection(fullfile(dcmpath));
+        cd(dcmpath)
+        V = double(dicomreadVolume(collection)); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+        
+        %Vectorize
+        V_M_z=double(permute(V,[4 1 2 3]));       % Changes from 112x92x12x32 to 32x112x92x12
+        sz=size(V_M_z);
+        maskInd=1:sz(2)*sz(3)*sz(4);
+        M_z=V_M_z(:,maskInd);
+end
 
-%Vectorize
-V_M_z=double(permute(V,[4 1 2 3]));       % Changes from 112x92x12x32 to 32x112x92x12
-sz=size(V_M_z);
-maskInd=1:sz(2)*sz(3)*sz(4);
-M_z=V_M_z(:,maskInd);
-
-%% 2 Define Segment
-Segment = ones(size(V(:,:,:,1)));
 %% 3) get times from seq file
 TE = [];
 num_adc = 0;
@@ -91,7 +103,7 @@ Segment_resh=reshape(Segment, size(Segment,1)*size(Segment,2)*size(Segment,3),1)
 % boundaries/start(p0) for:
 %    "T2"         "a"      "b"
 lb = [  .015      0        -10  ];
-ub = [ 1          10        10  ];
+ub = [ 1.5          10        10  ];
 p0 = [0.05        1         1  ]; %starting values
 
 %define T2 fit function 
