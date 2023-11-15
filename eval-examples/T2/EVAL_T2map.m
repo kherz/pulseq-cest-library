@@ -33,11 +33,16 @@ dcmpath=uigetdir('','Go to DICOM Directory of T2map_001_T2prep  data'); cd(dcmpa
 collection = dicomCollection(fullfile(dcmpath));
 cd(dcmpath)
 V = double(dicomreadVolume(collection)); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+
+%Vectorize
+V_M_z=double(permute(V,[4 1 2 3]));       % Changes from 112x92x12x32 to 32x112x92x12
+sz=size(V_M_z);
+maskInd=1:sz(2)*sz(3)*sz(4);
+M_z=V_M_z(:,maskInd);
+
 %% 2 Define Segment
 Segment = ones(size(V(:,:,:,1)));
 %% 3) get times from seq file
-P_T2=logread(seq_filename,seq_file_folder_path);
-
 TE = [];
 num_adc = 0;
 % loop through seq and add times to get exact TE value
@@ -72,36 +77,51 @@ while nB < numel(seq.blockEvents)
     nB = nB+1;
 end
 
-%remove first readout in T2 stack
-image = double(V);
-T2_stack = image(:,:,:,2:end)./image(:,:,:,1);
-P_T2.SEQ.w = TE;
 
-%% just for now .. (needed in levmar_fit.m) / may be removed later on
-P_T2.SEQ.FREQ = [];
-P_T2.SEQ.tp = [];
-P_T2.SEQ.B1 = [];
 
-% information about fit
-P_T2.FIT.options   = [1E-04, 1E-15, 1E-10, 1E-04, 1E-06];
-P_T2.FIT.nIter     = 200;
-P_T2.FIT.modelnum  = 051011; % multi echo T2 function: 
-P_T2.FIT.extopt=1;   % change parameters explicitly
+%% 4) Evaluation
+
+% Normalization
+Z=double(M_z(2:end,:))./double(M_z(1,:));
+
+%reshape segment
+Segment=squeeze(V(:, :, :, 1)) > 100;
+Segment_resh=reshape(Segment, size(Segment,1)*size(Segment,2)*size(Segment,3),1)';    % size Segment: 112x92x12
 
 % boundaries/start(p0) for:
 %    "T2"         "a"      "b"
 lb = [  .015      0        -10  ];
 ub = [ 1          10        10  ];
-p0 = [0.05        1         1  ];
-P_T2.FIT.lower_limit_fit = lb; P_T2.FIT.upper_limit_fit = ub; P_T2.FIT.start_fit = p0;
+p0 = [0.05        1         1  ]; %starting values
 
-tic ;
-popt= FIT_3D(T2_stack,P_T2,Segment);
-T2map=popt(:,:,:,1);
-toc
-T2map=T2map.*1000;  % Converting from from s in ms
+%define T2 fit function 
+t2_fit= @(p,t) p(2)*exp(-t/p(1))+p(3);
 
-figure; montage1t(T2map,[0 1000]); colormap gray; colorbar;
+%preallocation of Z_fit for speed
+Z_fit=zeros(sz(2)*sz(3)*sz(4),1);
+
+for ii = 1:size(Z, 2)
+    if all(isfinite(Z(:, ii))) && Segment_resh(ii)==1   
+        try
+            opts = optimset('Display','off');                        
+            [p, ~] = lsqcurvefit(t2_fit,p0,TE',(Z(:,ii)),lb, ub, opts); 
+            %disp(p);
+            Z_fit(ii,:) = p(1) * 1000; % T2 in ms 
+        catch
+            disp('something went wrong');
+            Z_fit(ii,:) = NaN;
+        end
+    end
+end
+
+
+%Vectorization Backwards
+  sizes=size(V);
+  T2map=reshape(Z_fit,[sizes(1) sizes(2) sizes(3)]);
+
+%% 5) Plots
+
+figure; imagesc(T2map(:,:,6),[0 1000]); colormap gray; colorbar; axis image
 title('T2map [ms]');
 
 

@@ -82,15 +82,15 @@ Z_fit = zeros(size(Z, 2), numel(w));
 
 for ii = 1:size(Z, 2)
     if all(isfinite(Z(:, ii))) && Segment_resh(ii)==1
-        p0 = [3.7, -0.1, 1, 2];                              % initial Starting values 
-                           
+        try
+            p0 = [3.7, -0.1, 1, 2];                              % initial Starting values                 
             %opts = optimset('Display','off');                        
             [p, ~] = lsqcurvefit(wasabi_fit_2abs,p0,w,(Z(:,ii))); 
             disp(p);
             rB1_stack(ii) = p(1) / B1;
             dB0_stack(ii) = p(2);
             Z_fit(ii,:) = wasabi_fit_2abs(p,w);
-              try  
+  
         catch
             disp('something went wrong');
             rB1_stack(ii) = NaN;
@@ -109,5 +109,5 @@ end
 %% 4) plots and further graphics
  % Display B1 and B0
  figure;
- subplot(1,2,1);imagesc(B0(:,:,6),[-0.2 0.2]);colorbar;title('B0 Map');
- subplot(1,2,2);imagesc(B1(:,:,6),[0.8 1.2]);colorbar;title('B1 Map');
+ subplot(1,2,1);imagesc(B0(:,:,6),[-0.2 0.2]);colorbar;title('B0 Map'); axis image
+ subplot(1,2,2);imagesc(B1(:,:,6),[0.8 1.2]);colorbar;title('B1 Map'); axis image
