@@ -92,7 +92,7 @@ Z_fit = np.zeros((Z.shape[1],np.size(w))) # same as the previous line
 for ii in range(Z.shape[1]):
      if np.all(np.isfinite(Z[:, ii])): # we check if all values in the current column ii of Z are finite (i.e., not NaN or infinity)
          
-         p0=([3.7, -0.1, 1, 0]) # we initialize an initial guess. These values are initial estimates for the parameters B1, offset, c and d of wasabi_fit_2abs
+         p0=([3.7, -0.1, 1, 2]) # we initialize an initial guess. These values are initial estimates for the parameters B1, offset, c and d of wasabi_fit_2abs
          try:
               p = curve_fit(wasabi_fit_2abs, w, Z[:,ii],  p0=p0, full_output=True, method='lm') # we use curve_fit function to fit wasabi_fit_function using Levenberg-Marquardt optimization method.
               print(p[0])
@@ -131,8 +131,8 @@ if Z.shape[1] > 1:
 
 fig, ax = plt.subplots()
 
-fit=Z_fit_stack[62,62,5,:]
-data=Z_stack[62,62,5,:]
+fit=Z_fit_stack[30,53,5,:]
+data=Z_stack[30,53,5,:]
 
 ax.plot(w, fit, label='fit')
 ax.plot(w, data, '.', label='data')
@@ -160,5 +160,4 @@ plt.colorbar()
 plt.title('Wasabi B1 map')
 
 plt.show()
-
 
