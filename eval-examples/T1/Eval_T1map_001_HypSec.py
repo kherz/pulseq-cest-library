@@ -11,12 +11,14 @@ import pypulseq as pp
 import os
 import  pydicom
 from scipy.optimize import curve_fit
+from bmctool.simulate import simulate
 
 seq = pp.Sequence()
 
-#%% read die sequence 
-seq_path = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/Messung_13_09_23/T1map_001_3HypSec.seq' # we define a variable seq_path and we assign it a string containing the location of the sequence
+#%% read in associated seq file from Pulse-CEST library 
 
+seq_fn = 'T1map_001_3HypSec'
+seq_path = '../../seq-library/'+seq_fn+'/'+seq_fn+'.seq'
 seq.read(seq_path)
 
 #%% extract values from the sequence
@@ -25,12 +27,26 @@ offsets =TI
 t = TI[1:,]
 m0_offset = offsets[0] # we assign to the variable m0_offset the first element of offset
 Nmeas = int(seq.get_definition('num_meas')[0]) #number of repetition
+#%% 2a) read in data from simulation
 
-#%% read data from measurement (dicom)
-path = 'W:/radiologie/mr-physik-data/Mitarbeiter/kouemo/Messung_13_09_23/Prismamessung/PULSEQ_HYBRID_GRE_2_2_5_T1_0011'  # we define a variable path and we assign it a string containing the file path to a directory where DICOM files are located
-os.chdir(path) # we change the current working directory of our Python script to the directory specified in the path variable.
+txt_path = '../../seq-library/'+seq_fn+'/M_z_'+seq_fn+'.seq.txt' 
+m_z = np.loadtxt(txt_path);
+m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vector
 
-collection = [pydicom.dcmread(filename) for filename in os.listdir(path)] # we create a collection of DICOM objects from the files in the directory
+# %% 2b) re-simulate using a ymal file
+# we assume you are in the path of the present file
+
+config_path = '../../sim-library/WM_3T_default_7pool_bmsim.yaml';
+sim = simulate(config_file=config_path, seq_file=seq_path) # we simulate the sequence using the sequence file and yaml file
+m_z = sim.get_zspec()[1]
+m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vector
+
+#%% 2c) read data from measurement (dicom)
+
+path = '../example_data/dcm/PULSEQ_HYBRID_GRE_2_2_5_T1/'  # we define a variable path and we assign it a string containing the file path to a directory where DICOM files are located
+
+collection = [pydicom.dcmread(path + filename) for filename in os.listdir(path)] # we create a collection of DICOM objects from the files in the directory
+
 V = np.stack([dcm.pixel_array for dcm in collection]) # we create an array and we use list comprehension to extract the pixel arrays from each dicom objects in collection
 V = np.transpose(V, (1, 2, 0)) # we trnspose V into the right shape
 sz = V.shape
