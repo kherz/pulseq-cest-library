@@ -1,30 +1,42 @@
-function EVAL_T2map
+%% EVAL T2map_001_T2prep
+% minimalistic data evaluation for T2 prep data acquired with
+% T2map_001_T2prep.seq
+%
+% Moritz Fabian 2023
 
-%% 1 read data from measurement (dicom)
-dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
-collection = dicomCollection(fullfile(dcmpath));
-seriesDescription = "pulseq_hybrid_GRE_2_2_5_T2";                              % Series  Description
-indices = find(strcmp(collection.SeriesDescription, seriesDescription));    % Find Dicom File
-filePaths = collection.Filenames(indices)
-SS = sortrows(collection.Filenames{1,1})
+%% 0) get the seq file infos
+pulseq_struct=what('pulseq-cest-library');
+pulseq_path=pulseq_struct.path;
+seq_filename='T2map_001_T2prep.seq';
+seq_file_folder_path= [pulseq_path filesep 'seq-library\' filesep extractBefore(seq_filename, '.seq')];
+seq_file_path= [seq_file_folder_path filesep seq_filename];
 
-%Read seq File
+%initiate seq file
 seq = SequenceSBB(getScannerLimits());
-[seqname seqpath]=uigetfile('','Go to Seq Path','*.seq'); cd(seqpath)
-seq.read(seqname)
-P_T2=logread(seqname,seqpath)
 
-ii=1;
-for k=1:numel(P_T2.SEQ.index_no_M0) 
-data=SS(ii:ii+11,1);
-V(:,:,:,k)=double(squeeze(dicomreadVolume(data)));
-ii=ii+12;
+question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
+if strcmpi(question, 'y')
+   %get the seq file from the library
+    seq.read(seq_file_path);
+    defs.TE   = seq.definitions('TE');
+    Nmeas=numel(defs.TE);
+else
+    %search your seqfile of the measurement
+    [seq_filename, seq_file_folder_path]=uigetfile('','');
+    seq.read(fullfile(seq_file_folder_path,seq_filename));
+    defs.TE   = seq.definitions('TE');
+    Nmeas=numel(defs.TE);
 end
 
-
-
-%% Define Segment
+%% 1 read data from measurement (dicom)
+dcmpath=uigetdir('','Go to DICOM Directory of T2map_001_T2prep  data'); cd(dcmpath)
+collection = dicomCollection(fullfile(dcmpath));
+cd(dcmpath)
+V = double(dicomreadVolume(collection)); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+%% 2 Define Segment
 Segment = ones(size(V(:,:,:,1)));
+%% 3) get times from seq file
+P_T2=logread(seq_filename,seq_file_folder_path);
 
 TE = [];
 num_adc = 0;
@@ -60,7 +72,7 @@ while nB < numel(seq.blockEvents)
     nB = nB+1;
 end
 
-%%
+%remove first readout in T2 stack
 image = double(V);
 T2_stack = image(:,:,:,2:end)./image(:,:,:,1);
 P_T2.SEQ.w = TE;
@@ -89,7 +101,7 @@ T2map=popt(:,:,:,1);
 toc
 T2map=T2map.*1000;  % Converting from from s in ms
 
-figure; montage1t(T2map,[0 1]); colormap gray; colorbar;
+figure; montage1t(T2map,[0 1000]); colormap gray; colorbar;
 title('T2map [ms]');
 
 
