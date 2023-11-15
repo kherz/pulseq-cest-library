@@ -75,7 +75,7 @@ for ii = 1:numel(defs.TE)
         seq.addBlock(post90Pulse);
         
         seq.addBlock(mr.makeDelay(100e-6)); % prespoiler
-        if spoiling == 1 && ii > 1 % spoil before readout after saturation
+        if defs.spoiling == 1 && ii > 1 % spoil before readout after saturation
             seq.addBlock(gxSpoil,gySpoil,gzSpoil);
             seq.addBlock(mr.makeDelay(100e-6)); % necessary?
         end
