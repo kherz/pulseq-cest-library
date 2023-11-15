@@ -84,9 +84,8 @@ for ii = 1:size(Z, 2)
     if all(isfinite(Z(:, ii))) && Segment_resh(ii)==1
         try
             p0 = [3.7, -0.1, 1, 2];                              % initial Starting values                 
-            %opts = optimset('Display','off');                        
-            [p, ~] = lsqcurvefit(wasabi_fit_2abs,p0,w,(Z(:,ii))); 
-            disp(p);
+            opts = optimset('Display','off');                        
+            [p, ~] = lsqcurvefit(wasabi_fit_2abs,p0,w,(Z(:,ii)),[],[],opts); 
             rB1_stack(ii) = p(1) / B1;
             dB0_stack(ii) = p(2);
             Z_fit(ii,:) = wasabi_fit_2abs(p,w);
