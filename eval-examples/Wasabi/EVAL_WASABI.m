@@ -12,36 +12,21 @@ seq_file_path= [seq_file_folder_path filesep seq_filename];
 
 % Go to seq file
 seq = SequenceSBB(getScannerLimits());
-gamma_hz  = seq.sys.gamma*1e-6;       
+gamma_hz  = seq.sys.gamma*1e-6;     % for H [Hz/uT]
+%get the seq file from the library
+seq.read(seq_file_path);
+defs.offsets_ppm   = seq.definitions('offsets_ppm');
+Nmeas=numel(defs.offsets_ppm);  
 
-%% 2)  read data from measurement (dicom)
+%% 2a)  read in data from simulation in pulseq folder
+M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
+
+%% 2b)  re-simulate
+M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
+M_z=M_z';
+
+%% 2c)  read data from measurement (dicom)
 dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
-
-% Question if seq file is still the same
-question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
-if strcmpi(question, 'y')
-    % 2a) get the seq file from the library
-    seq.read(seq_file_path)
-    defs.offsets_ppm   = seq.definitions('offsets_ppm');
-    Nmeas=numel(defs.offsets_ppm);
-else
-    % 2b) search your seqfile and resimulate the data, if there is not an
-    % "M_z" textfile apparent
-    [seqfile, seqpath]=uigetfile('','');
-    seq.read(fullfile(seqpath,seqfile));
-    defs.offsets_ppm   = seq.definitions('offsets_ppm');
-    Nmeas=numel(defs.offsets_ppm);
-
-    % 2c) check if M_z.txt is there, if not resimulate
-    try 
-        M_z_sim = load([seqpath extractBefore(seqfile, '.seq') '.txt']);
-    catch
-        disp('Simulation of M_z as a text file not found, doing re-simulation')
-        M_z_sim = simulate_pulseqcest(fullfile(seqpath,seqfile),[pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
-        M_z_sim=M_z_sim'; %transpose M_z
-        M_z_sim_MTRasym=M_z_sim(end:-1:2)-M_z_sim(2:end);%M0 offset is apparent
-    end
-end
 
 cd(dcmpath)
 collection = dicomCollection(fullfile(dcmpath));
@@ -63,6 +48,8 @@ sz=size(V_M_z);
 maskInd=1:sz(2)*sz(3)*sz(4);
 M_z=V_M_z(:,maskInd);
 
+
+%% 3) Evaluation
 % Normalization
 Z_wasabi=double(M_z(2:end,:))./double(M_z(1,:));
 
@@ -76,11 +63,12 @@ fitoptions=[1E-04, 1E-15, 1E-10, 1E-4, 1E-06];
 iterations = 100;
 modelnum  = 021031;
 c=1;
+
 d=2;
 
 
 % Compute the analytic function of WASABI curve
-wasabi_fit_2abs = @(p,w) abs(p(3) - p(4) .* sin(atan((p(1) ./ (freq / gamma_)) ./ (w - p(2)))).^2 .* sin(sqrt((p(1) ./ (freq / gamma_)).^2 + (w - p(2)).^2) .* freq .* (2 * pi) .* t_p / 2).^2);
+wasabi_fit_2abs = @(p,w) abs(p(3) - p(4) .* sin(atan((p(1) ./ (freq / gamma_hz)) ./ (w - p(2)))).^2 .* sin(sqrt((p(1) ./ (freq / gamma_hz)).^2 + (w - p(2)).^2) .* freq .* (2 * pi) .* t_p / 2).^2);
 Z=Z_wasabi;
 
 % Adapt the function for use with lsqcurvefit
@@ -115,11 +103,11 @@ end
 
 %Vectorization Backwards
   sizes=size(V);
-  B1=reshape(rB1_stack,[sizes(1) sizes(2) sizes(3)])
-  B0=reshape(dB0_stack,[sizes(1) sizes(2) sizes(3)])
+  B1=reshape(rB1_stack,[sizes(1) sizes(2) sizes(3)]);
+  B0=reshape(dB0_stack,[sizes(1) sizes(2) sizes(3)]);
   Zfit=reshape(Z_fit,[sizes(1) sizes(2) sizes(3) 31]);
-
+%% 4) plots and further graphics
  % Display B1 and B0
  figure;
  subplot(1,2,1);imagesc(B0(:,:,6),[-0.2 0.2]);colorbar;title('B0 Map');
- subplot(1,2,2);imagesc(B1(:,:,6),[0.8 1.2]);colorbar;stitle('B1 Map');
+ subplot(1,2,2);imagesc(B1(:,:,6),[0.8 1.2]);colorbar;title('B1 Map');
