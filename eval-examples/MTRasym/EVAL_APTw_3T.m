@@ -47,16 +47,6 @@ end
 cd(dcmpath)
 collection = dicomCollection(dcmpath);
 V = dicomreadVolume(collection); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
-figure;
-
-dcm_image = imagesc(squeeze(V(:, :, 11, 18)));colormap gray
-colorbar
-hold on;
-plot(65,132,'r+')
-
-sizes=size(V);
-figure
-plot(1:sizes(4),squeeze(V(100,90, 6,:)));
 
 % Vectorization
 V_M_z=double(permute(V,[4 1 2 3]));
