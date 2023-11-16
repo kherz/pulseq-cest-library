@@ -131,7 +131,7 @@ end
   sizes=size(V);
   T2map=reshape(Z_fit,[sizes(1) sizes(2) sizes(3)]);
 
-%% 5) Plots
+%% 4) Imaging
 
 figure; imagesc(T2map(:,:,6),[0 1000]); colormap gray; colorbar; axis image
 title('T2map [ms]');

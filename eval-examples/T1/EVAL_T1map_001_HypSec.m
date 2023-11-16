@@ -1,76 +1,120 @@
-%% EVAL T1map_001_Hypsec
-% minimalistic data evaluation for T1 IR data acquired with
-% T1map_001_3HypSec.seq
-%
-% Moritz Fabian 2023
+function EVAL_T1map_001_HypSec
 
-%% 0) get the seq file infos
-pulseq_struct=what('pulseq-cest-library');
+data_flag= 'real_data'; % simulation, re_simulation or real_data
+%% 1) Build up Filename, Structure, Paths
+
+%get the user specific pulseq path
+pulseq_struct=what('pulseq-cest-library');                  % look in Matlabpath if Folder is already included
 pulseq_path=pulseq_struct.path;
 seq_filename='T1map_001_3HypSec.seq';
 seq_file_folder_path= [pulseq_path filesep 'seq-library' filesep extractBefore(seq_filename, '.seq')];
-seq_file_path= [seq_file_folder_path '\' seq_filename];
+seq_file_path= [seq_file_folder_path filesep seq_filename];
 
-%initiate seq file
+
+% Go to seq file
 seq = SequenceSBB(getScannerLimits());
+gamma_hz  = seq.sys.gamma*1e-6;     % for H [Hz/uT]
 
 question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
 if strcmpi(question, 'y')
    %get the seq file from the library
     seq.read(seq_file_path);
-    defs.TI   = seq.definitions('TI');
-    Nmeas=numel(defs.TI);
+    defs.offsets_ppm = seq.definitions('offsets_ppm');
+    Nmeas=numel(defs.offsets_ppm); 
 else
     %search your seqfile of the measurement
     [seq_filename, seq_file_folder_path]=uigetfile('','');
     seq.read(fullfile(seq_file_folder_path,seq_filename));
-    defs.TI   = seq.definitions('TI');
-    Nmeas=numel(defs.TI);
+    defs.offsets_ppm = seq.definitions('offsets_ppm');
+    Nmeas=numel(defs.offsets_ppm); 
 end
 
 
-%% 1 read data from measurement (dicom)
-dcmpath=uigetdir('','Go to DICOM Directory of T1map_001_3HypSec data'); cd(dcmpath)
-collection = dicomCollection(fullfile(dcmpath));
-cd(dcmpath)
-V = double(dicomreadVolume(collection)); sz=size(V); V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); V= permute(V,[1 2 4 3]); size(V)
+switch data_flag
+    case 'simulation'
+        %% 2a)  read in data from simulation in pulseq folder
+        M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
+    case 're_simulation'
+        %% 2b)  re-simulate
+        M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
+        M_z=M_z';
+    case 'real_data'
 
-%% 2) Define Segment
-Segment = ones(size(V(:,:,:,1)));
-%% 3) get times from seq file
-P=logread(seq_filename,seq_file_folder_path);
-P.SEQ.w = P.SEQ.TI_list.*1000;% conversion from s to ms as starting values in loadGui are in ms
-P.SEQ.FREQ=gamma_*P.SEQ.B0;
-P.SEQ.B1=seq.definitions('B1pa');
+        %% 2c)  read data from measurement (dicom)
+        dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
+   
+        collection = dicomCollection(fullfile(dcmpath));
+        V= dicomreadVolume(collection); 
+        sz=size(V); 
 
-%% 4) T1 mapping (T1eval_levmar)
-TImaxstack=squeeze(V(:,:,:,1));
-[image] = NORM_ZSTACK(V,TImaxstack,P,Segment);  %Normalization with max TI
-P.SEQ.stack_dim=size(image);
+        V=reshape(V,[sz(1) sz(2) Nmeas sz(4)/Nmeas ]); 
+        V= permute(V,[1 2 4 3]); size(V)
 
-%Fitparameters
-P.FIT.options   = [1E-04, 1E-15, 1E-10, 1E-04, 1E-06];
-P.FIT.nIter     = 100;
-P.FIT.modelnum  = 031012;
-P.FIT.extopt=1; % change parameters explicitly
-P.FIT.estimatedp0 = 1; %estimate T1 start parameter via linear regression fit
-lb = [0         -80   0       ];
-ub = [10000      40   40    ];
-p0 = [200       0.5     1    ]; %2000 for brain
-ROInumber = 1;
-P.FIT.lower_limit_fit = lb; P.FIT.upper_limit_fit = ub; P.FIT.start_fit = p0;
- 
+        % Normalization with TI max
+        V_norm=double(V(:,:,:,2:end))./double(V(:,:,:,1));
+        size_norm=size(V_norm);
 
-[popt, P] = FIT_3D(image,P,Segment);   %FIT_3D(Z_stack,P,Segment,slices)
-T1map=popt(:,:,:,1);
+        % Define Segment
+        Segment=squeeze(V(:, :, :, 1)) > 100;
+        Segment_resh=reshape(Segment, size(Segment,1)*size(Segment,2)*size(Segment,3),1)';    % size Segment: 112x92x12
 
-figure; montage1t(T1map,[500 2000]); colormap gray; colorbar;
-title('T1map [ms]');
+        % Vectorize
+        V_M_z=double(permute(V_norm,[4 1 2 3]));       % Changes from 112x92x12x32 to 32x112x92x12
+        sz=size(V_M_z);
+        maskInd=1:sz(2)*sz(3)*sz(4);
+        M_z=V_M_z(:,maskInd);
+end
 
-%% Example to Plot T1map in Nifti File
-%nii=load_untouch_nii('MID012001_T1map_001_3HypSec_QUASS.nii')
-%nii.img=T1map;
-%nii.hdr.dime.dim(5)=1;
-%nii.hdr.dime.datatype=16;
-%nii.hdr.dime.bitpix=32;
-%save_untouch_nii(nii,'T1map');
+    %% 3 Evaluation
+
+    % Fitting Parameters 
+    P.TI=seq.definitions('TI');P.TI=P.TI.*1000  % conversion from s to ms
+    P.B1=seq.definitions('B1rms');
+    P.B0=seq.definitions('B0');
+    P.Freq=gamma_hz*P.B0;
+
+    P.FIT.options   = [1E-04, 1E-15, 1E-10, 1E-04, 1E-06];
+    P.FIT.nIter     = 100;
+    P.FIT.modelnum  = 031012;
+    P.FIT.extopt=1; % change parameters explicitly
+    .FIT.estimatedp0 = 1; %estimate T1 start parameter via linear regression fit
+
+    %     T1          a      c       -->further information in fitmodelfunc_NUM.m
+    
+    %lb = [0         -80   0     ];
+    %ub = [10000      40   40    ];
+    p0 = [0.5      1     2000];      % initial Starting values      
+
+    Z_fit = zeros(size(M_z, 2), numel(P.TI)-1);
+    t1_stack = zeros(1, size(M_z, 2));
+
+    % Function
+    t1_fit = @(p,t)  p(1) - p(2) * exp(-t / p(3));   % Function
+
+    Z=M_z;                                           % Make Copy 
+        for ii = 1:size(Z, 2)
+            if all(isfinite(Z(:, ii))) && Segment_resh(ii)==1
+
+                try  
+                    opts= optimset('Display','off');
+                    [p, ~] = lsqcurvefit(t1_fit,p0,P.TI(2:end),(Z(:,ii)),[],[],opts);   
+                    %[p, ~] = lsqcurvefit(t1_fit,p0,P.TI(2:end),(Z(:,ii)),lb,ub,opts);  
+                    t1_stack(ii) = p(3);    
+                catch
+                    disp('something went wrong');
+                    t1_stack(ii) = NaN;
+                end
+            end
+        end
+
+
+  %Vectorization Backwards
+  sizes=size(V);
+  T1=reshape(t1_stack,[sizes(1) sizes(2) sizes(3)])
+
+%% 4 Imaging
+
+ % Display T1
+ figure;
+ imagesc(T1(:,:,6),[0 2000]);colorbar;title('T1 Map');
+end

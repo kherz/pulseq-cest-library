@@ -97,7 +97,7 @@ if size(Z,2)>1
 end
 
 
-%% 4)  Plots and further graphics
+%% 4)  Imaging
 figure;
 subplot(1,2,1); plot(w,mean(Z_corr,2),'r.-', 'DisplayName', 'Measurement'); title('Mean Z-spectrum'); set(gca,'Xdir','reverse');
 subplot(1,2,2); plot(w,mean(MTRasym,2),'r.-', 'DisplayName', 'Measurement'); title('Mean MTRasym-spectrum'); xlim([0 Inf]);set(gca,'Xdir','reverse');

@@ -53,22 +53,20 @@ switch data_flag
         M_z=V_M_z(:,maskInd);
 end
 
-%% 3) Evaluation
-% Normalization
-Z_wasabi=double(M_z(2:end,:))./double(M_z(1,:));
+        %% 3) Evaluation
+        % Normalization
+        Z_wasabi=double(M_z(2:end,:))./double(M_z(1,:));
 
-
-% Fitting Parameters 
-B1=seq.definitions('B1');
-freq=seq.definitions('FREQ');
-w=defs.offsets_ppm(2:end);
-t_p=seq.definitions('tp');  
-fitoptions=[1E-04, 1E-15, 1E-10, 1E-4, 1E-06];
-iterations = 100;
-modelnum  = 021031;
-c=1;
-
-d=2;
+        % Fitting Parameters 
+        B1=seq.definitions('B1');
+        freq=seq.definitions('FREQ');
+        w=defs.offsets_ppm(2:end);
+        t_p=seq.definitions('tp');  
+        fitoptions=[1E-04, 1E-15, 1E-10, 1E-4, 1E-06];
+        iterations = 100;
+        modelnum  = 021031;
+        c=1;
+        d=2;
 
 
 % Compute the analytic function of WASABI curve
@@ -109,7 +107,7 @@ end
   B1=reshape(rB1_stack,[sizes(1) sizes(2) sizes(3)]);
   B0=reshape(dB0_stack,[sizes(1) sizes(2) sizes(3)]);
   Zfit=reshape(Z_fit,[sizes(1) sizes(2) sizes(3) 31]);
-%% 4) plots and further graphics
+%% 4) Imaging
  % Display B1 and B0
  figure;
  subplot(1,2,1);imagesc(B0(:,:,6),[-0.2 0.2]);colorbar;title('B0 Map'); axis image
