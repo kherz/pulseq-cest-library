@@ -2,15 +2,15 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for white matter at 3T 
-# This file is inspired by WM_001, but all numbers are made simpler to form a easy to share default model
-#
-# - 4 CEST pools
-# - 1 NOE pool      
-# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
+# Simulation parameters for white matter at 3T with
+# - 1 CEST pool 
+# - water pool as in water solution
 #
 # sources/references for settings in this file:
-# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
+# https://onlinelibrary.wiley.com/doi/full/10.1002/mrm.28433
+# exchange rate of creatine at 21 deg C and pH 6.4 = 47 Hz, we use 50 Hz herein
+# in this paper they used 55.5 mM Creatine, which is close to the maximum solubility this would be f= 55.5mM/(2*55.5M)=0.0005
+# this should give around 7 percent CEST effect
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
@@ -20,23 +20,23 @@
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
-### water pool   # as in WM_3T_001
+### water pool
 water_pool: {
   f: 1.0,
-  t1: 1.5,
-  t2: 1.0 
+  t1: 3.0,
+  t2: 2.0
 }
 
-cest_pool: {  
-  'amide': {
-    f: 4.8649e-04,  # 100e-3 / 111, 
-    t1: 1.0,
+### CEST pool(s)
+cest_pool: {
+  'creatine_gua': {
+    f: 5.0e-04, #55.5e-3 / 111,
+    t1: 1.05,
     t2: 0.1,
-    k: 350,
-    dw: 3
+    k: 50,
+    dw: 1.9
   }
-  }
-
+}
 
 ###### Scanner settings
 #       b0: field strength [T] (float)
