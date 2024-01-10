@@ -9,8 +9,8 @@
 % citation:
 % Roeloffs, V., Meyer, C., Bachert, P., and Zaiss, M. (2014) 
 % Towards quantification of pulsed spinlock and CEST at clinical MR scanners: 
-% an analytical interleaved saturation–relaxation (ISAR) approach, 
-% NMR Biomed., 28, 40– 53, doi: 10.1002/nbm.3192. 
+% an analytical interleaved saturationâ€“relaxation (ISAR) approach, 
+% NMR Biomed., 28, 40â€“ 53, doi: 10.1002/nbm.3192. 
 
 % Moritz Zaiss 2021
 % moritz.zaiss@tuebingen.mpg.de
@@ -39,7 +39,7 @@ defs.Trec          = 3.5             ; % approx [s]
 defs.Trec_M0       = 3.5             ; % approx [s]
 defs.M0_offset     = -300           ; % m0 offset [ppm]
 defs.DCsat         = defs.tp/(defs.tp+defs.td); % duty cycle
-defs.offsets_ppm   = [defs.M0_offset -4:0.05:4]; % offset vector [ppm]
+defs.offsets_ppm   = [defs.M0_offset -4:0.1:4]; % offset vector [ppm]
 defs.num_meas      = numel(defs.offsets_ppm)   ; % number of repetition
 defs.Tsat          = defs.n_pulses.*(defs.tp+ defs.td)-defs.td;
 defs.FREQ		   = 127.7292 ;         % Approximately 3 T
