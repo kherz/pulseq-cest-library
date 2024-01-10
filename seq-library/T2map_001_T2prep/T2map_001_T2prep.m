@@ -62,7 +62,7 @@ gzSpoil=mr.makeTrapezoid('z','Amplitude',spoilAmplitude,'Duration',spoilDuration
 
 
 for ii = 1:numel(defs.TE)
-    realTehalf = defs.TE(ii)/2-lims.rfRingdownTime-lims.rfDeadTime;
+    realTehalf = defs.TE(ii)/2-lims.rfRingdownTime-lims.rfDeadTime-defs.tp;
     % recover time
     
     seq.addBlock(mr.makeDelay(defs.Trec));
