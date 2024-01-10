@@ -116,7 +116,7 @@ for m, te in enumerate(defs["TE"]):
     # print progress/offset
     print(f"#{m + 1} / {len(defs['TE'])} : echo time {te:.2f} s")
 
-    real_te_half = te / 2.0 - sys.rf_ringdown_time - sys.rf_dead_time
+    real_te_half = te / 2.0 - sys.rf_ringdown_time - sys.rf_dead_time-defs["tp"]
 
     # add constant trec delay
     if defs["trec"] > 0:
