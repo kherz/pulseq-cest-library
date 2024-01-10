@@ -9,8 +9,8 @@
 % citation:
 % Roeloffs, V., Meyer, C., Bachert, P., and Zaiss, M. (2014) 
 % Towards quantification of pulsed spinlock and CEST at clinical MR scanners: 
-% an analytical interleaved saturation–relaxation (ISAR) approach, 
-% NMR Biomed., 28, 40– 53, doi: 10.1002/nbm.3192. 
+% an analytical interleaved saturationâ€“relaxation (ISAR) approach, 
+% NMR Biomed., 28, 40â€“ 53, doi: 10.1002/nbm.3192. 
 
 % Moritz Zaiss 2021
 % moritz.zaiss@tuebingen.mpg.de
