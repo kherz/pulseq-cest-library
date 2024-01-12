@@ -30,14 +30,14 @@ switch data_flag
         M_z = load([seq_file_folder_path filesep 'M_z_' seq_filename '.txt']);
     case 're_simulation'
         %% 2b)  re-simulate
-        M_z = simulate_pulseqcest(seq_filename, [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
+        M_z = simulate_pulseqcest([seq_file_folder_path filesep seq_filename], [pulseq_path filesep 'sim-library' filesep 'WM_3T_default_7pool_bmsim.yaml']);
         M_z=M_z';
     case 'real_data' 
         %% 2c)  read data from measurement (dicom)
         dcmpath=uigetdir('','Go to DICOM Directory'); cd(dcmpath)
         
         % Question if seq file is still the same
-        question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
+        question = input('Are the DICOM Files acquired with the same protocol parameters from the PulseqCEST Library? [y/n]','s');
         if strcmpi(question, 'y')
            %do nothing 
         else
@@ -88,17 +88,20 @@ end
 %  Calc Zspec and MTRasym
 Zref = Z_corr(end:-1:1,:);
 MTRasym = Zref-Z_corr;
+FS_MTRasym = MTRasym.*0.5^2./(Zref.^2);
 %Vectorization Backwards
 if size(Z,2)>1
     V_MTRasym=double(V_M_z(2:end,:,:,:))*0;
     V_MTRasym(:,maskInd)= MTRasym;
     V_Z_corr=double(V_M_z(2:end,:,:,:))*0;
     V_Z_corr(:,maskInd)= Z_corr;
+    V_FS_MTRasym=double(V_M_z(2:end,:,:,:))*0;
+    V_FS_MTRasym(:,maskInd)= FS_MTRasym;
 end
 
 
-%% 4)  Imaging
-figure;
+%% 4)  Visualization
+figure('Name',data_flag);
 subplot(1,2,1); plot(w,mean(Z_corr,2),'r.-', 'DisplayName', 'Measurement'); title('Mean Z-spectrum'); set(gca,'Xdir','reverse');
 subplot(1,2,2); plot(w,mean(MTRasym,2),'r.-', 'DisplayName', 'Measurement'); title('Mean MTRasym-spectrum'); xlim([0 Inf]);set(gca,'Xdir','reverse');
 
@@ -108,10 +111,13 @@ if size(Z,2)>1
     offsetofinterest=32; % Pick offset for Evaluation
     w(offsetofinterest)
     
-    subplot(1,2,1);
+    subplot(2,2,1);
     imagesc(squeeze(V_Z_corr(offsetofinterest,:,:,sliceofinterest)),[0.5 1]);  title(sprintf('Z(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
-    subplot(1,2,2);
+    subplot(2,2,2);
     imagesc(squeeze(V_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+     subplot(2,2,4);
+    imagesc(squeeze(V_FS_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('FS-MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+    
     %colormap(gca,RAINBOW)
 end
 
