@@ -20,65 +20,60 @@ import pypulseq as pp
 from bmctool.simulate import simulate
 from csaps import csaps
 
+
+# The following flag determines if you want to operate on real data or simulate the data
+data_flag = 'real_data'  # options: 'simulation', 're_simulation', 'real_data'
+
+
 # %% ==============================
 # Define seq, config and dicom name
 # =================================
-seq_name = "APTw_3T_000_2uT_1block_2s_braintumor.seq"
-config_name = "WM_3T_default_7pool_bmsim.yaml"
-dcm_name = "PULSEQ_HYBRID_GRE_2_2_5_APTW_001"
 
-# %% ====================================================
+pulseq_path = Path.home() /'pulseq-cest-library'
+seq_name = 'APTw_3T_000_2uT_1block_2s_braintumor.seq'
+seq_filename = Path(seq_name)     
+seq_file_folder_path = pulseq_path / 'seq-library' / seq_filename.stem
+seq_file_path = seq_file_folder_path / seq_name
+assert seq_file_path.is_file(), 'seq file exist'
+
 # 1) read in associated seq file from Pulseq-CEST library
-# =======================================================
-
-# get path to seq-file in seq-library
-seq_name = Path(seq_name)  # convert to Path object
-seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
-assert seq_path.is_file(), "seq file not found"
-
-# read in the sequence
 seq = pp.Sequence()
-seq.read(seq_path)
+seq.read(seq_file_path)
 
-# read offset vector from seq-file definitions
 m0_offset = seq.get_definition("M0_offset")
 offsets = seq.get_definition("offsets_ppm")
 n_meas = len(offsets)
 
-# %% =========================================
-# 2a) read in the simulated data from txt file
-# ============================================
 
-m_z_from_txt = np.loadtxt(str(seq_path.parent / ("M_z_" + seq_path.name + ".txt")))
-m_z_from_txt = np.expand_dims(m_z_from_txt, axis=1)
+if data_flag == 'simulation':
+    # 2a) Read in data from simulation in Pulseq folder
+    M_z = np.loadtxt(os.path.join(seq_file_folder_path, f'M_z_{seq_filename}.txt'))
+    M_z = np.expand_dims(M_z, axis=1)
+elif data_flag == 're_simulation':
+    # 2b) Re-simulate
+    # Implement the re-simulation using the appropriate Python library and function
+    M_z = None  # Placeholder for re-simulated data
 
-# %% ================================================
-# 2b) re-simulate data using seq-file and config-file
-# ===================================================
+    # config_path = Path.cwd().parent.parent / "sim-library" / config_name
+    # sim = simulate(config_file=config_path, seq_file=seq_path)   
+    # M_z_sim = sim.get_zspec()[1]
+    # M_z_sim = np.expand_dims(M_z, axis=1)
+elif data_flag == 'real_data':
+    # 2c) Read data from measurement (DICOM)
+    dcmpath = input('Enter the path to your DICOM directory: ')
+    os.chdir(dcmpath)
+    question = input('Are the DICOM Files acquired with the same protocol parameters from the PulseqCEST Library? [y/n]: ')
+    if question.lower() != 'y':
+        seqfile = filedialog.askopenfilename(title='Select sequence file', filetypes=[("SEQ files", "*.seq")])
+        if seqfile:
+            seqfile = input('Please enter the path to your seq file: ')
+            seq.read(seqfile)
+            offsets = seq.get_definition('offsets_ppm')
+            Nmeas = len(offsets)
 
-config_path = Path.cwd().parent.parent / "sim-library" / config_name
-sim = simulate(config_file=config_path, seq_file=seq_path)
-m_z_sim = sim.get_zspec()[1]
-m_z_sim = np.expand_dims(m_z_sim, axis=1)
-
-# %% ====================================
-# 2c)  read data from measurement (dicom)
-# =======================================
-dcm_folder = Path.cwd().parent.parent / "eval-examples" / "example_data" / "dcm"
-dcm_path = dcm_folder / dcm_name
-assert dcm_path.is_dir(), "dicom folder not found"
-
-# Question if seq file is still the same
-question = input('Are the DICOM Files acquired with the same Protocol Parameters from the PulseqCEST Library? [y/n] ')
-if question.lower() == 'n':
-    seqfile = input('Please enter the path to your seq file: ')
-    seq.read(seqfile)
-    offsets = seq.get_definition('offsets_ppm')
-    Nmeas = len(offsets)
 
 #read data from dicom directory
-collection = [pydicom.dcmread(dcm_path / filename) for filename in os.listdir(dcm_path)]
-
+collection = [pydicom.dcmread(os.path.join(dcmpath, filename)) for filename in os.listdir(dcmpath)]
 # extract the volume data
 V = np.stack([dcm.pixel_array for dcm in collection])
 V = np.transpose(V, (1, 2, 0))
@@ -153,7 +148,7 @@ if Z.shape[1] > 1:
     ).transpose(1, 2, 3, 0)
 
 # %% ==========================
-# 4) Plots and further graphics
+# 4) Plots MEAN ZSpec and MTRasym from Phantom
 # =============================
 
 plt.figure(figsize=(10, 4))
@@ -170,32 +165,21 @@ plt.title("Mean MTRasym-spectrum")
 plt.show()
 
 # %% ==================
-# 5) display the images
+# 5) Plot Parametric Maps from Z(3.5 ppm) and MTRasym(3.5ppm)
 # =====================
 
 slice_of_interest = 5  # pick slice for Evaluation
 desired_offset = 3.5
-offset_of_interest = np.where(offsets == desired_offset)[
-    0
-]  # pick offset for Evaluation
+offset_of_interest = np.where(offsets == desired_offset)[0]  # pick offset for Evaluation
 w_offset_of_interest = w[offset_of_interest]
 
 plt.figure(figsize=(10, 4))
-
 plt.subplot(1, 2, 1)
-plt.imshow(
-    V_Z_corr_reshaped[:, :, slice_of_interest, offset_of_interest], vmin=0.5, vmax=1
-)
+plt.imshow(V_Z_corr_reshaped[:, :, slice_of_interest, offset_of_interest], vmin=0.5, vmax=1)
 plt.colorbar()
 plt.title("Z(Δω) = %.2f ppm" % w_offset_of_interest)
-
 plt.subplot(1, 2, 2)
-plt.imshow(
-    V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],
-    vmin=-0.05,
-    vmax=0.05,
-)
+plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=-0.1,vmax=0.1)
 plt.colorbar()
 plt.title("MTRasym(Δω) = %.2f ppm" % w_offset_of_interest)
-
 plt.show()
