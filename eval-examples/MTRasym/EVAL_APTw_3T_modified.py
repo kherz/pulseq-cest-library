@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun 28 13:12:35 2023
+Created on Wed Jan 17 16:32:14 2024
 
-@author: kouemoin
-
+@author: schuerjn
 """
 
 # %% =============
 # Import libraries
 # ================
-
+# Loading 
 import os
 from pathlib import Path
 
@@ -21,27 +20,34 @@ from bmctool.simulate import simulate
 from csaps import csaps
 
 
-# The following flag determines if you want to operate on real data or simulate the data
- data_flag = 'real_data'  # options: 'simulation', 're_simulation', 'real_data'
+# Information
+# data_flag:        'real_data' , 'simulation' , 're-simulation'
+# data_path:        Enter path where DIDCOM data are located.
+# bmsim_filename:   Enter yaml filename
+# seq_filename:     enter seq filename
 
-# %% ==============================
+
+def eval_aptw_3t(**kwargs):
+    # Set default values
+    data_flag = kwargs.get('data_flag', 'real_data')
+    data_path = kwargs.get('data_path', '')
+    bmsim_filename = kwargs.get('bmsim_filename', 'WM_3T_default_7pool_bmsim.yaml')
+    seq_filename = kwargs.get('seq_filename', 'APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq')
+
+    # Handling the case where data_flag is 'real_data' and data_path is not specified
+    if data_flag == 'real_data' and not data_path:
+        # Here you would typically show a dialog box to select a directory.
+        # In a script, you might want to ask the user to input the path.
+        data_path = input('Please enter the path to your DICOM directory: ')
+        # Return these values so they can be used in the main script
+    return data_flag, data_path, bmsim_filename, seq_filename
+
+
+
 # Define seq, config and dicom name
-# =================================
-# get path to seq-file in seq-library
-
-seq_name = 'APTw_3T_000_2uT_1block_2s_braintumor.seq'
-
-seq_name = Path(seq_name)  # convert to Path object
+seq_name = Path(seq_filename)
 seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
-
 assert seq_path.is_file(), "seq file not found"
-# 1) read in associated seq file from Pulseq-CEST library
-seq = pp.Sequence()
-seq.read(seq_path)
-
-m0_offset = seq.get_definition("M0_offset")
-offsets = seq.get_definition("offsets_ppm")
-n_meas = len(offsets)
 
 
 if data_flag == 'simulation':
@@ -182,3 +188,4 @@ plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=
 plt.colorbar()
 plt.title("MTRasym(Δω) = %.2f ppm" % w_offset_of_interest)
 plt.show()
+

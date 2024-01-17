@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun 28 13:12:35 2023
+Created on Wed Jan 17 17:42:36 2024
 
-@author: kouemoin
-
+@author: schuerjn
 """
-
 # %% =============
 # Import libraries
 # ================
-
+# Loading 
 import os
 from pathlib import Path
 
@@ -19,29 +17,42 @@ import pydicom
 import pypulseq as pp
 from bmctool.simulate import simulate
 from csaps import csaps
+import argparse
+
+# Information
+# Example of calling the function with custom arguments
+# eval_aptw_3t(data_flag='simulation', data_path='/path/to/data')
+
+# data_flag:        'real_data' , 'simulation' , 're-simulation'
+# data_path:        Enter path where DIDCOM data are located.
+# bmsim_filename:   Enter yaml filename
+# seq_filename:     enter seq filename
 
 
-# The following flag determines if you want to operate on real data or simulate the data
- data_flag = 'real_data'  # options: 'simulation', 're_simulation', 'real_data'
+# Set up argparse to handle command line arguments
+parser = argparse.ArgumentParser(description="EVAL_APTw_3T script")
+parser.add_argument('data_flag', type=str, nargs='?', default='real_data',
+                    help="Type of data to process: 'simulation', 're_simulation', or 'real_data'")
+parser.add_argument('data_path', type=str, nargs='?', default='',
+                    help="Path to the data directory")
+parser.add_argument('bmsim_filename', type=str, nargs='?', default='WM_3T_default_7pool_bmsim.yaml',
+                    help="Filename of the BMSim configuration file")
+parser.add_argument('seq_filename', type=str, nargs='?', default='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',
+                    help="Filename of the sequence file")
 
-# %% ==============================
+args = parser.parse_args()
+
+# Use the arguments
+data_flag = args.data_flag
+data_path = args.data_path
+bmsim_filename = args.bmsim_filename
+seq_filename = args.seq_filename
+
+
 # Define seq, config and dicom name
-# =================================
-# get path to seq-file in seq-library
-
-seq_name = 'APTw_3T_000_2uT_1block_2s_braintumor.seq'
-
-seq_name = Path(seq_name)  # convert to Path object
+seq_name = Path(seq_filename)
 seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
-
 assert seq_path.is_file(), "seq file not found"
-# 1) read in associated seq file from Pulseq-CEST library
-seq = pp.Sequence()
-seq.read(seq_path)
-
-m0_offset = seq.get_definition("M0_offset")
-offsets = seq.get_definition("offsets_ppm")
-n_meas = len(offsets)
 
 
 if data_flag == 'simulation':
@@ -182,3 +193,4 @@ plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=
 plt.colorbar()
 plt.title("MTRasym(Δω) = %.2f ppm" % w_offset_of_interest)
 plt.show()
+
