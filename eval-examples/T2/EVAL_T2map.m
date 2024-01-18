@@ -1,24 +1,47 @@
+function EVAL_T2map(varargin)
+
 %% EVAL T2map_001_T2prep
 % minimalistic data evaluation for T2 prep data acquired with
 % T2map_001_T2prep.seq
 %
-% Moritz Fabian 2023
+% Moritz Zaiss, Jan-Rüdiger Schüre, Moritz Fabian 
 %
 % The following flag determines, if you want to operate on real data or
 % simulate the data
-data_flag= 'real_data'; % simulation, re_simulation or real_data
 
-%% 1) get the seq file infos
+p = inputParser;
+% Define the named parameters and their default values
+addParameter(p, 'data_flag', 'real_data');  % simulation, re_simulation or real_data
+addParameter(p, 'data_path', '');
+addParameter(p, 'bmsim_filename', 'WM_3T_default_7pool_bmsim.yaml');
+addParameter(p, 'seq_filename', 'APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq');
+parse(p, varargin{:});
+
+data_flag=  p.Results.data_flag;
+data_path=  p.Results.data_path;
+bmsim_filename=  p.Results.bmsim_filename;
+seq_filename=  p.Results.seq_filename;
+
+if strcmp(data_flag,'real_data') && strcmp(data_path,'')
+    data_path=uigetdir('','Go to DICOM Directory');
+end
+
+
+%% 1)  read in associated seq file
+%get the user specific pulseq path
 pulseq_struct=what('pulseq-cest-library');
 pulseq_path=pulseq_struct.path;
-seq_filename='T2map_001_T2prep.seq';
-seq_file_folder_path= [pulseq_path filesep 'seq-library\' filesep extractBefore(seq_filename, '.seq')];
+
+seq_file_folder_path= [pulseq_path filesep 'seq-library' filesep extractBefore(seq_filename, '.seq')];
 seq_file_path= [seq_file_folder_path filesep seq_filename];
 
-%initiate seq file
+
+% Go to seq file
 seq = SequenceSBB(getScannerLimits());
+gamma_hz  = seq.sys.gamma*1e-6;     % for H [Hz/uT]
 
 question = input('Are the DICOM Files acquired with the same Protocoll Parameters from the PulseqCEST Library? [y/n]','s');
+
 if strcmpi(question, 'y')
    %get the seq file from the library
     seq.read(seq_file_path);
@@ -133,8 +156,7 @@ end
 
 %% 4) Imaging
 
-figure; imagesc(T2map(:,:,6),[0 1000]); colormap gray; colorbar; axis image
+figure; imagesc(T2map(:,:,6),[0 100]); colormap gray; colorbar; axis image
 title('T2map [ms]');
 
-
-
+end
