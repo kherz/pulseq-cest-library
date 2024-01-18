@@ -54,6 +54,13 @@ seq_name = Path(seq_filename)
 seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
 assert seq_path.is_file(), "seq file not found"
 
+# 1) read in associated seq file from Pulseq-CEST library
+seq = pp.Sequence()
+seq.read(seq_path)
+m0_offset = seq.get_definition("M0_offset")
+offsets = seq.get_definition("offsets_ppm")
+n_meas = len(offsets)
+
 
 if data_flag == 'simulation':
     # 2a) Read in data from simulation in Pulseq folder
