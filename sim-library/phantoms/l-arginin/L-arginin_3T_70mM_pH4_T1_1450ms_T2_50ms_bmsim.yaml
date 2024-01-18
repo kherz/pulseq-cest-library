@@ -2,16 +2,15 @@
 # ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
 # ------------------------ https://pulseq-cest.github.io/ ------------------------ #
 ####################################################################################
-# Simulation parameters for white matter at 3T - 2 pools - MT Lorentzian
-# sources/references for settings in this file Stanisz et al. MRM 2005 https://doi.org/10.1002/mrm.20605 
-# To adjust the width of the Lorentzian MT to coarsly match the SuperLorentzian, we adjusted the R2mt by a factor 0.23
-# We also introduced an additional MT shift of -3 ppm that was not reported by Stanisz.
-# 
-# - a water pool  
-# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
-# - 0 CEST pools
-# - 0 NOE pool    
+# Simulation parameters for white matter at 3T 
+# This file is inspired by WM_001, but all numbers are made simpler to form a easy to share default model
 #
+# - 4 CEST pools
+# - 1 NOE pool      
+# - a Lorentzian shaped MT pool (with adjusted R2x by a factor 0.23, this makes the pool shiftable
+#
+# sources/references for settings in this file:
+# CEST pools: https://doi.org/10.1016/j.neuroimage.2017.04.045
 
 ###### Pool settings
 #         f: relative pool size fraction (float)
@@ -21,26 +20,33 @@
 #        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
-### water pool   # as in Stansiz WM https://onlinelibrary.wiley.com/doi/10.1002/mrm.20605
+### water pool   # as in WM_3T_001
 water_pool: {
   f: 1.0,
-  t1: 1.820,
-  t2: 99e-3,
-  #t2star: 0.0333, #0.0333
-  #isochromats: 1
+  t1: 1.45,
+  t2: 0.05
 }
 
-### MT pool  
+### MT pool  pectra
 mt_pool: {
-  f: 0.05, 
-  t1: 1.0,  # we can only assume here that it was set to R1=1 Hz, as they refer to this paper: https://doi.org/10.1002/mrm.1910290607
-  t2:  3.9565e-05,  # 9.1e-6/0.23,  # adjusted to have similar shape to SuperLorentzian
-  k:  40,
-  dw: 0.0, 
+  f:  0.035,      # 0.01
+  t1: 1.0,       
+  t2: 4.0e-05 ,  # adjusted to have similar shape to SuperLorentzian 4.0e-05
+  k:  30,
+  dw: 0.0,  
   lineshape: 'Lorentzian'
 }
 
-}
+cest_pool: {  
+  'amide': {
+    f: 0.0013,  # 100e-3 / 111, 
+    t1: 1.0,
+    t2: 0.1,
+    k: 350,
+    dw: 3
+  }
+  }
+
 
 
 
@@ -62,4 +68,4 @@ rel_b1: 1
 verbose: False
 reset_init_mag: True
 scale: 1
-max_pulse_samples: 100
+max_pulse_samples: 300

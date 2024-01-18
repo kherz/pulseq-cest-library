@@ -1,0 +1,3 @@
+Phantom Example Dicom and SEQ Files can be found here:
+
+W:\radiologie\mr-physik-data\Mitarbeiter\Zaiss_AG\HACKATHON_pulseqCEST_examples
