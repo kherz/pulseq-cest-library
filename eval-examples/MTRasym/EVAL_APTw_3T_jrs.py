@@ -30,7 +30,7 @@ import argparse
 
 # Set up argparse to handle command line arguments
 parser = argparse.ArgumentParser(description="EVAL_APTw_3T script")
-parser.add_argument('data_flag', type=str, nargs='?', default='simulation',
+parser.add_argument('data_flag', type=str, nargs='?', default='real_data',
                     help="Type of data to process: 'simulation', 're_simulation', or 'real_data'")
 parser.add_argument('data_path', type=str, nargs='?', default='',
                     help="Path to the data directory")
@@ -71,11 +71,11 @@ elif data_flag == 're_simulation':
     # 2b) Re-simulate
     # Implement the re-simulation using the appropriate Python library and function
     config_name = bmsim_filename
-    M_z = None  # Placeholder for re-simulated data
+    m_z = None  # Placeholder for re-simulated data
     config_path = Path.cwd().parent.parent / "sim-library" / config_name
     sim = simulate(config_file=config_path, seq_file=seq_path)   
     m_z = sim.get_zspec()[1]
-    m_z = np.expand_dims(M_z, axis=1)
+    m_z = np.expand_dims(m_z, axis=1)
 elif data_flag == 'real_data':
     # 2c) Read data from measurement (DICOM)
     if data_path == '':
@@ -86,16 +86,16 @@ elif data_flag == 'real_data':
         os.chdir(dcmpath)
     
     
-        question = input('Are the DICOM Files acquired with the same protocol parameters from the PulseqCEST Library? [y/n]: ')
-        if question.lower() != 'y':
-            seqfile = input('Please enter the path to your seq file: ')
-            seq.read(seqfile)
-            offsets = seq.get_definition('offsets_ppm')
-            n_meas = len(offsets)
+    question = input('Are the DICOM Files acquired with the same protocol parameters from the PulseqCEST Library? [y/n]: ')
+    if question.lower() != 'y':
+        seqfile = input('Please enter the path to your seq file: ')
+        seq.read(seqfile)
+        offsets = seq.get_definition('offsets_ppm')
+        n_meas = len(offsets)
 
 
     #read data from dicom directory
-    collection = [pydicom.dcmread(os.path.join(dcmpath, filename)) for filename in os.listdir(dcmpath)]
+    collection = [pydicom.dcmread(os.path.join(dcmpath, filename)) for filename in sorted(os.listdir(dcmpath))]
     # extract the volume data
     V = np.stack([dcm.pixel_array for dcm in collection])
     V = np.transpose(V, (1, 2, 0))
@@ -201,10 +201,7 @@ if data_flag == 'real_data':
     plt.colorbar()
     plt.title("Z(Δω) = %.2f ppm" % w_offset_of_interest)
     plt.subplot(1, 2, 2)
-    plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=-0.1,vmax=0.1)
+    plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=-0.05,vmax=0.05)
     plt.colorbar()
     plt.title("MTRasym(Δω) = %.2f ppm" % w_offset_of_interest)
     plt.show()
-
-from scipy.io import savemat
-savemat('MTRasym.mat', {'MTRasym': MTRasym})
