@@ -1,15 +1,43 @@
+function EVAL_WASABI(varargin)
 %% EVAL WASABI 
 % The following flag determines, if you want to operate on real data or
 % simulate the data
-data_flag= 'real_data'; % simulation, re_simulation or real_data
+
+p = inputParser;
+% Define the named parameters and their default values
+addParameter(p, 'data_flag', 'real_data');  % simulation, re_simulation or real_data
+addParameter(p, 'data_path', '');
+addParameter(p, 'bmsim_filename', 'WM_3T_default_7pool_bmsim.yaml');
+addParameter(p, 'seq_filename', 'APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq');
+parse(p, varargin{:});
+
+data_flag=  p.Results.data_flag;
+data_path=  p.Results.data_path;
+bmsim_filename=  p.Results.bmsim_filename;
+seq_filename=  p.Results.seq_filename;
+
+if strcmp(data_flag,'real_data') && strcmp(data_path,'')
+    data_path=uigetdir('','Go to DICOM Directory');
+end
+
+%% 1)  read in associated seq file
+
+%get the user specific pulseq path
+pulseq_struct=what('pulseq-cest-library');
+pulseq_path=pulseq_struct.path;
+
+seq_file_folder_path= [pulseq_path filesep 'seq-library' filesep extractBefore(seq_filename, '.seq')];
+seq_file_path= [seq_file_folder_path filesep seq_filename];
+
+%data_flag= 'real_data'; % simulation, re_simulation or real_data
 %% 1) Build up Filename, Structure, Paths
 
 %get the user specific pulseq path
-pulseq_struct=what('pulseq-cest-library');                  % look in Matlabpath if Folder is already included
-pulseq_path=pulseq_struct.path;
-seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq';
-seq_file_folder_path= [pulseq_path filesep 'seq-library' filesep extractBefore(seq_filename, '.seq')];
-seq_file_path= [seq_file_folder_path filesep seq_filename];
+%pulseq_struct=what('pulseq-cest-library');                  % look in Matlabpath if Folder is already included
+%pulseq_path=pulseq_struct.path;
+%seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq';
+%seq_file_folder_path= [pulseq_path filesep 'seq-library' filesep extractBefore(seq_filename, '.seq')];
+%seq_file_path= [seq_file_folder_path filesep seq_filename];
 
 
 % Go to seq file
@@ -85,7 +113,7 @@ Z_fit = zeros(size(Z, 2), numel(w));
 for ii = 1:size(Z, 2)
     if all(isfinite(Z(:, ii))) && Segment_resh(ii)==1
         try
-            p0 = [3.7, -0.1, 1, 2];                              % initial Starting values                 
+            p0 = [3.3, -0.1, 1, 2];                              % initial Starting values                 
             opts = optimset('Display','off');                        
             [p, ~] = lsqcurvefit(wasabi_fit_2abs,p0,w,(Z(:,ii)),[],[],opts); 
             rB1_stack(ii) = p(1) / B1;
@@ -110,5 +138,7 @@ end
 %% 4) Imaging
  % Display B1 and B0
  figure;
- subplot(1,2,1);imagesc(B0(:,:,6),[-0.2 0.2]);colorbar;title('B0 Map'); axis image
- subplot(1,2,2);imagesc(B1(:,:,6),[0.8 1.2]);colorbar;title('B1 Map'); axis image
+ subplot(1,2,1);imagesc(B0(:,:,5),[-0.2 0.2]);colorbar;title('B0 Map'); axis image
+ subplot(1,2,2);imagesc(B1(:,:,5),[0.8 1.2]);colorbar;title('B1 Map'); axis image
+
+end

@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun 28 13:12:35 2023
+Created on Wed Jan 17 17:42:36 2024
 
-@author: kouemoin
-
+@author: schuerjn
 """
-
 # %% =============
 # Import libraries
 # ================
-
+# Loading 
 import os
 from pathlib import Path
 
@@ -19,26 +17,45 @@ import pydicom
 import pypulseq as pp
 from bmctool.simulate import simulate
 from csaps import csaps
+import argparse
+
+# Information
+# Example of calling the function with custom arguments
+# eval_aptw_3t(data_flag='simulation', data_path='/path/to/data')
+
+# data_flag:        'real_data' , 'simulation' , 're-simulation'
+# data_path:        Enter path where DIDCOM data are located.
+# bmsim_filename:   Enter yaml filename
+# seq_filename:     enter seq filename
+
+# Set up argparse to handle command line arguments
+parser = argparse.ArgumentParser(description="EVAL_APTw_3T script")
+parser.add_argument('data_flag', type=str, nargs='?', default='real_data',
+                    help="Type of data to process: 'simulation', 're_simulation', or 'real_data'")
+parser.add_argument('data_path', type=str, nargs='?', default='',
+                    help="Path to the data directory")
+parser.add_argument('bmsim_filename', type=str, nargs='?', default='WM_3T_default_7pool_bmsim.yaml',
+                    help="Filename of the BMSim configuration file")
+parser.add_argument('seq_filename', type=str, nargs='?', default='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',
+                    help="Filename of the sequence file")
+
+args = parser.parse_args()
+
+# Use the arguments
+data_flag = args.data_flag
+data_path = args.data_path
+bmsim_filename = args.bmsim_filename
+seq_filename = args.seq_filename
 
 
-# The following flag determines if you want to operate on real data or simulate the data
- data_flag = 'real_data'  # options: 'simulation', 're_simulation', 'real_data'
-
-# %% ==============================
 # Define seq, config and dicom name
-# =================================
-# get path to seq-file in seq-library
-
-seq_name = 'APTw_3T_000_2uT_1block_2s_braintumor.seq'
-
-seq_name = Path(seq_name)  # convert to Path object
+seq_name = Path(seq_filename)
 seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
-
 assert seq_path.is_file(), "seq file not found"
+
 # 1) read in associated seq file from Pulseq-CEST library
 seq = pp.Sequence()
 seq.read(seq_path)
-
 m0_offset = seq.get_definition("M0_offset")
 offsets = seq.get_definition("offsets_ppm")
 n_meas = len(offsets)
@@ -53,26 +70,32 @@ if data_flag == 'simulation':
 elif data_flag == 're_simulation':
     # 2b) Re-simulate
     # Implement the re-simulation using the appropriate Python library and function
-    config_name = 'WM_3T_default_7pool_bmsim.yaml'
-    M_z = None  # Placeholder for re-simulated data
+    config_name = bmsim_filename
+    m_z = None  # Placeholder for re-simulated data
     config_path = Path.cwd().parent.parent / "sim-library" / config_name
     sim = simulate(config_file=config_path, seq_file=seq_path)   
-    m_z_sim = sim.get_zspec()[1]
-    m_z_sim = np.expand_dims(M_z, axis=1)
+    m_z = sim.get_zspec()[1]
+    m_z = np.expand_dims(m_z, axis=1)
 elif data_flag == 'real_data':
     # 2c) Read data from measurement (DICOM)
-    dcmpath = input('Enter the path to your DICOM directory: ')
-    os.chdir(dcmpath)
+    if data_path == '':
+        dcmpath = input('Enter the path to your DICOM directory: ')
+        os.chdir(dcmpath)
+    else:
+        dcmpath = data_path
+        os.chdir(dcmpath)
+    
+    
     question = input('Are the DICOM Files acquired with the same protocol parameters from the PulseqCEST Library? [y/n]: ')
     if question.lower() != 'y':
         seqfile = input('Please enter the path to your seq file: ')
         seq.read(seqfile)
         offsets = seq.get_definition('offsets_ppm')
-        Nmeas = len(offsets)
+        n_meas = len(offsets)
 
 
     #read data from dicom directory
-    collection = [pydicom.dcmread(os.path.join(dcmpath, filename)) for filename in os.listdir(dcmpath)]
+    collection = [pydicom.dcmread(os.path.join(dcmpath, filename)) for filename in sorted(os.listdir(dcmpath))]
     # extract the volume data
     V = np.stack([dcm.pixel_array for dcm in collection])
     V = np.transpose(V, (1, 2, 0))
@@ -166,19 +189,19 @@ plt.show()
 # %% ==================
 # 5) Plot Parametric Maps from Z(3.5 ppm) and MTRasym(3.5ppm)
 # =====================
+if data_flag == 'real_data':
+    slice_of_interest = 5  # pick slice for Evaluation
+    desired_offset = 3.5
+    offset_of_interest = np.where(offsets == desired_offset)[0]  # pick offset for Evaluation
+    w_offset_of_interest = w[offset_of_interest]
 
-slice_of_interest = 5  # pick slice for Evaluation
-desired_offset = 3.5
-offset_of_interest = np.where(offsets == desired_offset)[0]  # pick offset for Evaluation
-w_offset_of_interest = w[offset_of_interest]
-
-plt.figure(figsize=(10, 4))
-plt.subplot(1, 2, 1)
-plt.imshow(V_Z_corr_reshaped[:, :, slice_of_interest, offset_of_interest], vmin=0.5, vmax=1)
-plt.colorbar()
-plt.title("Z(Δω) = %.2f ppm" % w_offset_of_interest)
-plt.subplot(1, 2, 2)
-plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=-0.1,vmax=0.1)
-plt.colorbar()
-plt.title("MTRasym(Δω) = %.2f ppm" % w_offset_of_interest)
-plt.show()
+    plt.figure(figsize=(10, 4))
+    plt.subplot(1, 2, 1)
+    plt.imshow(V_Z_corr_reshaped[:, :, slice_of_interest, offset_of_interest], vmin=0.5, vmax=1)
+    plt.colorbar()
+    plt.title("Z(Δω) = %.2f ppm" % w_offset_of_interest)
+    plt.subplot(1, 2, 2)
+    plt.imshow(V_MTRasym_reshaped[:, :, slice_of_interest, offset_of_interest],vmin=-0.05,vmax=0.05)
+    plt.colorbar()
+    plt.title("MTRasym(Δω) = %.2f ppm" % w_offset_of_interest)
+    plt.show()

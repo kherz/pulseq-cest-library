@@ -13,7 +13,7 @@ function EVAL_APTw_3T(varargin)
 %   data_path - A string specifying the path to the data.
 %               If left empty, a dialog box will prompt for a directory.
 %
-p = inputParser;
+p= inputParser;
 % Define the named parameters and their default values
 addParameter(p, 'data_flag', 'real_data');  % simulation, re_simulation or real_data
 addParameter(p, 'data_path', '');
@@ -122,15 +122,15 @@ subplot(1,2,2); plot(w,mean(MTRasym,2),'r.-', 'DisplayName', 'Measurement'); tit
 if size(Z,2)>1
     figure;
     sliceofinterest=6;   % Pick slice for Evaluation
-    offsetofinterest=32; % Pick offset for Evaluation
+    offsetofinterest=31; % Pick offset for Evaluation
     w(offsetofinterest)
     
     subplot(2,2,1);
-    imagesc(squeeze(V_Z_corr(offsetofinterest,:,:,sliceofinterest)),[0.5 1]);  title(sprintf('Z(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+    imagesc(squeeze(V_Z_corr(offsetofinterest,:,:,sliceofinterest)),[0.5 1]);  title(sprintf('Z(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));colorbar;
     subplot(2,2,2);
-    imagesc(squeeze(V_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+    imagesc(squeeze(V_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));colorbar;
     subplot(2,2,4);
-    imagesc(squeeze(V_FS_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('FS-MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));
+    imagesc(squeeze(V_FS_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('FS-MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));colorbar;
     
     %colormap(gca,RAINBOW)
 end
