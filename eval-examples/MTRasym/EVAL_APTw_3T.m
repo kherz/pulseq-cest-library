@@ -129,7 +129,6 @@ if size(Z,2)>1
     imagesc(squeeze(V_Z_corr(offsetofinterest,:,:,sliceofinterest)),[0.5 1]);  title(sprintf('Z(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));colorbar;
     subplot(2,2,2);
     imagesc(squeeze(V_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));colorbar;
-    subplot(2,2,2);
     subplot(2,2,4);
     imagesc(squeeze(V_FS_MTRasym(offsetofinterest,:,:,sliceofinterest)),[-0.05 0.05]); title(sprintf('FS-MTRasym(\\Delta\\omega) = %.2f ppm',w(offsetofinterest)));colorbar;
     
