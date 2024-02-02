@@ -71,10 +71,10 @@ iterations = 100;
 wt=cat(2,w(2:end)*freq,t_rec(2:end)); %in trec, account for 1st offset being M_0
 
 % Compute the analytic function of WASABIT1 curve
-% p(1) = B1, p(2) = dB0, p(3)=c, p(4) =d, p(5) T1 ;  [3.7, -0.1, 1, 2, 1.5];    
-wasabi_fit_2abs = @(p,w_and_trec_array) abs(1- exp(-w_and_trec_array(:,2)./p(5)) .* (p(3) - p(4) .* (pi * p(1) * gamma_hz * t_p).^2 .* (sinc(t_p .* sqrt((p(1) .* gamma_hz).^2 + (w_and_trec_array(:,1)-p(2)).^2))).^2));
+% p(1) = B1, p(2) = dB0, p(3) T1 ;  [3.7, -0.1, 1, 2, 1.5];    
+wasabiti_fit_2abs = @(p,w_and_trec_array) abs(1- exp(-w_and_trec_array(:,2)./p(3)) .* (1 - 2 .* (pi * p(1) * gamma_hz * t_p).^2 .* (sinc(t_p .* sqrt((p(1) .* gamma_hz).^2 + (w_and_trec_array(:,1)-p(2)).^2))).^2));
 
-%wasabi_fit_2abs = @(p,w) abs(p(3) - p(4) .* sin(atan((p(1) ./ (freq / gamma_hz)) ./ (w - p(2)))).^2 .* sin(sqrt((p(1) ./ (freq / gamma_hz)).^2 + (w - p(2)).^2) .* freq .* (2 * pi) .* t_p / 2).^2);
+
 Z=Z_wasabi;
 
 % Adapt the function for use with lsqcurvefit
@@ -90,13 +90,13 @@ T1_stack = zeros(1, size(Z, 2));
 for ii = 1:size(Z, 2)
     if all(isfinite(Z(:, ii))) 
         try
-            p0 = [3.7, -0.1, 1, -2, 1.8];                              % initial Starting values                 
+            p0 = [3.7, -0.1, 1.8];                              % initial Starting values                 
             opts = optimset('Display','off');                        
-            [p, ~] = lsqcurvefit(wasabi_fit_2abs,p0,wt,(Z(:,ii)),[],[],opts); 
+            [p, ~] = lsqcurvefit(wasabiti_fit_2abs,p0,wt,(Z(:,ii)),[],[],opts); 
             rB1_stack(ii) = p(1) / B1;
             dB0_stack(ii) = p(2)/freq;
-            T1_stack(ii)=p(5);
-            Z_fit(ii,:) = wasabi_fit_2abs(p,wt);
+            T1_stack(ii)=p(3);
+            Z_fit(ii,:) = wasabiti_fit_2abs(p,wt);
   
         catch
             disp('something went wrong');
@@ -108,10 +108,8 @@ for ii = 1:size(Z, 2)
 end
 
 figure('Name',data_flag);
-subplot(1,2,1); plot(mean(Z,2),'rx-', 'DisplayName', 'Measurement'); title('Mean MTRasym-spectrum'); xlim([0 Inf]);set(gca,'Xdir','reverse'); hold on;
-subplot(1,2,1); plot(mean(Z_fit',2),'k-', 'DisplayName', 'Measurement'); title('Mean Z-spectrum'); set(gca,'Xdir','reverse');
-
-p
+ plot(mean(Z,2),'rx-', 'DisplayName', 'WASABIT1 measurement'); title('Mean MTRasym-spectrum'); xlim([0 Inf]); hold on;
+ plot(mean(Z_fit',2),'k-', 'DisplayName', 'Fit'); title('Mean Z-spectrum'); set(gca,'Xdir','reverse');
 
 if size(Z,2)>1
 %Vectorization Backwards
