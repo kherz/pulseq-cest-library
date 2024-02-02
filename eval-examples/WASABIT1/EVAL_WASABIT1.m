@@ -72,7 +72,7 @@ wt=cat(2,w(2:end)*freq,t_rec(2:end)); %in trec, account for 1st offset being M_0
 
 % Compute the analytic function of WASABIT1 curve
 % p(1) = B1, p(2) = dB0, p(3) T1 ;  [3.7, -0.1, 1, 2, 1.5];    
-wasabiti_fit_2abs = @(p,w_and_trec_array) abs(1- exp(-w_and_trec_array(:,2)./p(3)) .* (1 - 2 .* (pi * p(1) * gamma_hz * t_p).^2 .* (sinc(t_p .* sqrt((p(1) .* gamma_hz).^2 + (w_and_trec_array(:,1)-p(2)).^2))).^2));
+wasabiti_fit_2abs = @(p,w_and_trec_array) abs((1- exp(-w_and_trec_array(:,2)./p(3))) .* (1 - 2 .* (pi * p(1) * gamma_hz * t_p).^2 .* (sinc(t_p .* sqrt((p(1) .* gamma_hz).^2 + (w_and_trec_array(:,1)-p(2)).^2))).^2));
 
 
 Z=Z_wasabi;
