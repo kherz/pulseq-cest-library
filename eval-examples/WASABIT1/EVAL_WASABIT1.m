@@ -61,9 +61,6 @@ switch data_flag
                 V= readnifti(niifile); 
                 sz=size(V); 
 
-                %figure;
-                %nii_image = imagesc(squeeze(V(:, :, 6, 18)));colormap gray;colorbar
-                
                 Segment=squeeze(V(:, :, :, 1)) > 100;
                 Segment_resh=reshape(Segment, size(Segment,1)*size(Segment,2)*size(Segment,3),1)';    % size Segment: 112x92x12
                 
@@ -99,9 +96,9 @@ wasabiti_fit_2abs = @(p,w_and_trec_array) abs((1- exp(-w_and_trec_array(:,2)./p(
 Z=Z_wasabi;
 
 %create a WASABIT1 lookup bib
-    B1_bib=[0.4:0.05:1.4]*B1pa;
-    B0_bib=[-0.5:0.05:0.5];
-    T1_bib=[0.5:0.05:1.8];
+    B1_bib=[0.8:0.01:1.2]*B1pa;
+    B0_bib=[-1:0.05:1]*freq;
+    T1_bib=[0.5:0.05:2.5];
     [B1,B0,T1] = ndgrid(B1_bib,B0_bib,T1_bib);
     
     bib_entries=[ B1(:) B0(:) T1(:)];
@@ -123,12 +120,11 @@ Z_fit = zeros(size(Z, 2), numel(w)-1);
 T1_stack = zeros(1, size(Z, 2));
 
 for ii = 1:size(Z, 2)
-    if all(isfinite(Z(:, ii))) %&& Segment_resh(ii)==1
+    if all(isfinite(Z(:, ii)))
         try
             %do a WASABIT1 lookup of start parameters
                 SSE=sum((wbib-repmat(Z(:,ii),1,size(wbib,1))').^2,2);
                 idx=find(SSE==min(min(min(min(SSE)))),1);
-                 
                 p0 = bib_entries(idx,:);
                 lb=p0-0.5;
                 ub=p0+0.5;
@@ -166,14 +162,17 @@ if size(Z,2)>1
          B0_map=zeros([sizes(1) sizes(2) sizes(3)]);
          T1_map=zeros([sizes(1) sizes(2) sizes(3)]);
          Zfit=zeros([sizes(1)*sizes(2)*sizes(3) sizes(4)-1]);
+         Z_corrExt=zeros([sizes(1)*sizes(2)*sizes(3) sizes(4)-1]);%for imgui later
       
          B1_map(maskInd)=rB1_stack;
          B0_map(maskInd)=dB0_stack;
          T1_map(maskInd)=T1_stack;
          for ll=1:numel(maskInd)
+            Z_corrExt(maskInd(ll),:)=Z_wasabi(:,ll);%for imgui later
             Zfit(maskInd(ll),:)=Z_fit(ll,:);
          end
          Zfit=reshape(Zfit, sizes(1), sizes(2), sizes(3), sizes(4)-1);
+         Z_corrExt=reshape(Z_corrExt, sizes(1), sizes(2), sizes(3), sizes(4)-1);
 
 %% 4) Imaging
  % Display B1 and B0
@@ -184,3 +183,23 @@ if size(Z,2)>1
 
 
 end
+
+%% 5) optional: assign variables to visualize fitting with imgui
+
+%dummy P file
+load('WASABI.mat', 'P')
+
+P.SEQ.w=w(2:end);
+P.FIT.fitfunc='WASABIT1_FIT_2abs';
+P.SEQ.tp=t_p;
+P.SEQ.FREQ=freq;
+P.SEQ.Trec=t_rec(2:end);
+P.SEQ.B1=B1pa;
+P.EVAL.w_fit=P.SEQ.w;
+
+Z_uncorr=Z_corrExt; %dummy Z_uncorr
+popt(:,:,:,1)=B1_map*P.SEQ.B1;
+popt(:,:,:,2)=B0_map;
+popt(:,:,:,3)=T1_map;
+
+
