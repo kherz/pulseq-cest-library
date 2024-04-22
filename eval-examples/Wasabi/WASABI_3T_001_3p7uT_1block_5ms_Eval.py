@@ -51,7 +51,7 @@ m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vecto
 
 wsbpath = '../example_data/dcm/PULSEQ_HYBRID_GRE_2_2_5_WASABI_1/'  # we define a variable wsbpath and we assign it a string containing the file path to a directory
 
-collection = [pydicom.dcmread(wsbpath+filename) for filename in os.listdir(wsbpath)] # we create a collection of DICOM objects from the files in the directory
+collection = [pydicom.dcmread(wsbpath+filename) for filename in sorted(os.listdir(wsbpath))] # we create a collection of DICOM objects from the files in the directory
 
 V = np.stack([dcm.pixel_array for dcm in collection]) # we create an array using list comprehension to extract the pixel arrays from each dicom objects in collection
 V = np.transpose(V, (2, 1, 0)) # we transpose V into a right shape
