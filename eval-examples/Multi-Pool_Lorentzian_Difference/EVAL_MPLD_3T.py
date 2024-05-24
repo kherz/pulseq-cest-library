@@ -281,6 +281,15 @@ if Z.shape[1] > 1:
     Z_stack = Z_stack.reshape(V.shape[0], V.shape[1],V.shape[2],np.size(w))
 
 
+from skimage.restoration import denoise_bilateral
+
+# Apply bilateral filter
+if 0:
+    V_amide_stack = denoise_bilateral(V_amide_stack,channel_axis=-1, sigma_color=0.05, sigma_spatial=0.5)
+    V_rNOE_stack = denoise_bilateral(V_rNOE_stack,channel_axis=-1, sigma_color=0.1, sigma_spatial=0.5)
+    V_MT_stack = denoise_bilateral(V_MT_stack,channel_axis=-1, sigma_color=0.05, sigma_spatial=0.5)
+
+
 # %% ==================
 # 5) Plot Parametric Maps from Z(3.5 ppm) and MTRasym(3.5ppm)
 # =====================
