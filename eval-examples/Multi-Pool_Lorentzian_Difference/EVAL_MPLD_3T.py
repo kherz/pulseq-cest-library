@@ -32,7 +32,7 @@ import argparse
 parser = argparse.ArgumentParser(description="EVAL_APTw_3T script")
 parser.add_argument('data_flag', type=str, nargs='?', default='real_data',
                     help="Type of data to process: 'simulation', 're_simulation', or 'real_data'")
-parser.add_argument('data_path', type=str, nargs='?', default=r'\\141.67.249.47\MRTransfer\pulseq_zero\sequences\seq240524\CEST\MultiPool_3T_002_0p9uT_80Gauss_DC50_3200ms_deepCEST_cFA_img.npy',
+parser.add_argument('data_path', type=str, nargs='?', default=r'\\141.67.249.47\MRTransfer\pulseq_zero\sequences\seq240524\CEST\MultiPool_3T_002_0p9uT_80Gauss_DC50_3200ms_deepCEST_vFA_img.npy',
                     help="Path to the data directory")
 parser.add_argument('bmsim_filename', type=str, nargs='?', default='WM_3T_default_7pool_bmsim.yaml',
                     help="Filename of the BMSim configuration file")
@@ -156,7 +156,7 @@ w = offsets
 dB0_stack = np.zeros(Z.shape[1])
 for ii in range(Z.shape[1]):
     if np.all(np.isfinite(Z[:, ii])):
-        pp = csaps(w, Z[:, ii], smooth=0.999)
+        pp = csaps(w, Z[:, ii], smooth=0.997)
         w_fine = np.arange(-1, 1.005, 0.005)
         z_fine = ppval(pp, w_fine)
 
@@ -184,7 +184,7 @@ def pca_denoise(data, n_components):
 
 print("Original Data Shape:", Z_corr.shape)
 
-Z_corr = pca_denoise(Z_corr, 10)
+Z_corr = pca_denoise(Z_corr, 14)
 
 print("Denoised Data Shape:", Z_corr.shape)
 
@@ -285,9 +285,9 @@ from skimage.restoration import denoise_bilateral
 
 # Apply bilateral filter
 if 0:
-    V_amide_stack = denoise_bilateral(V_amide_stack,channel_axis=-1, sigma_color=0.05, sigma_spatial=0.5)
+    V_amide_stack = denoise_bilateral(V_amide_stack,channel_axis=-1, sigma_color=0.05, sigma_spatial=0.4)
     V_rNOE_stack = denoise_bilateral(V_rNOE_stack,channel_axis=-1, sigma_color=0.1, sigma_spatial=0.5)
-    V_MT_stack = denoise_bilateral(V_MT_stack,channel_axis=-1, sigma_color=0.05, sigma_spatial=0.5)
+    V_MT_stack = denoise_bilateral(V_MT_stack,channel_axis=-1, sigma_color=0.05, sigma_spatial=0.4)
 
 
 # %% ==================
@@ -298,11 +298,11 @@ if data_flag == 'real_data':
 
     plt.figure(figsize=(10, 4))
     plt.subplot(1, 3, 1)
-    plt.imshow(V_amide_stack[:, :, slice_of_interest], vmin=0.0, vmax=0.1)
+    plt.imshow(V_amide_stack[:, :, slice_of_interest], vmin=0.0, vmax=0.09)
     plt.colorbar()
     plt.title("amide")
     plt.subplot(1, 3, 2)
-    plt.imshow(V_rNOE_stack[:, :, slice_of_interest],vmin=0.0,vmax=0.2)
+    plt.imshow(V_rNOE_stack[:, :, slice_of_interest],vmin=0.0,vmax=0.13)
     plt.colorbar()
     plt.title('rNOE')
     plt.subplot(1, 3, 3)
@@ -310,3 +310,15 @@ if data_flag == 'real_data':
     plt.colorbar()
     plt.title('MT')
     plt.show()
+
+# %% ==================
+if data_flag == 'real_data':
+    plt.figure(figsize=(10, 4))
+    plt.subplot(3,1, 1)
+    plt.plot(V_amide_stack[:,56, slice_of_interest]); plt.ylim([0,0.2])
+    plt.subplot(3,1, 2)
+    plt.plot(V_rNOE_stack[:,56, slice_of_interest]); plt.ylim([0,0.23])
+    plt.subplot(3,1, 3)
+    plt.plot(V_MT_stack[:,56, slice_of_interest]); plt.ylim([0,0.23])
+    
+    
