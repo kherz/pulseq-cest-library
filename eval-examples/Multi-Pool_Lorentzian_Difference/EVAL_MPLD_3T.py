@@ -79,13 +79,38 @@ elif data_flag == 're_simulation':
     
 elif data_flag == 'real_data':
     
+    import scipy.ndimage as ndi
+
+    def BET_slicewise(image4D, threshold=0.3, iterations=8):
+        image3D=np.squeeze(image4D[:,:,:,0])
+        binary_mask_3D=np.zeros_like(image3D)
+        
+        for ii in range(0,image3D.shape[2]):
+            # Normalize the image
+            image = image3D[:,:,ii]
+            image = (image - np.min(image)) / (np.max(image) - np.min(image))
+            # Create a binary mask using the threshold
+            binary_mask = (image > threshold)
+            # Perform morphological operations to clean up the mask
+            binary_mask = ndi.binary_erosion(binary_mask, iterations=iterations)
+            binary_mask = ndi.binary_dilation(binary_mask, iterations=iterations)
+            # Apply the mask to the original image
+            binary_mask_3D[:,:,ii] =  binary_mask
+
+        #skull_stripped_image = image4D * binary_mask_3D[:, :, :, np.newaxis]
+        return binary_mask_3D
+    
+    
+    
     path = Path(data_path)
     if path.is_file() and path.suffix == '.npy':  # read npy
         V=np.abs(np.load(data_path))
         sz = V.shape
         print(sz)
+        
         # Vectorization
-        mask = np.squeeze(V[:, :, :, 0]) > np.mean(np.abs(V))/5
+        #mask = np.squeeze(V[:, :, :, 0]) > np.mean(np.abs(V))/5
+        mask=BET_slicewise(V)
         mask_idx = np.where(mask.ravel())[0]
         V_m_z = V.reshape(-1, n_meas).T
         m_z = V_m_z[:, mask_idx]
@@ -117,13 +142,17 @@ elif data_flag == 'real_data':
         V = np.reshape(V, [sz[0], sz[1], n_meas, sz[2] // n_meas]).transpose(0, 1, 3, 2)
     
         # Vectorization
-        mask = np.squeeze(V[:, :, :, 0]) > 100
+        #mask = np.squeeze(V[:, :, :, 0]) > 100
+        mask=BET_slicewise(V)
         mask_idx = np.where(mask.ravel())[0]
         V_m_z = V.reshape(-1, n_meas).T
         m_z = V_m_z[:, mask_idx]
-   
-
-
+        
+for ii in range(0,sz[2]):
+    plt.figure,plt.subplot(2,sz[2],ii+1),plt.imshow(V[:,:,ii,0]*mask[:,:,ii]), plt.title('BET')   
+    plt.figure,plt.subplot(2,sz[2],sz[2]+ii+1),plt.imshow(mask[:,:,ii]), plt.title('BET')    
+plt.show()
+print('data loaded')
 # %% ==========
 # 3) Evaluation
 # =============
@@ -137,7 +166,7 @@ if len(M0_idx) > 0:
 else:
     print("m0_offset not found in offset")
 
-
+print('data normalized')
 # helper function to evaluate piecewise polinomial
 def ppval(p, x):
     if callable(p):
@@ -165,28 +194,49 @@ for ii in range(Z.shape[1]):
 
         Z_corr[:, ii] = ppval(pp, w + dB0_stack[ii])
 
+print('data B0 corrected')
+
+
 
 from sklearn.decomposition import PCA
 
-def pca_denoise(data, n_components):
+
+
+def pca_denoise(data, n_components=None,verbose=False): # following Breitling et al. NBM
     # Perform PCA
-    pca = PCA(n_components=n_components)
-    transformed_data = pca.fit_transform(data.T)
+    pca = PCA().fit(data.T)
+    explained_variance = pca.explained_variance_ratio_
+
+
+    # Determine number of components to retain 95% variance
+    cumulative_variance = np.cumsum(explained_variance)
+    n_c_97 = np.argmax(cumulative_variance >= 0.97) + 1
     
-    # Inverse transform to reconstruct the data
+    if verbose:
+        plt.figure(figsize=(10, 5))
+        plt.plot(cumulative_variance, marker='o')
+        plt.xlabel('Number of Components')
+        plt.ylabel('Cumulative Explained Variance')
+        plt.title(f'Suggested n_c_97 = {n_c_97}'), plt.show()
+
+    if n_components==None:
+        n_components=n_c_97
+    
+    pca = PCA(n_components=n_components)
+
+    pca.fit(data.T)  # define PCA on skull stripped data, important to get brain matter components
+    
+    transformed_data = pca.transform(data.T)  # apply to original data
     reconstructed_data = pca.inverse_transform(transformed_data)
     
     # Reshape back to original 4D shape
     denoised_data = reconstructed_data.T
     
-    return denoised_data
+    return denoised_data,n_c_97
 
 
-print("Original Data Shape:", Z_corr.shape)
-
-Z_corr = pca_denoise(Z_corr, 14)
-
-print("Denoised Data Shape:", Z_corr.shape)
+Z_corr,n_c_97 = pca_denoise(Z_corr,verbose=True)
+print(f'data denoised with  {n_c_97} components, suggested  {n_c_97}')
 
 
 
@@ -225,7 +275,7 @@ for ii in range(Z.shape[1]):
        
         try:
             p = curve_fit(lorentzfit4pool_rel_fixPeaks, w, Z_corr[:,ii],  p0=p0,bounds=bounds,xtol=1e-4, ftol=1e-3,maxfev=300,full_output=True, method='dogbox') # curve_fit 
-            if (ii%1000): print(f'pixel {ii} of {Z.shape[1]} : {p[0]}.2f')
+            if (ii%300==0): print(f'pixel {ii} of {Z.shape[1]} : {p[0]}.2f')
             amide_stack[ii]= p[0][4] # amide
             rNOE_stack[ii]= p[0][6] # amide
             MT_stack[ii]=p[0][8] # amide
@@ -238,7 +288,7 @@ for ii in range(Z.shape[1]):
            rNOE_stack[ii]= np.nan
            MT_stack[ii]= np.nan
            FIT_stack[ii,:]= np.nan
-           p_stack[ii,:]
+           p_stack[ii,:]=p0*np.nan
 
 if Z.shape[1] == 1:
     fig, ax = plt.subplots()
@@ -321,4 +371,6 @@ if data_flag == 'real_data':
     plt.subplot(3,1, 3)
     plt.plot(V_MT_stack[:,56, slice_of_interest]); plt.ylim([0,0.23])
     
+    
+
     
