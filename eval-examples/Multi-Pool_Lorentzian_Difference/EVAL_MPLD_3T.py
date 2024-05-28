@@ -300,6 +300,7 @@ if Z.shape[1] == 1:
     ax.plot(w, fit0, label='start')
     ax.plot(w, fit, label='fit')
     ax.plot(w, data, '.', label='data')
+    ax.plot(w, data - fit, '.-', label='residuals')
     ax.invert_xaxis()
     ax.set_title('MPL Fit')
     ax.legend()
