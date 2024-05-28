@@ -30,7 +30,7 @@ import argparse
 
 # Set up argparse to handle command line arguments
 parser = argparse.ArgumentParser(description="EVAL_APTw_3T script")
-parser.add_argument('data_flag', type=str, nargs='?', default='real_data',
+parser.add_argument('data_flag', type=str, nargs='?', default='re_simulation',
                     help="Type of data to process: 'simulation', 're_simulation', or 'real_data'")
 parser.add_argument('data_path', type=str, nargs='?', default=r'\\141.67.249.47\MRTransfer\pulseq_zero\sequences\seq240524\CEST\MultiPool_3T_002_0p9uT_80Gauss_DC50_3200ms_deepCEST_vFA_img.npy',
                     help="Path to the data directory")
@@ -148,10 +148,10 @@ elif data_flag == 'real_data':
         V_m_z = V.reshape(-1, n_meas).T
         m_z = V_m_z[:, mask_idx]
         
-for ii in range(0,sz[2]):
-    plt.figure,plt.subplot(2,sz[2],ii+1),plt.imshow(V[:,:,ii,0]*mask[:,:,ii]), plt.title('BET')   
-    plt.figure,plt.subplot(2,sz[2],sz[2]+ii+1),plt.imshow(mask[:,:,ii]), plt.title('BET')    
-plt.show()
+    for ii in range(0,sz[2]):
+        plt.figure,plt.subplot(2,sz[2],ii+1),plt.imshow(V[:,:,ii,0]*mask[:,:,ii]), plt.title('BET')   
+        plt.figure,plt.subplot(2,sz[2],sz[2]+ii+1),plt.imshow(mask[:,:,ii]), plt.title('BET')    
+    plt.show()
 print('data loaded')
 # %% ==========
 # 3) Evaluation
@@ -297,8 +297,8 @@ if Z.shape[1] == 1:
     fit=lorentzfit4pool_rel_fixPeaks(w,*p[0])
     data=Z_corr[:,ii]
     
-    ax.plot(w, fit0, label='fit')
-    ax.plot(w, fit, label='start')
+    ax.plot(w, fit0, label='start')
+    ax.plot(w, fit, label='fit')
     ax.plot(w, data, '.', label='data')
     ax.invert_xaxis()
     ax.set_title('MPL Fit')
