@@ -45,7 +45,7 @@ cest_pool: {
 #   rel_b1: relative amp inhomogeneity, default is 1.0 (float)
 b0: 3
 gamma: 267.5154109126009
-b0_inhom: 1   # 0.0
+b0_inhom: 0.0   
 rel_b1: 1
 
 ##### Additional simulation settings
