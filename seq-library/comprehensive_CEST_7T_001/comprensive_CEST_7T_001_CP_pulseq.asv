@@ -1,0 +1,236 @@
+%% comprenCEST_7T_brain_B1_1p00_2p00_4p00
+% Creates a sequence file for an multi B1 level protocol
+
+
+sim_pathname='C:\Users\fabianmz\Documents\MS_project\pulseq-cest-library\sim-library\WM_7T_default_7pool_bmsim_MF.yaml';
+
+% author name for sequence file
+author = 'Moritz Fabian';
+
+
+
+%% get back to the folder of pulseq file
+cd(fileparts(matlab.desktop.editor.getActiveFilename))
+
+
+%% get id of generation file
+
+seqid_base='comprehensive_CEST_7T_CP_B1_';
+
+%% sequence definitions
+% everything in seq_defs gets written as definition in .seq-file
+
+%T1= [1.222]  ;  % [Zhu 2014] http://hdl.handle.net/21.11116/0000-0001-32FE-9, for 7T
+%T2= [0.037]	;	 % [Zhu 2014] http://hdl.handle.net/21.11116/0000-0001-32FE-9, for 7T
+
+
+B1_array=[1.00, 1.90, 3.10, 3.75, 6.25];%[uT], derived from empricial experiments for low power, Amine/Glutamate, Hydroxy exchange
+tp_array=[15.36e-3, 60e-3, 60e-3, 99.84e-3, 99.84e-3]; %[ms] pulse duration
+N_array=[120, 10, 10, 2, 2];% number of pulses
+td_array=[10e-3, 6.3e-3, 6.3e-3, 99.84e-3, 99.84e-3]; %[ms], interpulse delay
+Trec_array=[1, 3, 3, 3, 3];
+
+offset_array={[-100,-50,-20,-12,-9,-7.25000000000000,-6.25000000000000,-5.50000000000000,-4.70000000000000,-4,-3.30000000000000,-2.70000000000000,-2,-1.70000000000000,-1.50000000000000,-1.10000000000000,-0.900000000000000,-0.600000000000000,-0.400000000000000,0,0.400000000000000,0.600000000000000,0.950000000000000,1.10000000000000,1.25000000000000,1.40000000000000,1.55000000000000,1.70000000000000,1.85000000000000,2,2.15000000000000,2.30000000000000,2.45000000000000,2.60000000000000,2.75000000000000,2.90000000000000,3.05000000000000,3.20000000000000,3.35000000000000,3.50000000000000,3.65000000000000,3.80000000000000,3.95000000000000,4.10000000000000,4.25000000000000,4.40000000000000,4.70000000000000,5.25000000000000,6.25000000000000,8,12,20,50,100],...
+    [-3.75 -3.00 -2.25 -1.5 1.5 2.25 3.00 3.75],[-3.75 -3.00 -2.25 -1.5 1.5 2.25 3.00 3.75],...
+    [-2.25 -1.5 -0.75 0.75 1.5 2.25], [-2.25 -1.5 -0.75 0.75 1.5 2.25]}; %[ppm] CEST offsets
+
+
+%iterate through the B1 levels and generate all coressponding seq files
+for B1_level=1:length(B1_array)
+    %for pulse_no=1:length(pulse_array)
+
+    seq_defs.n_pulses      = N_array(B1_level)           ; % number of pulses
+    seq_defs.tp            = tp_array(B1_level)      ; % pulse duration [s]
+    seq_defs.td            = td_array(B1_level)            ; % interpulse delay [s]
+    seq_defs.Trec          = Trec_array(B1_level)             ; % recovery time [s]
+    seq_defs.Trec_M0       = 12             ; % recovery time before M0 [s]
+    seq_defs.M0_offset     = -300           ; % m0 offset [ppm]
+    seq_defs.DCsat         = (seq_defs.tp)/(seq_defs.tp+seq_defs.td); % duty cycle
+    seq_defs.offsets_ppm   = [seq_defs.M0_offset offset_array{B1_level}];  % offset vector [ppm]
+    %seq_defs.offsets_ppm   = -5:0.2:5;  % offset vector [ppm]
+    seq_defs.num_meas      = numel(seq_defs.offsets_ppm)   ; % number of repetition
+    seq_defs.Tsat          = seq_defs.n_pulses*(seq_defs.tp+seq_defs.td) - ...
+        seq_defs.td ;  % saturation time [s]
+    seq_defs.B0            = 6.9809               ; % B0 [T] Terra.X XA60BL9 UKER
+
+    %make proper filename
+    numberstring=sprintf("%.2f",B1_array(B1_level));
+    seq_defs.seq_id_string = strcat(seqid_base,convertStringsToChars(strrep(numberstring,'.','p')),'uT'); % unique seq id
+
+
+    %% get info from struct
+    offsets_ppm = seq_defs.offsets_ppm; % [ppm]
+    Trec        = seq_defs.Trec;        % recovery time between scans [s]
+    Trec_M0     = seq_defs.Trec_M0;     % recovery time before m0 scan [s]
+    tp          = seq_defs.tp;          % sat pulse duration [s]
+    td          = seq_defs.td;          % delay between pulses [s]
+    n_pulses    = seq_defs.n_pulses;    % number of sat pulses per measurement. if DC changes use: n_pulses = round(2/(t_p+t_d))
+    B0          = seq_defs.B0;          % B0 [T]
+
+    %% two different b1 proocols
+    B1pa        = B1_array(B1_level);  % mean sat pulse b1 [uT]
+    %B1pa        = 0.9;  % mean sat pulse b1 [uT]
+
+    %%
+    spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
+    seq_filename = strcat(seq_defs.seq_id_string,'.seq'); % filename
+
+    %% scanner limits
+    % see pulseq doc for more info
+    seq = SequenceSBB(getScannerLimits());
+
+    %% create scanner events
+    % satpulse
+    gyroRatio_hz  = 42.5764;                  % for H [Hz/uT]
+    gyroRatio_rad = gyroRatio_hz*2*pi;        % [rad/uT]
+    fa_sat        =  B1pa*gyroRatio_rad*tp; % flip angle of sat pulse
+    % create pulseq saturation pulse object
+    
+    if B1_level<4 %make Gaussian pulses for the first 3 B1 levels
+        satPulse      = mr.makeGaussPulse(fa_sat, 'Duration', tp,'system',seq.sys,'timeBwProduct', 0.2,'apodization', 0.5); % siemens-like gauss
+        satPulse      = resamplePulseForRLE(satPulse, 300); disp('Gau pulse resampled. Beware of sidebands')
+         [B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+            seq_defs.B1cwpe = B1cwpe;
+    elseif B1_level==4 || B1_level==5
+            % SL pulses are played out during the interpulse delay. We need to make
+            % sure that they fit in the DC here
+            slPrepPulseTime = 1e-3; %Gaps between pulses [s]
+            slPauseTime = 250e-6;
+            additionalSLPrepTime = 2*slPrepPulseTime+2*slPauseTime;
+
+            td = td - additionalSLPrepTime; % DC is between block bulses SL is in between
+            if td < 100e-6
+                error('DC too high for SL prepatration pulses!');
+            end
+
+            % these rf times getting added in the run function of pulseq! If we want
+            % the timing to be exact we have to take care of this
+            if(slPauseTime-seq.sys.rfDeadTime-seq.sys.rfRingdownTime) <= 0
+                error('slPauseTime is too short for hardware limits');
+            end
+            slPauseTime = slPauseTime-seq.sys.rfDeadTime-seq.sys.rfRingdownTime;
+
+            minFa = 0.38; % this is the limit for prep pulses to be played out
+              
+            satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp, 'system', seq.sys); % block pusle cw
+            [B1cwpe,B1cwae,B1cwae_pure,alpha]= calculatePowerEquivalents(satPulse,tp,td,1,gyroRatio_hz);
+           seq_defs.B1cwpe = B1cwpe;
+    end
+
+    
+
+    %% loop through zspec offsets
+    offsets_Hz = offsets_ppm*gyroRatio_hz*B0;
+
+    % loop through offsets and set pulses and delays
+    for currentOffset = offsets_Hz
+        if B1_level<4
+             if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
+                seq.addBlock(mr.makeDelay(Trec_M0));
+             end
+            satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
+            accumPhase=0;
+            for np = 1:n_pulses
+                satPulse.phaseOffset = mod(accumPhase,2*pi); % set accumulated pahse from previous rf pulse
+                seq.addBlock(satPulse) % add sat pulse
+                % calc phase for next rf pulse
+                accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
+                if np < n_pulses % delay between pulses
+                    seq.addBlock(mr.makeDelay(td)); % add delay
+                end
+            end
+        elseif B1_level==4 || B1_level==5 %make adiabatic spinlock pulses
+            
+            if currentOffset == seq_defs.M0_offset*gyroRatio_hz*B0
+                if Trec_M0 > 0
+                    seq.addBlock(mr.makeDelay(Trec_M0));
+                end
+            else
+                if Trec > 0
+                    seq.addBlock(mr.makeDelay(Trec)); % recovery time
+                end
+            end
+            
+            adia_SL       = makeSLExpPulses(B1pa, seq.sys);
+            accumPhase=0;
+
+            %make the pre and post sl pulse
+            if currentOffset < 0
+                pre_sl = adia_SL{find(ismember(adia_SL(:,2), 'pre_neg')),1};
+                post_sl = adia_SL{find(ismember(adia_SL(:,2), 'post_neg')),1};
+            else
+                pre_sl = adia_SL{find(ismember(adia_SL(:,2), 'pre_pos')),1};
+                post_sl = adia_SL{find(ismember(adia_SL(:,2), 'post_pos')),1};
+            end
+
+            %sat pulse between SL pulses
+            satPulse      = mr.makeBlockPulse(fa_sat, 'Duration', tp,'freqOffset', currentOffset, 'system', seq.sys);
+
+            % set frequency
+            pre_sl.freqOffset = currentOffset;
+            accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(pre_sl.signal)>0))*1e-6),2*pi);
+
+            satPulse.phaseOffset = mod(accumPhase,2*pi);
+            satPulse.freqOffset = currentOffset; % set freuqncy offset of the pulse
+            accumPhase = mod(accumPhase + currentOffset*2*pi*(numel(find(abs(satPulse.signal)>0))*1e-6),2*pi);
+
+            post_sl.phaseOffset = mod(accumPhase,2*pi);
+            post_sl.freqOffset = currentOffset;
+    
+            
+            for np = 1:n_pulses
+                if fa_sat == 0 % pulses with amplitude/FA 0 have to be replaced by delay
+                    seq.addBlock(mr.makeDelay(tp));
+                    %seq.addBlock(mr.makeDelay(additionalSLPrepTime));
+                else
+%                     if abs(faSL) > minFa/180*pi
+%                         seq.addBlock(preSL);
+%                         seq.addBlock(mr.makeDelay(slPauseTime));
+%                     else
+%                          seq.addBlock(mr.makeDelay(mr.calcDuration(preSL)+slPauseTime));
+%                     end
+                    seq.addBlock(pre_sl)
+                    seq.addBlock(satPulse) % add sat pulse
+                    seq.addBlock(post_sl)
+%                     if abs(faSL) > minFa/180*pi
+%                         seq.addBlock(mr.makeDelay(slPauseTime));
+%                         seq.addBlock(postSL);
+%                     else
+%                         seq.addBlock(mr.makeDelay(mr.calcDuration(postSL)+slPauseTime));
+%                     end
+                end
+
+                if np < n_pulses % delay between pulses
+
+                    seq.addBlock(mr.makeDelay(td)); % add delay
+                end
+            end
+        end
+        if spoiling % spoiling before readout
+            seq.addSpoilerGradients()
+        end
+        seq.addPseudoADCBlock(); % readout trigger event
+        seq.addBlock(mr.makeDelay(seq_defs.Trec));   
+    end
+ 
+    %% write definitions
+    def_fields = fieldnames(seq_defs);
+    for n_id = 1:numel(def_fields)
+        seq.setDefinition(def_fields{n_id}, seq_defs.(def_fields{n_id}));
+    end
+    seq.write(seq_filename, author);
+  
+    %% plot
+    saveSaturationPhasePlot(seq_filename);
+
+
+
+%% call standard sim
+M_z = Run_pulseq_cest_Simulation(seq_filename,sim_pathname);
+
+%save('Simulation_data.mat', 'M_z', 'M_z_ref')
+
+figure; 
+hold on;
+plot(offsets_ppm , M_z, 'o-.')
+end
