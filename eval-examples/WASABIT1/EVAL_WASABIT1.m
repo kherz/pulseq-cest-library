@@ -184,20 +184,20 @@ if size(Z,2)>1
 
 end
 
-%% 5) optional: assign variables to visualize fitting with imgui
-
-%dummy P file
-load('WASABI.mat', 'P')
-
-P.SEQ.w=w(2:end);
-P.FIT.fitfunc='WASABIT1_FIT_2abs';
-P.SEQ.tp=t_p;
-P.SEQ.FREQ=freq;
-P.SEQ.Trec=t_rec(2:end);
-P.SEQ.B1=B1pa;
-P.EVAL.w_fit=P.SEQ.w;
-
-Z_uncorr=Z_corrExt; %dummy Z_uncorr
+% %% 5) optional: assign variables to visualize fitting with imgui
+% 
+% %dummy P file
+% load('WASABI.mat', 'P')
+% 
+% P.SEQ.w=w(2:end);
+% P.FIT.fitfunc='WASABIT1_FIT_2abs';
+% P.SEQ.tp=t_p;
+% P.SEQ.FREQ=freq;
+% P.SEQ.Trec=t_rec(2:end);
+% P.SEQ.B1=B1pa;
+% P.EVAL.w_fit=P.SEQ.w;
+% 
+% Z_uncorr=Z_corrExt; %dummy Z_uncorr
 popt(:,:,:,1)=B1_map*P.SEQ.B1;
 popt(:,:,:,2)=B0_map;
 popt(:,:,:,3)=T1_map;
