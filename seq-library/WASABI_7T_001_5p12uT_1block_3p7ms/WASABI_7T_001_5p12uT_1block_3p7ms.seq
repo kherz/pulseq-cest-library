@@ -1,0 +1,189 @@
+# Pulseq sequence file
+# Created by MATLAB mr toolbox
+
+# Created for Pulseq-CEST
+# https://pulseq-cest.github.io/
+# Created by: Moritz Fabian
+# Created at: 27-Nov-2023 09:44:34
+
+[VERSION]
+major 1
+minor 4
+revision 0
+
+[DEFINITIONS]
+AdcRasterTime 1e-07 
+B0 6.98000752 
+B1 5.12 
+B1rms 5.12 
+BlockDurationRaster 1e-05 
+FREQ 297.1808 
+GradientRasterTime 1e-05 
+M0_offset -300 
+RadiofrequencyRasterTime 1e-06 
+Trec 3 
+Trec_M0 12 
+Tsat 0.005 
+n_pulses 1 
+num_meas 22 
+offsets_ppm -300 -2 -1.8 -1.6 -1.4 -1.2 -1 -0.8 -0.6 -0.4 -0.2 0 0.2 0.4 0.6 0.8 1 1.2 1.4 1.6 1.8 2 
+seq_id_string WASABI_7T_001_5p12uT_1block_3p7ms 
+spoiling 1 
+tp 0.005 
+
+# Format of blocks:
+# NUM DUR RF  GX  GY  GZ  ADC  EXT
+[BLOCKS]
+ 1 1200000   0   0   0   0  0  0
+ 2 513   1   0   0   0  0  0
+ 3 650   0   1   1   1  0  0
+ 4 100   0   0   0   0  1  0
+ 5 300000   0   0   0   0  0  0
+ 6 513   2   0   0   0  0  0
+ 7 650   0   1   1   1  0  0
+ 8 100   0   0   0   0  1  0
+ 9 300000   0   0   0   0  0  0
+10 513   3   0   0   0  0  0
+11 650   0   1   1   1  0  0
+12 100   0   0   0   0  1  0
+13 300000   0   0   0   0  0  0
+14 513   4   0   0   0  0  0
+15 650   0   1   1   1  0  0
+16 100   0   0   0   0  1  0
+17 300000   0   0   0   0  0  0
+18 513   5   0   0   0  0  0
+19 650   0   1   1   1  0  0
+20 100   0   0   0   0  1  0
+21 300000   0   0   0   0  0  0
+22 513   6   0   0   0  0  0
+23 650   0   1   1   1  0  0
+24 100   0   0   0   0  1  0
+25 300000   0   0   0   0  0  0
+26 513   7   0   0   0  0  0
+27 650   0   1   1   1  0  0
+28 100   0   0   0   0  1  0
+29 300000   0   0   0   0  0  0
+30 513   8   0   0   0  0  0
+31 650   0   1   1   1  0  0
+32 100   0   0   0   0  1  0
+33 300000   0   0   0   0  0  0
+34 513   9   0   0   0  0  0
+35 650   0   1   1   1  0  0
+36 100   0   0   0   0  1  0
+37 300000   0   0   0   0  0  0
+38 513  10   0   0   0  0  0
+39 650   0   1   1   1  0  0
+40 100   0   0   0   0  1  0
+41 300000   0   0   0   0  0  0
+42 513  11   0   0   0  0  0
+43 650   0   1   1   1  0  0
+44 100   0   0   0   0  1  0
+45 300000   0   0   0   0  0  0
+46 513  12   0   0   0  0  0
+47 650   0   1   1   1  0  0
+48 100   0   0   0   0  1  0
+49 300000   0   0   0   0  0  0
+50 513  13   0   0   0  0  0
+51 650   0   1   1   1  0  0
+52 100   0   0   0   0  1  0
+53 300000   0   0   0   0  0  0
+54 513  14   0   0   0  0  0
+55 650   0   1   1   1  0  0
+56 100   0   0   0   0  1  0
+57 300000   0   0   0   0  0  0
+58 513  15   0   0   0  0  0
+59 650   0   1   1   1  0  0
+60 100   0   0   0   0  1  0
+61 300000   0   0   0   0  0  0
+62 513  16   0   0   0  0  0
+63 650   0   1   1   1  0  0
+64 100   0   0   0   0  1  0
+65 300000   0   0   0   0  0  0
+66 513  17   0   0   0  0  0
+67 650   0   1   1   1  0  0
+68 100   0   0   0   0  1  0
+69 300000   0   0   0   0  0  0
+70 513  18   0   0   0  0  0
+71 650   0   1   1   1  0  0
+72 100   0   0   0   0  1  0
+73 300000   0   0   0   0  0  0
+74 513  19   0   0   0  0  0
+75 650   0   1   1   1  0  0
+76 100   0   0   0   0  1  0
+77 300000   0   0   0   0  0  0
+78 513  20   0   0   0  0  0
+79 650   0   1   1   1  0  0
+80 100   0   0   0   0  1  0
+81 300000   0   0   0   0  0  0
+82 513  21   0   0   0  0  0
+83 650   0   1   1   1  0  0
+84 100   0   0   0   0  1  0
+85 300000   0   0   0   0  0  0
+86 513  22   0   0   0  0  0
+87 650   0   1   1   1  0  0
+88 100   0   0   0   0  1  0
+
+# Format of RF events:
+# id amplitude mag_id phase_id time_shape_id delay freq phase
+# ..        Hz   ....     ....          ....    us   Hz   rad
+[RF]
+1      217.989 1 2 3 100 -89154.2 0
+2      217.989 1 2 3 100 -594.362 0
+3      217.989 1 2 3 100 -534.925 0
+4      217.989 1 2 3 100 -475.489 0
+5      217.989 1 2 3 100 -416.053 0
+6      217.989 1 2 3 100 -356.617 0
+7      217.989 1 2 3 100 -297.181 0
+8      217.989 1 2 3 100 -237.745 0
+9      217.989 1 2 3 100 -178.308 0
+10      217.989 1 2 3 100 -118.872 0
+11      217.989 1 2 3 100 -59.4362 0
+12      217.989 1 2 3 100 0 0
+13      217.989 1 2 3 100 59.4362 0
+14      217.989 1 2 3 100 118.872 0
+15      217.989 1 2 3 100 178.308 0
+16      217.989 1 2 3 100 237.745 0
+17      217.989 1 2 3 100 297.181 0
+18      217.989 1 2 3 100 356.617 0
+19      217.989 1 2 3 100 416.053 0
+20      217.989 1 2 3 100 475.489 0
+21      217.989 1 2 3 100 534.925 0
+22      217.989 1 2 3 100 594.362 0
+
+# Format of trapezoid gradients:
+# id amplitude rise flat fall delay
+# ..      Hz/m   us   us   us    us
+[TRAP]
+ 1  1.36243e+06 1000 4500 1000   0
+
+# Format of ADC events:
+# id num dwell delay freq phase
+# ..  ..    ns    us   Hz   rad
+[ADC]
+1 1 1000000 0 0 0
+
+# Sequence Shapes
+[SHAPES]
+
+shape_id 1
+num_samples 2
+1
+1
+
+shape_id 2
+num_samples 2
+0
+0
+
+shape_id 3
+num_samples 2
+0
+5000
+
+
+[SIGNATURE]
+# This is the hash of the Pulseq file, calculated right before the [SIGNATURE] section was added
+# It can be reproduced/verified with md5sum if the file trimmed to the position right above [SIGNATURE]
+# The new line character preceding [SIGNATURE] BELONGS to the signature (and needs to be sripped away for recalculating/verification)
+Type md5
+Hash dd5d88826f7575e01c5a3dae089d33be
