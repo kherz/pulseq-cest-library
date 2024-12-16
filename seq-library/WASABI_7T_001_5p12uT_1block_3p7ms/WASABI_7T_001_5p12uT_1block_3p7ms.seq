@@ -29,7 +29,7 @@ num_meas 22
 offsets_ppm -300 -2 -1.8 -1.6 -1.4 -1.2 -1 -0.8 -0.6 -0.4 -0.2 0 0.2 0.4 0.6 0.8 1 1.2 1.4 1.6 1.8 2 
 seq_id_string WASABI_7T_001_5p12uT_1block_3p7ms 
 spoiling 1 
-tp 0.005 
+tp 0.0037 
 
 # Format of blocks:
 # NUM DUR RF  GX  GY  GZ  ADC  EXT
