@@ -26,6 +26,7 @@ defs.offsets_ppm   = [-300 -4 -3.73333333 -3.46666667 -3.2 -2.93333333 -2.666666
 defs.num_meas      = numel(defs.offsets_ppm); % number of repetition
 defs.seq_id_string = seqid           ; % unique seq id
 defs.FREQ		   = 127.7292;          % Approximately 3 T 
+defs.B0            = defs.FREQ/(gamma_hz);  % Calculate B0   
 defs.B1pa        = 3.7;  % mean sat pulse b1 [uT]
 defs.spoiling    = 1;     % 0=no spoiling, 1=before readout, Gradient in x,y,z
 

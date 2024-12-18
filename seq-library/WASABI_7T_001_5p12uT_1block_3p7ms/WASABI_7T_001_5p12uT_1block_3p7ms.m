@@ -6,7 +6,7 @@
 
 
 % author name for sequence file
-author = 'Moritz Fabian';
+author = 'Moritz Fabian and Jan Schüre';
 
 %% get id of generation file
 if contains(mfilename, 'LiveEditorEvaluationHelperESectionEval')
