@@ -4,7 +4,7 @@
 # Created for Pulseq-CEST
 # https://pulseq-cest.github.io/
 # Created by: Moritz Zaiss
-# Created at: 01-Feb-2024 16:29:59
+# Created at: 18-Dec-2024 11:26:19
 
 [VERSION]
 major 1
@@ -12,7 +12,7 @@ minor 3
 revision 1
 
 [DEFINITIONS]
-B0 -1 
+B0 3 
 B1pa 3.7 
 B1rms 3.7 
 FREQ 127.7292 

@@ -6,7 +6,7 @@
 
 
 % author name for sequence file
-author = 'Moritz Fabian';
+author = 'Moritz Fabian and Jan Schüre';
 
 %% get id of generation file
 if contains(mfilename, 'LiveEditorEvaluationHelperESectionEval')
@@ -24,7 +24,7 @@ gamma_hz  =seq.sys.gamma*1e-6;                  % for H [Hz/uT]
 % everything in defs gets written as definition in .seq-file
 defs.n_pulses      = 1              ; % number of pulses
 defs.B1rms        = 5.12            ; % b1 for 1 block is cqpe
-defs.tp            = 5e-3           ; % pulse duration [s]
+defs.tp            = 3.7e-3         ; % pulse duration [s]
 defs.Trec          = 3              ; % recovery time [s]
 defs.Trec_M0       = 12             ; % recovery time before M0 [s]
 defs.M0_offset     = -300           ; % m0 offset [ppm]
