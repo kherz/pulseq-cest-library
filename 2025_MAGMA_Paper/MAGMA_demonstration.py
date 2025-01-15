@@ -13,19 +13,17 @@ import subprocess
 # [not applicable -- figure shows screenshot of Pulseq-CEST Library contents]
 
 # Figure 2a/3a/4a
-subprocess.run(["python3", "../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.py", "3", "6"])
+# subprocess.run(["python3", "../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.py", "3", "6"])
 
 # Figure 5a
-# Uncomment to generate the WASABI sequence
-# WASABI_seq_gen()
+# subprocess.run(["python3", "../seq-library/WASABI_3T_001_3p7uT_1block_5ms/WASABI_3T_001_3p7uT_1block_5ms.py", "11.5", "15.5"])
 
 # Figure 3
 
 # Figure 4
 
-# Figure 5
-
-# Figure 6
+# Figure 6a, 6b
+# subprocess.run(["python3", "WM_comparison.py"])
 
 # Figure S1
 
