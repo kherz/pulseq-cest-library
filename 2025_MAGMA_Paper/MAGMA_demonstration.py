@@ -15,17 +15,45 @@ import subprocess
 # Figure 2a/3a/4a
 # subprocess.run(["python3", "../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.py", "3", "6"])
 
+# Figure 2b, 2c, 2d, 2f, 2g
+
+# Figure 2e
+
+# Figure 2h/4b, 2i/4c, 2j/4d
+
+# Figure 3b, 3c, 3d, 3f, 3g
+
+# Figure 3e
+
+# Figure 3h, 3i, 3j
+
+# Figure 4e, 4f, 4g
+
+# Figure 4h, 4i, 4j
+
 # Figure 5a
 # subprocess.run(["python3", "../seq-library/WASABI_3T_001_3p7uT_1block_5ms/WASABI_3T_001_3p7uT_1block_5ms.py", "11.5", "15.5"])
 
-# Figure 3
+# Figure 5b, 5c, 5d, 5e
 
-# Figure 4
+# Figure 5f, 5g
 
 # Figure 6a, 6b
 # subprocess.run(["python3", "WM_comparison.py"])
 
-# Figure S1
+# Figure S1a, S1b
+
+# Figure S1c, S1d
+
+# Figure S1e, S1f
+
+# Figure S1g, S1h
+
+# Figure S1i, S1j
+
+# Figure S1k, S1l
+
+# Figure S1m, S1n
 
 # Figure S2
 # [not applicable -- figure shows exchange rate estimation over variations in pH level, sourced from cited work]
