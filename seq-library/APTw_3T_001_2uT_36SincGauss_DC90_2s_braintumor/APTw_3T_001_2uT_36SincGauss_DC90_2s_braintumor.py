@@ -156,4 +156,4 @@ write_seq(seq=seq, seq_defs=defs, filename=folder / seq_filename, author=AUTHOR,
 
 # plot the sequence
 if FLAG_PLOT_SEQUENCE:
-    seq.plot(time_range=(int(time_min),int(time_max)))  # to plot all offsets, remove time_range argument
+    seq.plot(time_range=(float(time_min),float(time_max)))  # to plot all offsets, remove time_range argument
