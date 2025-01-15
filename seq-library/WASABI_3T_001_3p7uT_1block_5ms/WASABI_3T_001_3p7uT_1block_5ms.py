@@ -15,6 +15,19 @@ from pathlib import Path
 import numpy as np
 import pypulseq as pp
 from bmctool.utils.seq.write import write_seq
+import argparse
+
+parser = argparse.ArgumentParser(description="APTw Sequence Generation script")
+parser.add_argument('time_min', type=str, nargs='?', default='11.5',
+                    help="Time range minimum")
+parser.add_argument('time_max', type=str, nargs='?', default='15.5',
+                    help="Time range maximum")
+
+args = parser.parse_args()
+
+# Use the arguments
+time_min = args.time_min
+time_max = args.time_max
 
 # get id of generation file
 seqid = Path(__file__).stem + "_python"
@@ -24,7 +37,7 @@ folder = Path(__file__).parent
 
 # general settings
 AUTHOR = "Patrick Schuenke"
-FLAG_PLOT_SEQUENCE = False  # plot preparation block?
+FLAG_PLOT_SEQUENCE = True  # plot preparation block?
 FLAG_CHECK_TIMING = False  # perform a timing check at the end of the sequence?
 FLAG_POST_PREP_SPOIL = True  # add spoiler after preparation block?
 
@@ -130,4 +143,4 @@ write_seq(seq=seq, seq_defs=defs, filename=folder / seq_filename, author=AUTHOR,
 
 # plot the sequence
 if FLAG_PLOT_SEQUENCE:
-    seq.plot()  # to plot all offsets, remove time_range argument
+    seq.plot(time_range=(float(time_min),float(time_max)))  # to plot all offsets, remove time_range argument
