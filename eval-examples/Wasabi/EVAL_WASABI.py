@@ -2,7 +2,7 @@
 """
 Created on Wed Jul 19 13:45:31 2023
 
-@author: kouemoin
+@author: schuerejn
 """
 import os
 from pathlib import Path
