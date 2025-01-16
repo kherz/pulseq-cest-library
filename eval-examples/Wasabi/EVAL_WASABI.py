@@ -9,7 +9,6 @@ from pathlib import Path
 
 import numpy as np
 import pydicom
-
 import matplotlib.pyplot as plt
 import pypulseq as pp
 from scipy.optimize import curve_fit

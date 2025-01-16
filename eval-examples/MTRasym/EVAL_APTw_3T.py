@@ -52,7 +52,6 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
         
         # 2a) Read in data from simulation in Pulseq folder
         txt_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / f'M_z_{seq_name.stem}.seq.txt'
-        print(txt_path)
         assert txt_path.is_file(), "Simulation data file not found"
         m_z = np.loadtxt(txt_path)
         m_z = np.expand_dims(m_z, axis=1) # Convert 1D array to 2D column vector
