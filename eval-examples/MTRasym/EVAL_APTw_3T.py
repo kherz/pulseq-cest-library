@@ -40,6 +40,8 @@ parser.add_argument('seq_filename', type=str, nargs='?', default='APTw_3T_001_2u
                     help="Filename of the sequence file")
 parser.add_argument('interpolation', type=str, nargs='?', default='spline',
                     help="Type of interpolation (linear or spline)")
+parser.add_argument('dB0_shift', type=str, nargs='?', default='0',
+                    help="dB0 shift value")
 
 args = parser.parse_args()
 
@@ -49,6 +51,7 @@ data_path = args.data_path
 bmsim_filename = args.bmsim_filename
 seq_filename = args.seq_filename
 interpolation = args.interpolation
+dB0_shift = float(args.dB0_shift) - 0.02 # adjusted to account for phantom
 
 # Define seq, config and dicom name
 seq_name = Path(seq_filename)
@@ -190,6 +193,7 @@ def ppval(p, x):
 
 from scipy.interpolate import interp1d
 
+# Smoothing 
 if interpolation == "linear":
     # Perform linear interpolation
     Z_corr = np.zeros_like(Z)
@@ -210,7 +214,7 @@ if interpolation == "linear":
             dB0_stack[ii] = w_fine[min_idx]
 
             # Interpolate corrected values
-            Z_corr[:, ii] = f(w + dB0_stack[ii]-0.028)
+            Z_corr[:, ii] = f(w + dB0_stack[ii] + dB0_shift)
 
 elif interpolation == "spline": 
     # Perform the smoothing spline interpolation
@@ -227,7 +231,7 @@ elif interpolation == "spline":
             min_idx = np.argmin(z_fine)
             dB0_stack[ii] = w_fine[min_idx]
 
-            Z_corr[:, ii] = ppval(pp, w + dB0_stack[ii]-0.028)
+            Z_corr[:, ii] = ppval(pp, w + dB0_stack[ii] + dB0_shift)
 
 # Calc of MTRasym-Spectrum
 Z_ref = Z_corr[::-1, :]
@@ -284,6 +288,7 @@ else:
     Z_spectrum = Z_spectrum[:len(w)]
     V_MTRasym_spectrum = V_MTRasym_spectrum[:len(w)]
 
+    # ROI-specific smoothing to account for smaller selection and associated spectra
     if interpolation == "linear":
         # Perform linear interpolation
         f = interp1d(w, Z_spectrum, kind='linear', fill_value='extrapolate')
