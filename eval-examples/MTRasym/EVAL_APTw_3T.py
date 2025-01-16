@@ -38,6 +38,7 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
     seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
     assert seq_path.is_file(), "seq file not found"
     
+    
     # 1) read in associated seq file from Pulseq-CEST library
     import pypulseq as pp        # ist jetzt doppelt. wurde oben nicht erkannt
     seq = pp.Sequence()
@@ -50,11 +51,11 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
     if data_flag == 'simulation':
         
         # 2a) Read in data from simulation in Pulseq folder
-        seq_path_base = Path.cwd().parent.parent / "seq-library" / seq_name.stem 
-        txt_path = seq_path_base / f'M_z_{seq_name.stem}.txt'
+        txt_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / f'M_z_{seq_name.stem}.seq.txt'
+        print(txt_path)
         assert txt_path.is_file(), "Simulation data file not found"
         m_z = np.loadtxt(txt_path)
-        m_z = np.expand_dims(m_z, axis=1)
+        m_z = np.expand_dims(m_z, axis=1) # Convert 1D array to 2D column vector
         
     elif data_flag == 're_simulation':
         # 2b) Re-simulate
@@ -199,10 +200,7 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
 
 
 if __name__ == "__main__":
-    globals()["EVAL_APTw_3T"] = EVAL_APTw_3T
-    EVAL_APTw_3T(
-        data_flag='simulation', 
-        data_path='', 
-        bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
-        seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq'
-    )
+    EVAL_APTw_3T(data_flag='simulation',  
+                data_path='', 
+                bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
+                seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq')
