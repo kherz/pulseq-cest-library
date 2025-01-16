@@ -1,0 +1,1 @@
+This file contains code used to generate figures for the 2025 paper "The Pulseq-CEST Library: Definition of Preparations and Simulations, Example Data, and Example Evaluations." Code is compatible with the rest of the codebase and should be run from inside of eval-examples as stored here.
