@@ -12,7 +12,7 @@ import pydicom
 import matplotlib.pyplot as plt
 import pypulseq as pp
 from scipy.optimize import curve_fit
-from bmctool.simulate import simulate
+from bmctool.simulation import simulate
 
 def EVAL_WASABI(data_flag='simulation',  data_path='', bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
                 seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq'):
@@ -47,9 +47,13 @@ def EVAL_WASABI(data_flag='simulation',  data_path='', bmsim_filename='WM_3T_def
     elif data_flag == 're_simulation':
    
         #  %% 2b) Re-simulate using a yaml file
-        config_path = Path.cwd().parent.parent / "sim-library" / bmsim_filename
-        assert config_path.is_file(), "Config file not found"
-        sim = simulate(config_file=config_path, seq_file=seq_path)
+        if isinstance(bmsim_filename, str):
+            config_path = Path.cwd().parent.parent / "sim-library" / bmsim_filename
+            sim = simulate(config_file=config_path, seq_file=seq_path)   
+        else:
+            sim = simulate(config_file=bmsim_filename, seq_file=seq_path)
+        
+        
         m_z = sim.get_zspec()[1]
         m_z = np.expand_dims(m_z, axis=1)     
   
@@ -147,7 +151,7 @@ def EVAL_WASABI(data_flag='simulation',  data_path='', bmsim_filename='WM_3T_def
         plt.subplot(1, 2, 1)
         plt.plot(w, np.mean(Z, axis=1), "r.-")  # Mittelwert über Achse 1
         plt.gca().invert_xaxis()  # x-Achse umkehren
-        plt.title("Mean Z-spectrum")
+        plt.title("WASABI spectrum")
         plt.xlabel("Offsets (ppm)")
         plt.ylabel("Normalized Signal")
         plt.grid(True)

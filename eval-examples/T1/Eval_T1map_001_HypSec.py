@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pypulseq as pp
 import  pydicom
 from scipy.optimize import curve_fit
-from bmctool.simulate import simulate
+from bmctool.simulation import simulate
 
 
 def EVAL_T1(data_flag='simulation',  data_path='', bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
@@ -134,9 +134,8 @@ def EVAL_T1(data_flag='simulation',  data_path='', bmsim_filename='WM_3T_default
         plt.figure(figsize=(10, 4))
         plt.subplot(1, 2, 1)
         plt.plot(offsets, np.mean(Z, axis=1), "r.-")  # Mittelwert über Achse 1
-        plt.gca().invert_xaxis()  # x-Achse umkehren
-        plt.title("Mean Z-spectrum")
-        plt.xlabel("Offsets (ppm)")
+        plt.title("T1 Relaxation")
+        plt.xlabel("TI")
         plt.ylabel("Normalized Signal")
         plt.grid(True)
         plt.show() 
