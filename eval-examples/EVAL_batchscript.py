@@ -39,39 +39,40 @@ if __name__ == "__main__":
     
     # Change Parameters in yaml file 
     # 
-    yaml_struc.system.b0_inhom = -1  # Beispieländerung
+    yaml_struc.system.b0_inhom = 0  # Beispieländerung
    
     
     script_path = Path.cwd().parent/ "eval-examples" / evalname
     os.chdir(script_path)
     # Skript aufrufen mit dem modifizierten YAML-Inhalt
     EVAL_APTw_3T(
-        data_flag='re_simulation',
+        data_flag='real_data',
         data_path='', 
         bmsim_filename= yaml_struc,  # Übergebe den StringIO-Objekt als Dateiinhalt   
-        seq_filename='APTw_3T_000_2uT_1block_2s_braintumor.seq'
+        seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',
+        smooth_flag=0.1
     )
     
    
-    EVAL_WASABI(
-        data_flag='re_simulation',
-        data_path='', 
-        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
-        seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq'
-    )
-    
-    
-    EVAL_T1(
-        data_flag='re_simulation',
-        data_path='', 
-        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
-        seq_filename='T1map_001_3HypSec.seq'
-    )
-    
-    
-    EVAL_T2(
-        data_flag='re_simulation',
-        data_path='', 
-        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
-        seq_filename='T2map_001_T2prep.seq'
-    )
+#    EVAL_WASABI(
+#        data_flag='re_simulation',
+#        data_path='', 
+#        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
+#        seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq'
+#    )
+#    
+#    
+#    EVAL_T1(
+#        data_flag='re_simulation',
+#        data_path='', 
+#        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
+#        seq_filename='T1map_001_3HypSec.seq'
+#    )
+#    
+#    
+#    EVAL_T2(
+#        data_flag='re_simulation',
+#        data_path='', 
+#        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
+#        seq_filename='T2map_001_T2prep.seq'
+#    )
