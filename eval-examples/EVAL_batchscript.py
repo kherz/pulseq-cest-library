@@ -37,10 +37,14 @@ if __name__ == "__main__":
     yaml_struc = Parameters.from_yaml(yaml_path)
     
     
-    # Change Parameters in yaml file 
-    # 
+    # Change Parameters in yaml file  
     yaml_struc.system.b0_inhom = 0  # Beispieländerung
    
+    # Changes in P struc
+    #P = {
+    #"smooth_param": 0.95
+    #}
+    
     
     script_path = Path.cwd().parent/ "eval-examples" / evalname
     os.chdir(script_path)
@@ -50,7 +54,7 @@ if __name__ == "__main__":
         data_path='', 
         bmsim_filename= yaml_struc,  # Übergebe den StringIO-Objekt als Dateiinhalt   
         seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',
-        smooth_flag=0.1
+        P_Eval_smoothness=0.95,
     )
     
    
@@ -58,7 +62,8 @@ if __name__ == "__main__":
 #        data_flag='re_simulation',
 #        data_path='', 
 #        bmsim_filename= 'WM_3T_default_7pool_bmsim.yaml',  # Übergebe den StringIO-Objekt als Dateiinhalt   
-#        seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq'
+#        seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq',
+#        P_Eval_smoothness=0.95
 #    )
 #    
 #    

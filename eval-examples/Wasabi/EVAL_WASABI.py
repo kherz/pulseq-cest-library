@@ -15,7 +15,7 @@ from scipy.optimize import curve_fit
 from bmctool.simulation import simulate
 
 def EVAL_WASABI(data_flag='simulation',  data_path='', bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
-                seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq',smooth_flag=0.95):
+                seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq'):
 
     
     # Initializations
@@ -177,7 +177,7 @@ if __name__ == "__main__":
     EVAL_WASABI(data_flag='simulation',  
                 data_path='', 
                 bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
-                seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq',
-                smooth_flag=0.95)
+                seq_filename='WASABI_3T_001_3p7uT_1block_5ms.seq'
+                )
     
     

@@ -30,7 +30,7 @@ from csaps import csaps
 
 
 def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
-                 seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',smooth_flag=0.95):
+                 seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',P_Eval_smoothness=0.95):
 
 
     # Initializations
@@ -136,7 +136,7 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
         dB0_stack = np.zeros(Z.shape[1])
         for ii in range(Z.shape[1]):
             if np.all(np.isfinite(Z[:, ii])):
-                pp = csaps(w, Z[:, ii], smooth=smooth_flag)
+                pp = csaps(w, Z[:, ii], smooth=P_Eval_smoothness)
                 w_fine = np.arange(-1, 1.005, 0.005)
                 z_fine = ppval(pp, w_fine)
         
