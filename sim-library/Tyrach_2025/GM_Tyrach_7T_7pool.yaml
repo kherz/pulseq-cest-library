@@ -1,0 +1,87 @@
+####################################################################################
+# ------ Simulation settings for (py)pulseq-cest BlochMcConnell simulations ------ #
+# ------------------------ https://pulseq-cest.github.io/ ------------------------ #
+####################################################################################
+# Simulation parameters for grey matter at 7T 
+#
+# - 4 CEST pools
+# - 1 NOE pool      
+# - a Lorentzian shaped MT pool
+#
+# sources/references for settings in this file:
+# CEST pools: https://github.com/cest-sources/MultiB0_B1_qCEST_brain
+
+###### Pool settings
+#         f: relative pool size fraction (float)
+#        t1: longitudinal relaxation time T1 = 1/R1 [s] (float)
+#        t2: transversal relaxation time T2 = 1/R2 [s] (float)
+#         k: exchange rate [Hz] to water pool (MT and CEST pools only) (float)
+#        dw: chemical shift (delta omega) relative to water [ppm] (MT and CEST pools only) (float)
+# lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
+
+water_pool: {
+  f: 1,
+  t1: 1.2,
+  t2: 0.23317
+
+}
+mt_pool: {
+  f: 0.051744,
+  t1: 1.3,
+  t2: 2.6315e-05,
+  k: 23.9013,
+  dw: -1.6058,
+  lineshape: Lorentzian
+
+}
+cest_pool: {
+  amide: {
+    f: 0.0030714,
+    t1: 1.3,
+    t2: 0.01002,
+    k: 4.6178,
+    dw: 3.854
+
+  },
+  guanidine_1: {
+    f: 0.0039876,
+    t1: 1.3,
+    t2: 0.00062573,
+    k: 25.5859,
+    dw: 2.5841
+
+  },
+  amine_1: {
+    f: 0.0024318,
+    t1: 1.3,
+    t2: 0.0081358,
+    k: 7998.6515,
+    dw: 3.1016
+
+  },
+  OH_1: {
+    f: 0.0026964,
+    t1: 1.3,
+    t2: 32.9749,
+    k: 2805.259,
+    dw: 1.3
+
+  },
+  NOE_1: {
+    f: 0.028257,
+    t1: 1.3,
+    t2: 0.00026913,
+    k: 14.3741,
+    dw: -2.5035
+
+  }
+
+}
+b0: 7
+gamma: 267.5153
+b0_inhom: 0
+rel_b1: 1
+verbose: false
+reset_init_mag: False
+scale: 1
+max_pulse_samples: 300
