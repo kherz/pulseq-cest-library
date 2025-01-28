@@ -20,14 +20,14 @@
 # lineshape: lineshape of the MT Pool ('Lorentzian', 'SuperLorentzian' or 'None') (str)
 
 ### water pool
-water_pool: { # this was taken from 7T WM Tyrach Master Thesis 
+water_pool: { # this was taken from fitresults https://github.com/cest-sources/MultiB0_B1_qCEST_brain
   f: 1.0,
   t1: 0.3434,
   t2: 1.5e-3
 }
 
 ### MT pool
-mt_pool: { # this was taken from 7T WM Tyrach Master Thesis
+mt_pool: { # this was taken from fitresults https://github.com/cest-sources/MultiB0_B1_qCEST_brain
   f: 0.0759785,
   t1: 1.0,
   t2: 11.235e-6 ,
