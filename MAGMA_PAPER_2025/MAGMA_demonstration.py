@@ -11,12 +11,20 @@
 # https://drive.google.com/drive/u/0/folders/1VjNKsdfPrrot2H7o-Hu0HPr7_FgTZr1U
 
 import subprocess
+import sys
+from pathlib import Path
+
+original_path = sys.path.copy()
 
 # Figure 1
 # [not applicable -- figure shows screenshot of Pulseq-CEST Library contents]
 
 # Figure 2a/3a/4a
 # subprocess.run(["python3", "../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.py", "3", "6"])
+module_path = Path("../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor").resolve()
+sys.path.append(str(module_path))
+from APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor_parametrized import generate_sequence
+generate_sequence(3,6)
 
 # Figure 2b, 2c/S1g, 2d/S1h, 2f, 2g
 # subprocess.run(["python3", 
