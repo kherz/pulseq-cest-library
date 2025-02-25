@@ -21,10 +21,14 @@ original_path = sys.path.copy()
 
 # Figure 2a/3a/4a
 # subprocess.run(["python3", "../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.py", "3", "6"])
-module_path = Path("../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor").resolve()
-sys.path.append(str(module_path))
-from APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor_parametrized import generate_sequence
-generate_sequence(3,6)
+
+# Without subprocess
+# module_path = Path("../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor").resolve()
+# original_sys_path = sys.path.copy()
+# sys.path.append(str(module_path))
+# from APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor_parametrized import generate_APT_sequence
+# generate_APT_sequence(3,6)
+# sys.path = original_sys_path
 
 # Figure 2b, 2c/S1g, 2d/S1h, 2f, 2g
 # subprocess.run(["python3", 
@@ -45,6 +49,19 @@ generate_sequence(3,6)
   # ROI x-maximum: 150
   # ROI y-minimum: 95
   # ROI y-maximum: 100
+
+# Without subprocess
+# module_path = Path("../eval-examples/MTRasym").resolve()
+# original_sys_path = sys.path.copy()
+# sys.path.append(str(module_path))
+# from APTw_3T_eval_parametrized import evaluate_APTw_3T
+# evaluate_APTw_3T("real_data", 
+#                 "",
+#                 "phantoms/l-arginin/L-arginin_3T_20mM_pH4_T1_1500ms_T2_1000ms_bmsim.yaml",
+#                 "APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq",
+#                 "spline",
+#                 0)
+# sys.path = original_sys_path
 
 # Figure 2e
 # [same as above, but change the following in in APTw_3T_eval:
@@ -105,17 +122,35 @@ generate_sequence(3,6)
 # Figure 5a
 # subprocess.run(["python3", "../seq-library/WASABI_3T_001_3p7uT_1block_5ms/WASABI_3T_001_3p7uT_1block_5ms.py", "11.5", "15.5"])
 
+# Without subprocess
+# module_path = Path("../seq-library/WASABI_3T_001_3p7uT_1block_5ms").resolve()
+# original_sys_path = sys.path.copy()
+# sys.path.append(str(module_path))
+# from WASABI_3T_001_3p7uT_1block_5ms_parametrized import generate_WASABI_sequence
+# generate_WASABI_sequence(11.5,15.5)
+# sys.path = original_sys_path
+
 # Figure 5b, 5c, 5d, 5e
 # subprocess.run(["python3", 
 #                 "../eval-examples/Wasabi/WASABI_3T_001_3p7uT_1block_5ms_Eval.py", 
 #                 "real_data"])
+
   # Notes:
+  # DICOM: ../data/PULSEQ_HYBRID_GRE_2_2_5_WASABI_RR_0016/
   # Do you want to specify an ROI [y/n]: y
   # Slice of interest: 5
   # ROI x-minimum: 145
   # ROI x-maximum: 150
   # ROI y-minimum: 95
   # ROI y-maximum: 100
+
+# Without subprocess
+# module_path = Path("../eval-examples/Wasabi").resolve()
+# original_sys_path = sys.path.copy()
+# sys.path.append(str(module_path))
+# from WASABI_3T_001_3p7uT_1block_5ms_Eval_parametrized import eval_WASABI
+# eval_WASABI("real_data")
+# sys.path = original_sys_path
 
 # Figure 5f, 5g
 # subprocess.run(["python3", 
@@ -124,6 +159,10 @@ generate_sequence(3,6)
 
 # Figure 6a, 6b
 # subprocess.run(["python3", "WM_comparison.py"])
+
+# Without subprocess
+# from WM_comparison_parametrized import compare_WM
+# compare_WM()
 
 # Figure S1a, S1b
 # subprocess.run(["python3", 
