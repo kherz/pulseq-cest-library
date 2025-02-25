@@ -4,7 +4,7 @@ import pypulseq as pp
 from bmctool.utils.pulses.calc_power_equivalents import calc_power_equivalent
 from bmctool.utils.seq.write import write_seq
 
-def generate_sequence(time_min=3, time_max=6):
+def generate_APT_sequence(time_min=3, time_max=6):
     # get id of generation file
     seqid = Path(__file__).stem + "_python"
     folder = Path.cwd()
