@@ -5,6 +5,8 @@ Created on Thu Jan 16 17:58:21 2025
 @author: schuerjn
 """
 
+## Go to eval:_example Folder. Make sure you are in there.
+
 from pathlib import Path
 import yaml
 import os
