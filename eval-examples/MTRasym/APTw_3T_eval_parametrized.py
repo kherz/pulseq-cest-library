@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pydicom
-import pypulseq  # ✅ Ensures pypulseq is imported
+import pypulseq  
 from bmctool.simulate import simulate
 from csaps import csaps
 from scipy.interpolate import interp1d
@@ -17,12 +17,12 @@ def evaluate_APTw_3T(
     smoothingFactor=0.95,
     dB0_shift=0  # Adjusted for phantom
 ):
-    # ✅ Define sequence file path (Ensures Paths are Correct)
+    # Define sequence file path (Ensures Paths are Correct)
     seq_name = Path(seq_filename)
     seq_path = Path.cwd().parent / "seq-library" / seq_name.stem / seq_name
     assert seq_path.is_file(), f"Sequence file not found: {seq_path}"
 
-    # ✅ Initialize Sequence Object Before Use
+    # Initialize Sequence Object Before Use
     seq = pypulseq.Sequence()
     seq.read(seq_path)
 
@@ -32,19 +32,19 @@ def evaluate_APTw_3T(
     y_min = 0
     y_max = 0
     
-    # ✅ Get Sequence Definitions
+    # Get Sequence Definitions
     m0_offset = seq.get_definition("M0_offset")
     offsets = seq.get_definition("offsets_ppm")
     n_meas = len(offsets)
 
     if data_flag == 'simulation':
-        # ✅ Read in data from simulation
+        # Read in data from simulation
         seq_path_base = Path.cwd().parent / "seq-library" / seq_name.stem
         m_z = np.loadtxt(os.path.join(seq_path_base, f'M_z_{seq_name}.txt'))
         m_z = np.expand_dims(m_z, axis=1)
 
     elif data_flag == 're_simulation':
-        # ✅ Re-simulate using provided BMSim configuration
+        # Re-simulate using provided BMSim configuration
         config_path = Path.cwd().parent / "sim-library" / bmsim_filename
         assert config_path.is_file(), f"Config file not found: {config_path}"
 
@@ -64,7 +64,7 @@ def evaluate_APTw_3T(
         plt.show()
 
     elif data_flag == 'real_data':
-        # ✅ Read DICOM Data
+        # Read DICOM Data
         dcmpath = data_path if data_path else input('Enter the path to your DICOM directory: ')
         os.chdir(dcmpath)
 
@@ -74,7 +74,7 @@ def evaluate_APTw_3T(
         sz = V.shape
         V = np.reshape(V, [sz[0], sz[1], n_meas, sz[2] // n_meas]).transpose(0, 1, 3, 2)
 
-        # ✅ Vectorization
+        # Vectorization
         mask = np.squeeze(V[:, :, :, 0]) > 100
         mask_idx = np.where(mask.ravel())[0]
         V_m_z = V.reshape(-1, n_meas).T
@@ -105,7 +105,7 @@ def evaluate_APTw_3T(
             plt.title("Z-spectrum")
             plt.show()
 
-    # ✅ Normalize Data
+    # Normalize Data
     M0_idx = np.where(abs(offsets) >= abs(m0_offset))[0]
     if len(M0_idx) >= 0:
         M0 = np.mean(m_z[M0_idx, :], 0)
@@ -308,6 +308,6 @@ def evaluate_APTw_3T(
 
         plt.show()
 
-# ✅ Example Usage
+# Example Usage
 if __name__ == "__main__":
     evaluate_APTw_3T()
