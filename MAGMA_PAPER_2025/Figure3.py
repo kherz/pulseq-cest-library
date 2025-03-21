@@ -37,7 +37,7 @@ elif subfigure == 'b' or subfigure == 'c' or subfigure == 'd' or subfigure == 'f
                   "APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq",
                   "linear",
                   0.95,
-                  -0.028)
+                  0)
   sys.path = original_sys_path
 
 elif subfigure == 'e':
@@ -57,7 +57,7 @@ elif subfigure == 'h' or subfigure == 'i' or subfigure == 'j':
                   "APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq",
                   "linear",
                   0.99,
-                  -0.028)
+                  0)
   sys.path = original_sys_path
   
 else:
