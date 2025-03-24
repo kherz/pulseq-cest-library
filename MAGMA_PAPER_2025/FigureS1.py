@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 original_path = sys.path.copy()
-B0_correct = -0.028
+B0_correct = 0
 
 subfigure = input('Please specify which subfigure to generate: ')
 
