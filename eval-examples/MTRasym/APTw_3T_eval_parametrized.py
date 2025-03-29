@@ -19,7 +19,7 @@ def evaluate_APTw_3T(
 ):
     # Define sequence file path (Ensures Paths are Correct)
     seq_name = Path(seq_filename)
-    seq_path = Path.cwd().parent / "seq-library" / seq_name.stem / seq_name
+    seq_path = Path.cwd().parents[1] / "seq-library" / seq_name.stem / seq_name
     assert seq_path.is_file(), f"Sequence file not found: {seq_path}"
 
     # Initialize Sequence Object Before Use
@@ -39,13 +39,13 @@ def evaluate_APTw_3T(
 
     if data_flag == 'simulation':
         # Read in data from simulation
-        seq_path_base = Path.cwd().parent / "seq-library" / seq_name.stem
+        seq_path_base = Path.cwd().parents[1] / "seq-library" / seq_name.stem
         m_z = np.loadtxt(os.path.join(seq_path_base, f'M_z_{seq_name}.txt'))
         m_z = np.expand_dims(m_z, axis=1)
 
     elif data_flag == 're_simulation':
         # Re-simulate using provided BMSim configuration
-        config_path = Path.cwd().parent / "sim-library" / bmsim_filename
+        config_path = Path.cwd().parents[1] / "sim-library" / bmsim_filename
         assert config_path.is_file(), f"Config file not found: {config_path}"
 
         sim = simulate(config_file=config_path, seq_file=seq_path)
