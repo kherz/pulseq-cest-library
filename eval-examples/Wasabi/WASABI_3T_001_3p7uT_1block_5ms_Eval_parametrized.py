@@ -20,7 +20,7 @@ def eval_WASABI(data_flag="simulation", seq_fn="WASABI_3T_001_3p7uT_1block_5ms")
   seq = pp.Sequence()
 
   #%% read in associated seq file from Pulse-CEST library
-  seq_path = '../seq-library/'+seq_fn+'/'+seq_fn+'.seq'  # can be a str or a Path
+  seq_path = '../../seq-library/'+seq_fn+'/'+seq_fn+'.seq'  # can be a str or a Path
 
   seq.read(seq_path)
 
@@ -59,13 +59,13 @@ def eval_WASABI(data_flag="simulation", seq_fn="WASABI_3T_001_3p7uT_1block_5ms")
 
   if data_flag == 'simulation':
       # 2a)  read in data from simulation
-      txt_path = '../seq-library/'+seq_fn+'/M_z_'+seq_fn+'.seq.txt' 
+      txt_path = '../../seq-library/'+seq_fn+'/M_z_'+seq_fn+'.seq.txt' 
       m_z = np.loadtxt(txt_path);
       m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vector
 
   elif data_flag == 're_simulation':
       # 2b) re-simulate using a ymal file
-      config_path = '../sim-library/phantoms/l-arginin/L-arginin_3T_20mM_pH4_T1_1500ms_T2_1000ms_bmsim.yaml';
+      config_path = '../../sim-library/phantoms/l-arginin/L-arginin_3T_20mM_pH4_T1_1500ms_T2_1000ms_bmsim.yaml';
       sim = simulate(config_file=config_path, seq_file=seq_path) # we simulate the sequence using the sequence file and yaml file
       m_z = sim.get_zspec()[1]
       m_z = np.expand_dims(m_z, axis=1) # we convert a 1D array into a 2D column vector
