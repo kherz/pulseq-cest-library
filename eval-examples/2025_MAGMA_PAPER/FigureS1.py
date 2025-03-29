@@ -20,7 +20,7 @@ if subfigure == 'a' or subfigure == 'b':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -45,7 +45,7 @@ elif subfigure == 'c' or subfigure == 'd':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -70,7 +70,7 @@ elif subfigure == 'e' or subfigure == 'f':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -95,7 +95,7 @@ elif subfigure == 'g' or subfigure == 'h':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -120,7 +120,7 @@ elif subfigure == 'i' or subfigure == 'j':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -145,7 +145,7 @@ elif subfigure == 'k' or subfigure == 'l':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -170,7 +170,7 @@ elif subfigure == 'm' or subfigure == 'n':
   # ROI y-minimum: 95
   # ROI y-maximum: 100
   
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
