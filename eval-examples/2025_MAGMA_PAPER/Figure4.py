@@ -8,7 +8,7 @@ original_path = sys.path.copy()
 subfigure = input('Please specify which subfigure to generate: ')
 
 if subfigure == 'a':
-  module_path = Path("../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor").resolve()
+  module_path = Path("../../seq-library/APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor_parametrized import generate_APT_sequence
@@ -16,7 +16,7 @@ if subfigure == 'a':
   sys.path = original_sys_path
 
 elif subfigure == 'b' or subfigure == 'c' or subfigure == 'd':
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -30,7 +30,7 @@ elif subfigure == 'b' or subfigure == 'c' or subfigure == 'd':
   sys.path = original_sys_path
 
 elif subfigure == 'e' or subfigure == 'f' or subfigure == 'g':
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
@@ -44,7 +44,7 @@ elif subfigure == 'e' or subfigure == 'f' or subfigure == 'g':
   sys.path = original_sys_path
 
 elif subfigure == 'h' or subfigure == 'i' or subfigure == 'j':
-  module_path = Path("../eval-examples/MTRasym").resolve()
+  module_path = Path("../MTRasym").resolve()
   original_sys_path = sys.path.copy()
   sys.path.append(str(module_path))
   from APTw_3T_eval_parametrized import evaluate_APTw_3T
