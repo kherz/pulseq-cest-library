@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pydicom
 import pypulseq as pp
-from bmctool.simulate import simulate
+from bmctool.simulation import simulate
 from csaps import csaps
 #import argparse
 
@@ -30,7 +30,7 @@ from csaps import csaps
 
 
 def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
-                 seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq'):
+                 seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',P_Eval_smoothness=0.95):
 
 
     # Initializations
@@ -38,34 +38,38 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
     seq_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / seq_name
     assert seq_path.is_file(), "seq file not found"
     
+    
     # 1) read in associated seq file from Pulseq-CEST library
     import pypulseq as pp        # ist jetzt doppelt. wurde oben nicht erkannt
     seq = pp.Sequence()
     seq.read(seq_path)
     m0_offset = seq.get_definition("M0_offset")
     offsets = seq.get_definition("offsets_ppm")
+    w = offsets[1:]
     n_meas = len(offsets)
     
     
     if data_flag == 'simulation':
         
         # 2a) Read in data from simulation in Pulseq folder
-        seq_path_base = Path.cwd().parent.parent / "seq-library" / seq_name.stem 
-        txt_path = seq_path_base / f'M_z_{seq_name.stem}.txt'
+        txt_path = Path.cwd().parent.parent / "seq-library" / seq_name.stem / f'M_z_{seq_name.stem}.seq.txt'
         assert txt_path.is_file(), "Simulation data file not found"
         m_z = np.loadtxt(txt_path)
-        m_z = np.expand_dims(m_z, axis=1)
+        m_z = np.expand_dims(m_z, axis=1) # Convert 1D array to 2D column vector
+        Z = m_z[1:] / m_z[0]
         
     elif data_flag == 're_simulation':
         # 2b) Re-simulate
         # Implement the re-simulation using the appropriate Python library and function
-        config_name = bmsim_filename
-        m_z = None  # Placeholder for re-simulated data
-        config_path = Path.cwd().parent.parent / "sim-library" / config_name
-        sim = simulate(config_file=config_path, seq_file=seq_path)   
+        if isinstance(bmsim_filename, str):
+            config_path = Path.cwd().parent.parent / "sim-library" / bmsim_filename
+            sim = simulate(config_file=config_path, seq_file=seq_path)   
+        else:
+            sim = simulate(config_file=bmsim_filename, seq_file=seq_path)
+        
         m_z = sim.get_zspec()[1]
         m_z = np.expand_dims(m_z, axis=1)
-        
+        Z = m_z[1:] / m_z[0]
 
     elif data_flag == 'real_data':
         # 2c) Read data from measurement (DICOM)
@@ -100,87 +104,107 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
         m_z = V_m_z[:, mask_idx]
     
     
-    # %% ==========
-    # 3) Evaluation
-    # =============
-    
-    M0_idx = np.where(abs(offsets) >= abs(m0_offset))[0]
-    if len(M0_idx) > 0:
-        M0 = np.mean(m_z[M0_idx, :], 0)
-        offsets = np.delete(offsets, M0_idx)
-        m_z = np.delete(m_z, M0_idx, axis=0)
-        Z = m_z / M0  # Normalization
-    else:
-        print("m0_offset not found in offset")
-    
-    
-    # helper function to evaluate piecewise polinomial
-    def ppval(p, x):
-        if callable(p):
-            return p(x)
+        # %% ==========
+        # 3) Evaluation
+        # =============
+        
+        M0_idx = np.where(abs(offsets) >= abs(m0_offset))[0]
+        if len(M0_idx) > 0:
+            M0 = np.mean(m_z[M0_idx, :], 0)
+            offsets = np.delete(offsets, M0_idx)
+            m_z = np.delete(m_z, M0_idx, axis=0)
+            Z = m_z / M0  # Normalization
         else:
-            n = len(p) - 1
-            result = np.zeros_like(x)
-            for i in range(n, -1, -1):
-                result = result * x + p[i]
-            return result
+            print("m0_offset not found in offset")
+        
+        
+        # helper function to evaluate piecewise polinomial
+        def ppval(p, x):
+            if callable(p):
+                return p(x)
+            else:
+                n = len(p) - 1
+                result = np.zeros_like(x)
+                for i in range(n, -1, -1):
+                    result = result * x + p[i]
+                return result
+        
+        
+        # perform the smoothing spline interpolation
+        Z_corr = np.zeros_like(Z)
+        w = offsets
+        dB0_stack = np.zeros(Z.shape[1])
+        for ii in range(Z.shape[1]):
+            if np.all(np.isfinite(Z[:, ii])):
+                pp = csaps(w, Z[:, ii], smooth=P_Eval_smoothness)
+                w_fine = np.arange(-1, 1.005, 0.005)
+                z_fine = ppval(pp, w_fine)
+        
+                min_idx = np.argmin(z_fine)
+                dB0_stack[ii] = w_fine[min_idx]
+        
+                Z_corr[:, ii] = ppval(pp, w + dB0_stack[ii])
+        
+        
+        # calc of MTRasym-Spectrum
+        Z_ref = Z_corr[::-1, :]
+        MTRasym = Z_ref - Z_corr
+        
+        # Vectorization Backwards
+        if Z.shape[1] > 1:
+            V_MTRasym = np.zeros((V_m_z.shape[0], V_m_z.shape[1]), dtype=float)
+            V_MTRasym[1:, mask_idx] = MTRasym
+            V_MTRasym_reshaped = V_MTRasym.reshape(
+                V.shape[3], V.shape[0], V.shape[1], V.shape[2]
+            ).transpose(1, 2, 3, 0)
+        
+            V_Z_corr = np.zeros((V_m_z.shape[0], V_m_z.shape[1]), dtype=float)
+            V_Z_corr[1:, mask_idx] = Z_corr
+            V_Z_corr_reshaped = V_Z_corr.reshape(
+                V.shape[3], V.shape[0], V.shape[1], V.shape[2]
+            ).transpose(1, 2, 3, 0)
     
-    
-    # perform the smoothing spline interpolation
-    Z_corr = np.zeros_like(Z)
-    w = offsets
-    dB0_stack = np.zeros(Z.shape[1])
-    for ii in range(Z.shape[1]):
-        if np.all(np.isfinite(Z[:, ii])):
-            pp = csaps(w, Z[:, ii], smooth=0.95)
-            w_fine = np.arange(-1, 1.005, 0.005)
-            z_fine = ppval(pp, w_fine)
-    
-            min_idx = np.argmin(z_fine)
-            dB0_stack[ii] = w_fine[min_idx]
-    
-            Z_corr[:, ii] = ppval(pp, w + dB0_stack[ii])
-    
-    
-    # calc of MTRasym-Spectrum
-    Z_ref = Z_corr[::-1, :]
-    MTRasym = Z_ref - Z_corr
-    
-    # Vectorization Backwards
-    if Z.shape[1] > 1:
-        V_MTRasym = np.zeros((V_m_z.shape[0], V_m_z.shape[1]), dtype=float)
-        V_MTRasym[1:, mask_idx] = MTRasym
-        V_MTRasym_reshaped = V_MTRasym.reshape(
-            V.shape[3], V.shape[0], V.shape[1], V.shape[2]
-        ).transpose(1, 2, 3, 0)
-    
-        V_Z_corr = np.zeros((V_m_z.shape[0], V_m_z.shape[1]), dtype=float)
-        V_Z_corr[1:, mask_idx] = Z_corr
-        V_Z_corr_reshaped = V_Z_corr.reshape(
-            V.shape[3], V.shape[0], V.shape[1], V.shape[2]
-        ).transpose(1, 2, 3, 0)
-    
-    # %% ==========================
-    # 4) Plots MEAN ZSpec and MTRasym from Phantom
-    # =============================
-    
-    plt.figure(figsize=(10, 4))
-    plt.subplot(1, 2, 1)
-    plt.plot(w, np.mean(Z_corr, axis=1), "r.-")
-    plt.gca().invert_xaxis()
-    plt.title("Mean Z-spectrum")
-    
-    plt.subplot(1, 2, 2)
-    plt.plot(w, np.mean(MTRasym, axis=1), "b.-")
-    plt.xlim([0, 4])
-    plt.gca().invert_xaxis()
-    plt.title("Mean MTRasym-spectrum")
-    plt.show()
 
 # %% ==================
 # 5) Plot Parametric Maps from Z(3.5 ppm) and MTRasym(3.5ppm)
 # =====================
+
+    if data_flag == 'simulation' or data_flag == 're_simulation':
+        
+        plt.figure(figsize=(10, 4))
+        plt.subplot(1, 2, 1)
+        plt.plot(w, Z, "r.-")  # Mittelwert über Achse 1
+        plt.gca().invert_xaxis()  # x-Achse umkehren
+        plt.title("Z-spectrum")
+        plt.xlabel("Offsets (ppm)")
+        plt.ylabel("Normalized Signal")
+        plt.grid(True)
+        plt.show()
+
+        plt.subplot(1, 2, 2)
+        plt.plot(w, Z[::-1]-Z, "b.-")
+        plt.xlim([0, 4])
+        plt.gca().invert_xaxis()
+        plt.title("MTRasym-spectrum")
+        plt.show()
+ 
+
     if data_flag == 'real_data':
+        
+        plt.figure(figsize=(10, 4))
+        plt.subplot(1, 2, 1)
+        plt.plot(w, np.mean(Z_corr, axis=1), "r.-")
+        plt.gca().invert_xaxis()
+        plt.title("Mean Z-spectrum")
+        
+        plt.subplot(1, 2, 2)
+        plt.plot(w, np.mean(MTRasym, axis=1), "b.-")
+        plt.xlim([0, 4])
+        plt.gca().invert_xaxis()
+        plt.title("Mean MTRasym-spectrum")
+        plt.show()
+        
+        
         slice_of_interest = 5  # pick slice for Evaluation
         desired_offset = 3.5
         offset_of_interest = np.where(offsets == desired_offset)[0]  # pick offset for Evaluation
@@ -199,10 +223,8 @@ def EVAL_APTw_3T(data_flag='simulation', data_path='', bmsim_filename='WM_3T_def
 
 
 if __name__ == "__main__":
-    globals()["EVAL_APTw_3T"] = EVAL_APTw_3T
-    EVAL_APTw_3T(
-        data_flag='simulation', 
-        data_path='', 
-        bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
-        seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq'
-    )
+    EVAL_APTw_3T(data_flag='re-simulation',  
+                data_path='', 
+                bmsim_filename='WM_3T_default_7pool_bmsim.yaml',
+                seq_filename='APTw_3T_001_2uT_36SincGauss_DC90_2s_braintumor.seq',
+                smooth_flag=0.95)
